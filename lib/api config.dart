@@ -13,3 +13,4 @@ var applyleaveapi =
 var getleavesapi = "/hrmsapi/Attendance/GetLeavesForSelfEmployee/";
 var getmontlyleaves =
     "/hrmsapi/Attendance/GetLeavesForSelfInMonth"; //parameter months id, employeid
+var GetHolidayList = "/hrmsapi/Admin/GetHolidays/";

@@ -9,6 +9,7 @@ import 'package:hrms/leaves_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'Model Class/HolidayResponse.dart';
 import 'api config.dart';
 
 class apply_leave extends StatefulWidget {
@@ -31,7 +32,9 @@ class _apply_leaveeState extends State<apply_leave> {
   DateTime selectedDate = DateTime.now();
   DateTime selectedToDate = DateTime.now();
   bool isButtonEnabled = true;
-
+  bool isTodayHoliday = false;
+  bool _isTodayHoliday = false;
+  List<HolidayResponse> holidayList = [];
   // TextEditingController _emailController3 = TextEditingController();
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _apply_leaveeState extends State<apply_leave> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       accessToken = prefs.getString("accessToken") ?? "";
+      fetchHolidayList(2023);
     });
     print("accestokeninapplyleave:$accessToken");
   }
@@ -55,29 +59,87 @@ class _apply_leaveeState extends State<apply_leave> {
     print("empolyeidinapplyleave:$empolyeid");
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
+  Future<void> _selectDate(bool isTodayHoliday) async {
+    setState(() {
+      _isTodayHoliday = isTodayHoliday;
+    });
+
+    DateTime initialDate = selectedDate;
+
+    // Adjust the initial date if it doesn't satisfy the selectableDayPredicate
+    if (_isTodayHoliday && initialDate.isBefore(DateTime.now())) {
+      initialDate = DateTime.now().add(const Duration(days: 1));
+    }
+
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      initialDate: initialDate,
+      firstDate: DateTime.now().subtract(Duration(days: 0)),
+      lastDate: DateTime(2125),
+      // Assuming you have a variable '_isTodayHoliday' indicating whether today is a holiday or not.
+
       selectableDayPredicate: (DateTime date) {
-        // Exclude weekends (Saturday and Sunday)
-        return date.weekday != DateTime.saturday &&
-            date.weekday != DateTime.sunday;
+        final isPastDate =
+            date.isBefore(DateTime.now().subtract(Duration(days: 1)));
+
+        final saturday =
+            date.weekday == DateTime.saturday; // Change to DateTime.sunday
+        final sunday = date.weekday == DateTime.sunday;
+
+        final isHoliday = holidayList.any((holiday) =>
+            date.year == holiday.fromDate.year &&
+            date.month == holiday.fromDate.month &&
+            date.day == holiday.fromDate.day);
+
+        // If today is a holiday and the selected date is a past date, allow selecting the holiday date
+        if (_isTodayHoliday && isHoliday && isPastDate) {
+          return true;
+        }
+
+        final isPreviousYear = date.year < DateTime.now().year;
+
+        // Return false if any of the conditions are met
+        return !isPastDate &&
+            !saturday &&
+            !isHoliday &&
+            !isPreviousYear &&
+            date.year >= DateTime.now().year;
       },
     );
 
-    if (picked != null && picked != selectedDate) {
+    if (pickedDate != null) {
       setState(() {
-        selectedDate = picked;
-        print('fromdate$selectedDate');
+        selectedDate = pickedDate;
         _fromdateController.text =
             DateFormat('dd-MM-yyyy').format(selectedDate);
+        //  onDateSelected(pickedDate);
       });
     }
   }
+  // Future<void> _selectDate() async {
+  //   final DateTime? picked = await showDatePicker(
+  //     initialEntryMode: DatePickerEntryMode.calendarOnly,
+  //     context: context,
+  //     initialDate: selectedDate,
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2101),
+  //     selectableDayPredicate: (DateTime date) {
+  //       // Exclude weekends (Saturday and Sunday)
+  //       return date.weekday != DateTime.saturday &&
+  //           date.weekday != DateTime.sunday;
+  //     },
+  //   );
+  //
+  //   if (picked != null && picked != selectedDate) {
+  //     setState(() {
+  //       selectedDate = picked;
+  //       print('fromdate$selectedDate');
+  //       _fromdateController.text =
+  //           DateFormat('dd-MM-yyyy').format(selectedDate);
+  //     });
+  //   }
+  // }
 
   Future<void> _selectToDate() async {
     final DateTime? picked = await showDatePicker(
@@ -340,7 +402,7 @@ class _apply_leaveeState extends State<apply_leave> {
                       padding: EdgeInsets.only(left: 0, top: 20.0, right: 0),
                       child: GestureDetector(
                         onTap: () async {
-                          _selectDate();
+                          _selectDate(isTodayHoliday);
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -520,5 +582,58 @@ class _apply_leaveeState extends State<apply_leave> {
         ),
       ),
     );
+  }
+
+  Future<void> fetchHolidayList(int year) async {
+    // final url = Uri.parse(
+    //     'http://182.18.157.215/SaloonApp/API/GetHolidayListByBranchId/$branchId');
+    final url = Uri.parse(baseUrl + GetHolidayList + '$year');
+    print('url========>: $url');
+    print('API headers:1 $accessToken');
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      };
+      print('API headers:2 $accessToken');
+
+      final response = await http.get(url, headers: headers);
+      print('response body : ${response.body}');
+      //  final response = await http.get(Uri.parse(url), headers: headers);
+      print("responsecode ${response.statusCode}");
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          holidayList =
+              data.map((json) => HolidayResponse.fromJson(json)).toList();
+        });
+
+        print('Today is a holiday: $holidayList');
+        DateTime now = DateTime.now();
+        DateTime currentDate = DateTime(now.year, now.month, now.day);
+        String formattedDate =
+            DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(currentDate);
+
+        for (final holiday in holidayList) {
+          DateTime holidayDate = holiday.fromDate;
+          String holidaydate =
+              DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(holidayDate);
+
+          if (formattedDate == holidaydate) {
+            isTodayHoliday = true;
+            print('Today is a holiday: $formattedDate');
+            break; // If a match is found, exit the loop
+          }
+        }
+      } else {
+        // Handle error if the request was not successful
+        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      // Handle any exceptions that occurred during the request
+      print('Error: $error');
+    }
   }
 }

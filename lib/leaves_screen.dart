@@ -1015,7 +1015,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
             // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
             print('Used PLs in Month: ${leaveInfo.usedPLsInMonth}');
             int noofPL = leaveInfo.usedPLsInMonth;
-
+            print('noofPL:$noofPL');
             setState(() {
               noOfleavesinPLs = noofPL;
               print('noOfleavesinPLs:$noOfleavesinPLs');
