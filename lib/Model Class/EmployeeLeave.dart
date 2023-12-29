@@ -1,0 +1,73 @@
+class EmployeeLeave {
+  // final int employeeId;
+  // final String employeeName;
+  // final String? code;
+  // final int employeeLeaveId;
+  final String leaveType;
+  final String fromDate;
+  final String? toDate;
+  // final int leaveTypeId;
+  // final int usedCLsInMonth;
+  // final int usedPLsInMonth;
+//  final bool? rejected;
+  // final String? acceptedAt;
+  // final String? acceptedBy;
+  // final String? approvedAt;
+  // final String? approvedBy;
+  final String note;
+  final String status;
+  // final bool? isApprovalEscalated;
+  // final Null comments;
+  // final String createdAt;
+  // final String createdBy;
+
+  EmployeeLeave({
+    // required this.employeeId,
+    // required this.employeeName,
+    // required this.code,
+    // required this.employeeLeaveId,
+    required this.leaveType,
+    required this.fromDate,
+    required this.toDate,
+    // required this.leaveTypeId,
+    // required this.usedCLsInMonth,
+    // required this.usedPLsInMonth,
+    // required this.rejected,
+    // required this.acceptedAt,
+    // required this.acceptedBy,
+    // required this.approvedAt,
+    // required this.approvedBy,
+    required this.note,
+    required this.status,
+    // required this.isApprovalEscalated,
+    // required this.comments,
+    // required this.createdAt,
+    // required this.createdBy,
+  });
+
+  factory EmployeeLeave.fromJson(Map<String, dynamic> json) {
+    return EmployeeLeave(
+      // employeeId: json['employeeId'],
+      // employeeName: json['employeeName'],
+      // code: json['code'],
+      // employeeLeaveId: json['employeeLeaveId'],
+      leaveType: json['leaveType'],
+      fromDate: json['fromDate'],
+      toDate: json['toDate'],
+      // leaveTypeId: json['leaveTypeId'],
+      // usedCLsInMonth: json['usedCLsInMonth'],
+      // usedPLsInMonth: json['usedPLsInMonth'],
+      // rejected: json['rejected'],
+      // acceptedAt: json['acceptedAt'],
+      // acceptedBy: json['acceptedBy'],
+      // approvedAt: json['approvedAt'],
+      // approvedBy: json['approvedBy'],
+      note: json['note'],
+      status: json['status'],
+      // isApprovalEscalated: json['isApprovalEscalated'],
+      // comments: json['comments'],
+      // createdAt: json['createdAt'],
+      // createdBy: json['createdBy'],
+    );
+  }
+}
