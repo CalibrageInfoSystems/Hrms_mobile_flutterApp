@@ -84,6 +84,7 @@ flutter:
      - assets/leave_8.svg
      - assets/app_logo.png
      - assets/hrms_logo.png
+     - assets/men_emp.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

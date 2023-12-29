@@ -1060,12 +1060,12 @@ class _leaves_screen_screenState extends State<leaves_screen> {
           if (leaveInfoCl.leaveTypeId == 102) {
             print('LeaveClType: ${leaveInfoCl.leaveType}');
             // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
-            print('UsedCLsin Month: ${leaveInfoCl.usedPLsInMonth}');
-            int noofCL = leaveInfoCl.usedPLsInMonth;
-
+            print('UsedCLsin Month: ${leaveInfoCl.usedCLsInMonth}');
+            int noofCL = leaveInfoCl.usedCLsInMonth;
+            print('noofCL:$noofCL');
             setState(() {
               noOfleavesinCLs = noofCL;
-              print('noOfleavesinCls:$noOfleavesinPLs');
+              print('noOfleavesinCls:$noOfleavesinCLs');
             });
           }
         }

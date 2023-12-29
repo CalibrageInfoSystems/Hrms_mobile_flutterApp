@@ -102,6 +102,7 @@ class _apply_leaveeState extends State<apply_leave> {
         // Return false if any of the conditions are met
         return !isPastDate &&
             !saturday &&
+            !sunday &&
             !isHoliday &&
             !isPreviousYear &&
             date.year >= DateTime.now().year;

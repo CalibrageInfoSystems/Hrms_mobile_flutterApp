@@ -24,6 +24,7 @@ class _personal_screen_screenState extends State<personal_details> {
   String Mobilenum = '';
   String Bloodgroup = '';
   String formattedDOB = '';
+  String Gender = '';
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -51,7 +52,9 @@ class _personal_screen_screenState extends State<personal_details> {
       final expincompany = loadedData['experienceInCompany'];
       final mobilenum = loadedData['mobileNumber'];
       final bloodgroup = loadedData['bloodGroup'];
-
+      final gender = loadedData["gender"];
+      //   "gender"
+      // : "Male"
       print('employeeName: $employeeName');
       print('dob: $dateofbirth');
       print('emailid: $emailid');
@@ -72,6 +75,7 @@ class _personal_screen_screenState extends State<personal_details> {
         Expincomapny = expincompany;
         Mobilenum = mobilenum;
         Bloodgroup = bloodgroup;
+        Gender = gender;
       });
     }
   }
@@ -146,11 +150,19 @@ class _personal_screen_screenState extends State<personal_details> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                'assets/women-emp.jpg',
-                                width: 90,
-                                height: 110,
-                              ),
+                              if (Gender == "Male")
+                                Image.asset(
+                                  'assets/men_emp.jpg',
+                                  width: 90,
+                                  height: 110,
+                                )
+                              else if (Gender == "Female")
+                                Image.asset(
+                                  'assets/women-emp.jpg',
+                                  width: 90,
+                                  height: 110,
+                                ),
+
                               //  SizedBox(height: 40.0),
                               Padding(
                                 padding: EdgeInsets.all(16.0),
@@ -204,7 +216,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                   Padding(
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            0, 0, 0, 0),
+                                                            0, 10, 0, 0),
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
@@ -228,7 +240,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                   Padding(
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            10, 0, 0, 0),
+                                                            10, 10, 0, 0),
                                                     child: Text(
                                                       "$dob",
                                                       style: TextStyle(
