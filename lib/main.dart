@@ -148,8 +148,9 @@ class _LoginPageState extends State<LoginPage> {
 
           empolyelogin(employeeId!);
           Commonutils.showCustomToastMessageLong(
-              'Login Successfully', context, 0, 2);
+              'Login Successful', context, 0, 2);
         } else {
+          FocusScope.of(context).unfocus();
           Commonutils.showCustomToastMessageLong(
               'Invalid Username or Password ', context, 1, 4);
           print('response is not success');

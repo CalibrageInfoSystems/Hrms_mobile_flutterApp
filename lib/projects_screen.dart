@@ -127,7 +127,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
-                        mainAxisExtent: 175,
+                        mainAxisExtent: 190,
                       ),
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,

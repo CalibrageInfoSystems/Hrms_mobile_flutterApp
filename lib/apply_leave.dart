@@ -205,7 +205,8 @@ class _apply_leaveeState extends State<apply_leave> {
     }
     if (isValid && _leavetext.text.isEmpty) {
       Commonutils.showCustomToastMessageLong(
-          'Please Enter the Reason to Apply Leave', context, 1, 6);
+          'Please Enter the Reason For Leave', context, 1, 6);
+
       isValid = false;
       hasValidationFailed = true;
     }
@@ -349,7 +350,8 @@ class _apply_leaveeState extends State<apply_leave> {
                     Padding(
                       padding: EdgeInsets.only(left: 0, top: 10.0, right: 0),
                       child: Container(
-                        width: double.infinity,
+                        padding: EdgeInsets.all(15.0),
+                        width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5.0),
                           border: Border.all(
@@ -358,43 +360,13 @@ class _apply_leaveeState extends State<apply_leave> {
                           ),
                           color: Colors.white, // Add white background color
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: ButtonTheme(
-                            alignedDropdown: true,
-                            child: DropdownButton<int>(
-                              value: selectedTypeCdId,
-                              iconSize: 30,
-                              icon: null,
-                              style: TextStyle(
-                                color: Colors.black26,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Calibri',
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedTypeCdId = value!;
-                                });
-                              },
-                              items: [
-                                DropdownMenuItem<int>(
-                                  value: -1,
-                                  child: Text(
-                                      ' ${widget.buttonName}'), // Static text
-                                ),
-                                // DropdownMenuItem<int>(
-                                //   value: -1,
-                                //   child: Text('Select Leave Type'), // Static text
-                                // ),
-                                // if (dropdownItems.length > 2)
-                                //   ...dropdownItems.sublist(2).map((item) {
-                                //     return DropdownMenuItem<int>(
-                                //       value: item['lookupDetailId'],
-                                //       child: Text(item['name']),
-                                //     );
-                                //   }).toList(),
-                              ],
-                            ),
+                        child: Text(
+                          "${widget.buttonName}",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Calibri',
                           ),
                         ),
                       ),
@@ -425,7 +397,7 @@ class _apply_leaveeState extends State<apply_leave> {
                                 decoration: InputDecoration(
                                   hintText: 'From Date',
                                   hintStyle: TextStyle(
-                                    color: Colors.black26,
+                                    color: Colors.black54,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Calibri',
@@ -438,7 +410,7 @@ class _apply_leaveeState extends State<apply_leave> {
                                     child: Icon(
                                       Icons.calendar_today,
                                       // Replace with your desired icon
-                                      color: Colors.grey,
+                                      color: Colors.black54,
                                     ),
                                   ),
                                   border: InputBorder.none,
@@ -475,7 +447,7 @@ class _apply_leaveeState extends State<apply_leave> {
                                 decoration: InputDecoration(
                                   hintText: 'To Date',
                                   hintStyle: TextStyle(
-                                    color: Colors.black26,
+                                    color: Colors.black54,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Calibri',
@@ -488,7 +460,7 @@ class _apply_leaveeState extends State<apply_leave> {
                                     child: Icon(
                                       Icons.calendar_today,
                                       // Replace with your desired icon
-                                      color: Colors.grey,
+                                      color: Colors.black54,
                                     ),
                                   ),
                                   border: InputBorder.none,
@@ -524,7 +496,7 @@ class _apply_leaveeState extends State<apply_leave> {
                             decoration: InputDecoration(
                               hintText: 'Reason For Leave',
                               hintStyle: TextStyle(
-                                color: Colors.black26,
+                                color: Colors.black54,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Calibri',

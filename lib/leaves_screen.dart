@@ -41,6 +41,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   List<LookupDetail> lookupDetails = [];
 
   late int DayWorkStatus;
+
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -103,6 +104,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width / 3.5;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -146,10 +149,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
                     // Row of three containers
                     Row(
-                      ///   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.blue,
@@ -219,12 +222,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -253,7 +252,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               Row(
                                 children: [
                                   Container(
-                                    width: 16,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                       padding: EdgeInsets.only(right: 0.0),
@@ -268,7 +267,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 72, // Set your desired width here
+                                    width: width /
+                                        1.6, // Set your desired width here
                                     child: Text(
                                       DateFormat('MMMM')
                                           .format(_selectedMonthPL),
@@ -282,7 +282,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 16.0,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                         padding: EdgeInsets.only(left: 0),
@@ -314,12 +314,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -346,7 +342,26 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               ),
                             ),
                             Container(
-                                padding: EdgeInsets.only(top: 4.0),
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  // Your click listener logic here
+                                  print("Container Clicked!");
+
+                                  printLookupDetailId('PL');
+                                  // if (availablepls <= 0) {
+                                  //   // Show a toast message
+                                  //   Commonutils.showCustomToastMessageLong(
+                                  //       'No PLs available!', context, 1, 3);
+                                  // } else {
+                                  //   printLookupDetailId('PL');
+                                  // }
+
+                                  // Navigator.of(context).pushReplacement(
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) => apply_leave()),
+                                  // );
+                                },
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -362,32 +377,22 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     SizedBox(
                                       height: 3.0,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        // Your click listener logic here
-                                        print("Button Clicked!");
-                                        printLookupDetailId('PL');
-                                        // Navigator.of(context).pushReplacement(
-                                        //   MaterialPageRoute(
-                                        //       builder: (context) =>
-                                        //           apply_leave()),
-                                        // );
-                                      },
-                                      child: Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Text(
-                                          "Click Here to Apply",
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Calibri',
-                                            color: Color(0xFF7F7FE1),
-                                          ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Text(
+                                        "Click Here to Apply",
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Calibri',
+                                          color: Color(0xFF7F7FE1),
                                         ),
                                       ),
-                                    )
+                                    ),
                                   ],
-                                ))
+                                ),
+                              ),
+                            )
                           ]),
                           // Other child widgets or content can be added here
                         ),
@@ -397,10 +402,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                       height: 16.0,
                     ),
                     Row(
-                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6.0),
@@ -472,12 +477,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -507,7 +508,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               Row(
                                 children: [
                                   Container(
-                                    width: 16,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                       padding: EdgeInsets.only(right: 0.0),
@@ -522,7 +523,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 72, // Set your desired width here
+                                    width: width /
+                                        1.6, // Set your desired width here
                                     child: Text(
                                       DateFormat('MMMM')
                                           .format(_selectedMonthCL),
@@ -536,7 +538,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 16.0,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                         padding: EdgeInsets.only(left: 0),
@@ -570,61 +572,63 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
                           // Other child widgets or content can be added here
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
+
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(6.0),
-                            // Adjust the radius as needed
                             border: Border.all(
                               color: Color(0xFF7F7FE1),
-                              // Specify the border color
-                              width: 2.0, // Adjust the border width as needed
+                              width: 2.0,
                             ),
                           ),
-                          child: Column(children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 3.0),
-                              // Adjust the padding as needed
-                              child: Text(
-                                "Available CL's",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Calibri',
-                                  color: Color(0xFFf15f22),
+                          child: GestureDetector(
+                            onTap: () {
+                              // Your click listener logic here
+                              printLookupDetailId('CL');
+                              // Check if availablecls is less than or equal to 0
+                              // if (availablecls <= 0) {
+                              //   Commonutils.showCustomToastMessageLong(
+                              //       'No CLs available!', context, 1, 3);
+                              // } else {
+                              //   printLookupDetailId('CL');
+                              // }
+                            },
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 3.0),
+                                  child: Text(
+                                    "Available CL's",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Calibri',
+                                      color: Color(0xFFf15f22),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Container(
-                                padding: EdgeInsets.only(top: 4.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "$availablecls",
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Color(0xFFf15f22),
+                                Container(
+                                  padding: EdgeInsets.only(top: 4.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "$availablecls",
+                                        style: TextStyle(
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Calibri',
+                                          color: Color(0xFFf15f22),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 3.0,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        // Your click listener logic here
-                                        printLookupDetailId('CL');
-                                        print("Button Clicked!");
-                                      },
-                                      child: Align(
+                                      SizedBox(
+                                        height: 3.0,
+                                      ),
+                                      Align(
                                         alignment: Alignment.bottomCenter,
                                         child: Text(
                                           "Click Here to Apply",
@@ -636,22 +640,25 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                           ),
                                         ),
                                       ),
-                                    )
-                                  ],
-                                ))
-                          ]),
-                          // Other child widgets or content can be added here
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+
+                        //
                       ],
                     ),
                     SizedBox(
                       height: 16.0,
                     ),
                     Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6.0),
@@ -716,12 +723,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -751,7 +754,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               Row(
                                 children: [
                                   Container(
-                                    width: 16,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                       padding: EdgeInsets.only(right: 0.0),
@@ -767,7 +770,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 72, // Set your desired width here
+                                    width: width /
+                                        1.6, // Set your desired width here
                                     child: Text(
                                       DateFormat('MMMM')
                                           .format(_selectedMonthlwp),
@@ -781,7 +785,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     ),
                                   ),
                                   Container(
-                                    width: 16.0,
+                                    width: width / 6,
                                     height: 30.0,
                                     child: IconButton(
                                         padding: EdgeInsets.only(left: 0),
@@ -816,12 +820,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
                           // Other child widgets or content can be added here
                         ),
-                        SizedBox(
-                          width: 16.0,
-                          height: 16.0,
-                        ),
                         Container(
-                          width: 110,
+                          width: MediaQuery.of(context).size.width / 3.5,
                           height: 90,
                           // decoration: BoxDecoration(
                           //   color: Colors.white,
@@ -883,6 +883,9 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                         ),
                       ],
                     ),
+                    // Your existing content...
+
+                    // Add LeavesScreen content here if needed
                     // Your existing content...
 
                     // Add LeavesScreen content here if needed

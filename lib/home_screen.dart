@@ -276,7 +276,7 @@ class _home_screenState extends State<home_screen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Logout'),
-          content: Text('Are you sure you want to logout?'),
+          content: Text('Are you sure you want to Logout?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -299,7 +299,7 @@ class _home_screenState extends State<home_screen> {
 
   void onConfirmLogout() {
     SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
-    Commonutils.showCustomToastMessageLong("logout Successful", context, 0, 3);
+    Commonutils.showCustomToastMessageLong("Logout Successful", context, 0, 3);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }

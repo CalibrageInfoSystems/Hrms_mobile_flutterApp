@@ -184,9 +184,8 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                     SizedBox(width: 16.0),
                                     // Adjust the spacing between Leave Type and Leave Status
                                     Container(
-                                      height: 25,
-                                      width: 80,
-                                      // padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(8.0),
+
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius:
@@ -197,17 +196,20 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                           width: 2.0, // Set the border width
                                         ),
                                       ),
+                                      // decoration: BoxDecoration(
+                                      //   color: Colors.white,
+                                      //   borderRadius: BorderRadius.circular(8.0),
+                                      // ),
                                       child: Text(
                                         '${leave.status}',
                                         style: TextStyle(
                                           color:
-                                              borderColor, // Text color to match the border color
+                                              borderColor, // Border color of the card
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Calibri',
                                         ),
-                                        textAlign: TextAlign.center,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),

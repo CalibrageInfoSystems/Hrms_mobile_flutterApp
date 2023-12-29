@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE " />
 <!--    <uses-permission android:name="android.permission.READ_SMS" />-->
     <application
-        android:label="Hrms"
+        android:label="HRMS"
         android:name="${applicationName}"
         android:icon="@drawable/app_logo">
         <activity
