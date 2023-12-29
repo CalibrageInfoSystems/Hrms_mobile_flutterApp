@@ -510,9 +510,8 @@ class _apply_leaveeState extends State<apply_leave> {
                             border: Border.all(
                                 color: Color(0xFFf15f22), width: 1.5),
                             borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.white, // Add white background color
+                            color: Colors.white,
                           ),
-                          // child: SizedBox(
                           child: TextFormField(
                             controller: _leavetext,
                             style: TextStyle(
@@ -520,6 +519,8 @@ class _apply_leaveeState extends State<apply_leave> {
                               fontSize: 14,
                               fontWeight: FontWeight.w300,
                             ),
+                            maxLines:
+                                null, // Set maxLines to null for multiline input
                             decoration: InputDecoration(
                               hintText: 'Reason For Leave',
                               hintStyle: TextStyle(
@@ -531,12 +532,10 @@ class _apply_leaveeState extends State<apply_leave> {
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.0,
                                 vertical: 12.0,
-                              ), // Adjust padding as needed
-
+                              ),
                               border: InputBorder.none,
                             ),
                           ),
-                          // ),
                         ),
                       ),
                     ),
@@ -548,7 +547,6 @@ class _apply_leaveeState extends State<apply_leave> {
                         decoration: BoxDecoration(
                           color: Color(0xFFf15f22),
                           borderRadius: BorderRadius.circular(6.0),
-                          // Adjust the border radius as needed
                         ),
                         child: ElevatedButton(
                           onPressed: isButtonEnabled

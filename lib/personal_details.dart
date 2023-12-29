@@ -220,7 +220,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -244,7 +244,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$dob",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -296,7 +296,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -320,7 +320,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$EmailId",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -372,7 +372,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -396,7 +396,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$OfficeEmailid",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -448,7 +448,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -472,7 +472,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$Expincomapny",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -600,7 +600,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -624,7 +624,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$Mobilenum",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -676,7 +676,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       ":",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 16,
                                                         fontFamily: 'Calibri',
                                                         fontWeight:
@@ -700,7 +700,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                     child: Text(
                                                       "$Bloodgroup",
                                                       style: TextStyle(
-                                                        color: Colors.black26,
+                                                        color: Colors.black54,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.bold,

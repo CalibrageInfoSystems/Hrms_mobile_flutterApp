@@ -206,7 +206,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                                           child: Text(
                                             ":",
                                             style: TextStyle(
-                                              color: Colors.black26,
+                                              color: Colors.black54,
                                               fontSize: 16,
                                               fontFamily: 'Calibri',
                                               fontWeight: FontWeight.bold,
@@ -228,7 +228,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                                           child: Text(
                                             "${projects.projectfromdate}",
                                             style: TextStyle(
-                                              color: Colors.black26,
+                                              color: Colors.black54,
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'Calibri',
@@ -274,7 +274,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                                           child: Text(
                                             ":",
                                             style: TextStyle(
-                                              color: Colors.black26,
+                                              color: Colors.black54,
                                               fontSize: 16,
                                               fontFamily: 'Calibri',
                                               fontWeight: FontWeight.bold,
@@ -296,7 +296,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                                           child: Text(
                                             "Present",
                                             style: TextStyle(
-                                              color: Colors.black26,
+                                              color: Colors.black54,
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'Calibri',

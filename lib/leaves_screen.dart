@@ -146,7 +146,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
                     // Row of three containers
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ///   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           width: 110,
@@ -218,6 +218,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               )
                             ],
                           ),
+                        ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
                         ),
                         Container(
                           width: 110,
@@ -310,6 +314,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             ],
                           ),
                         ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
+                        ),
                         Container(
                           width: 110,
                           height: 90,
@@ -389,7 +397,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                       height: 16.0,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           width: 110,
@@ -463,6 +471,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               )
                             ],
                           ),
+                        ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
                         ),
                         Container(
                           width: 110,
@@ -558,6 +570,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
                           // Other child widgets or content can be added here
                         ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
+                        ),
                         Container(
                           width: 110,
                           height: 90,
@@ -632,7 +648,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                       height: 16.0,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           width: 110,
@@ -699,6 +715,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               ),
                             ],
                           ),
+                        ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
                         ),
                         Container(
                           width: 110,
@@ -795,6 +815,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                           ),
 
                           // Other child widgets or content can be added here
+                        ),
+                        SizedBox(
+                          width: 16.0,
+                          height: 16.0,
                         ),
                         Container(
                           width: 110,
