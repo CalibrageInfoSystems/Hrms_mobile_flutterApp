@@ -125,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
               return Transform.scale(
                 scale: _animation.value,
                 child: Image.asset(
-                  'assets/logo_png.png',
+                  'assets/hrms_logo.png',
                   width: 200,
                   height: 200,
                 ),

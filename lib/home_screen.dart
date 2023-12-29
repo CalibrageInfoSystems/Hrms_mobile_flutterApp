@@ -177,7 +177,7 @@ class _home_screenState extends State<home_screen> {
                                   ),
                                 ),
                                 const Text(
-                                  "Project",
+                                  "Projects",
                                   style: TextStyle(
                                       color: Color(0xFFf15f22),
                                       fontWeight: FontWeight.bold,
@@ -299,8 +299,7 @@ class _home_screenState extends State<home_screen> {
 
   void onConfirmLogout() {
     SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
-    Commonutils.showCustomToastMessageLong(
-        "Successfully logout", context, 0, 3);
+    Commonutils.showCustomToastMessageLong("logout Successful", context, 0, 3);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }

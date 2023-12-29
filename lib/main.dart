@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
     bool hasValidationFailed = false;
     if (isValid && _usernamecontroller.text.isEmpty) {
       Commonutils.showCustomToastMessageLong(
-          'Please Enter UserName', context, 1, 4);
+          'Please Enter Username', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
       FocusScope.of(context).unfocus();
@@ -117,15 +117,17 @@ class _LoginPageState extends State<LoginPage> {
           },
         );
         print('loginreponse$response');
-        print('login response: ${response.body}');
-        if (response.body == "User not found") {
-          Commonutils.showCustomToastMessageLong(
-              'Please Check the User Name & Password', context, 1, 4);
-        }
+        print('login response: ${response.statusCode}');
+        print('statusCode=====>${response.statusCode}');
+        // if (response.body == "User not found") {
+        //   Commonutils.showCustomToastMessageLong(
+        //       'Please Check the User Name & Password', context, 1, 4);
+        // }
         // Check the response status code
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
+
         if (response.statusCode == 200) {
           //  Map<String, dynamic> jsonResponse = json.decode(response.body);
+          Map<String, dynamic> jsonResponse = json.decode(response.body);
           accessToken = jsonResponse['accessToken'];
           String refreshToken = jsonResponse['refreshToken'];
 
@@ -148,6 +150,8 @@ class _LoginPageState extends State<LoginPage> {
           Commonutils.showCustomToastMessageLong(
               'Login Successfully', context, 0, 2);
         } else {
+          Commonutils.showCustomToastMessageLong(
+              'Invalid Username or Password ', context, 1, 4);
           print('response is not success');
 
           print(
@@ -250,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
                         // requestPhonePermission();
                       },
                       decoration: InputDecoration(
-                        hintText: 'User Name',
+                        hintText: 'Username',
                         filled: true,
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(

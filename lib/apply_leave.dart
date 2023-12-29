@@ -169,7 +169,7 @@ class _apply_leaveeState extends State<apply_leave> {
           "employeeId": empolyeid,
           "fromDate": fromdate,
           "toDate": todate,
-          "leaveTypeId": 103,
+          "leaveTypeId": '${widget.lookupDetailId}',
           "note": _leavetext.text,
           "acceptedBy": null,
           "acceptedAt": null,
@@ -458,7 +458,7 @@ class _apply_leaveeState extends State<apply_leave> {
                               fontWeight: FontWeight.w300,
                             ),
                             decoration: InputDecoration(
-                              hintText: 'Leave Narration',
+                              hintText: 'Reason For Leave',
                               hintStyle: TextStyle(
                                 color: Colors.black26,
                                 fontSize: 14,

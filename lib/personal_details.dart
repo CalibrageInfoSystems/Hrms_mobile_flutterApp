@@ -258,7 +258,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                         EdgeInsets.fromLTRB(
                                                             12, 0, 0, 0),
                                                     child: Text(
-                                                      "Mail",
+                                                      "Email",
                                                       style: TextStyle(
                                                           color:
                                                               Color(0xFFf15f22),

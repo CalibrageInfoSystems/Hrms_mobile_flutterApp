@@ -184,7 +184,7 @@ class _ProjectsScreenState extends State<projects_screen> {
                                           padding:
                                               EdgeInsets.fromLTRB(8, 5, 0, 0),
                                           child: Text(
-                                            "from Date",
+                                            "From Date",
                                             style: TextStyle(
                                                 color: Color(0xFFf15f22),
                                                 fontWeight: FontWeight.bold,

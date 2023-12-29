@@ -82,6 +82,8 @@ flutter:
      - assets/2560114.svg
      - assets/atten.svg
      - assets/leave_8.svg
+     - assets/app_logo.png
+     - assets/hrms_logo.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
