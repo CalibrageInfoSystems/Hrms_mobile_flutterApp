@@ -34,6 +34,7 @@ class _apply_leaveeState extends State<apply_leave> {
   bool isButtonEnabled = true;
   bool isTodayHoliday = false;
   bool _isTodayHoliday = false;
+  bool isChecked = false;
   List<HolidayResponse> holidayList = [];
   // TextEditingController _emailController3 = TextEditingController();
   @override
@@ -177,12 +178,6 @@ class _apply_leaveeState extends State<apply_leave> {
     bool hasValidationFailed = false;
     String fromdate = DateFormat('yyyy-MM-dd').format(selectedDate);
     String todate = DateFormat('yyyy-MM-dd').format(selectedToDate);
-    // if (isValid && selectedTypeCdId == -1) {
-    //   Commonutils.showCustomToastMessageLong(
-    //       'Please Select Leave Type', context, 1, 4);
-    //   isValid = false;
-    //   hasValidationFailed = true;
-    // }
 
     print('tosendfromdate:$fromdate');
     print('tosendtodate:$todate');
@@ -209,6 +204,19 @@ class _apply_leaveeState extends State<apply_leave> {
 
       isValid = false;
       hasValidationFailed = true;
+    }
+    if (isValid && isChecked) {
+      // Calculate the difference in days between fromDate and toDate
+      //int daysDifference = toDate.difference(fromDate).inDays;
+      // if (daysDifference > 2) {
+      //   Commonutils.showCustomToastMessageLong(
+      //       'You cannot select more than 2 days when the checkbox is checked',
+      //       context,
+      //       1,
+      //       7);
+      //   isValid = false;
+      //   hasValidationFailed = true;
+      // }
     }
     // if (fromdate == null || todate == null) {
     //   Commonutils.showCustomToastMessageLong(
@@ -373,6 +381,76 @@ class _apply_leaveeState extends State<apply_leave> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 0, top: 20.0, right: 0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          border:
+                              Border.all(color: Color(0xFFf15f22), width: 1.5),
+                          borderRadius: BorderRadius.circular(5.0),
+                          color: Colors.white, // Add white background color
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButton<int>(
+                                value: selectedTypeCdId,
+                                iconSize: 30,
+                                icon: null,
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Calibri',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedTypeCdId = value!;
+                                  });
+                                },
+                                items: [
+                                  DropdownMenuItem<int>(
+                                    value: -1,
+                                    child: Text(
+                                        'Select Leave Reason'), // Static text
+                                  ),
+                                  ...dropdownItems.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final item = entry.value;
+                                    return DropdownMenuItem<int>(
+                                      value: index,
+                                      child: Text(item['Desc']),
+                                    );
+                                  }).toList(),
+                                ]),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10, top: 0.0, right: 0),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Is Halfday Leave?',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFFf15f22),
+                                fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(width: 6),
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isChecked = value!;
+                              });
+                            },
+                            activeColor: Colors.green,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 0, top: 0.0, right: 0),
                       child: GestureDetector(
                         onTap: () async {
                           _selectDate(isTodayHoliday);
