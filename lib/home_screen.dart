@@ -7,6 +7,7 @@ import 'package:hrms/Commonutils.dart';
 import 'package:hrms/SharedPreferencesHelper.dart';
 import 'package:hrms/personal_details.dart';
 import 'package:hrms/projects_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Constants.dart';
 import 'Myleaveslist.dart';
@@ -300,7 +301,12 @@ class _home_screenState extends State<home_screen> {
   void onConfirmLogout() {
     SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
     Commonutils.showCustomToastMessageLong("Logout Successful", context, 0, 3);
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false,
+    );
   }
 }
