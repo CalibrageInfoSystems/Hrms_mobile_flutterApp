@@ -105,6 +105,7 @@ class _LoginPageState extends State<LoginPage> {
         "password": password,
         "rememberMe": true
       };
+      print('Request Body: ${json.encode(request)}');
       try {
         final url = Uri.parse(baseUrl + getlogin);
         print('LoginUrl: $url');
@@ -180,6 +181,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Check the response status code
       if (response.statusCode == 200) {
+        fetchLookupKeys();
         // Save the response data to shared preferences
         final Map<String, dynamic> responseData = json.decode(response.body);
         //await AuthService.saveSecondApiResponse(responseData);
@@ -191,6 +193,8 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => home_screen()),
         );
       } else {
+        Commonutils.showCustomToastMessageLong(
+            'Error GetSelfEmployeeData: ${response.statusCode}', context, 1, 4);
         print('response is not success');
         print(
             'Failed to send the request. Status code: ${response.statusCode}');
@@ -404,6 +408,39 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> saveAccessToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("accessToken", token);
+  }
+
+  Future<List<dynamic>> fetchLookupKeys() async {
+    final response = await http.get(Uri.parse(baseUrl + lookupkeys));
+    // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupKeys'));
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      Map<String, dynamic> jsonData = json.decode(response.body);
+      Map<String, dynamic> lookups = jsonData['Lookups'];
+
+      // Save DayWorkStatus in SharedPreferences
+      saveDayWorkStatus(lookups['DayWorkStatus']);
+      saveLeaveReasons(lookups['LeaveReasons']);
+      // Return the entire response as a List<dynamic>
+      return json.decode(response.body);
+    } else {
+      // If the server did not return a 200 OK response,
+      // throw an exception.
+      throw Exception(
+          'Failed to load Lookup Keys. Status Code: ${response.statusCode}');
+    }
+  }
+
+// Function to save DayWorkStatus in SharedPreferences
+  Future<void> saveDayWorkStatus(int dayWorkStatus) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('dayWorkStatus', dayWorkStatus);
+  }
+
+  Future<void> saveLeaveReasons(int LeaveReasons) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('leavereasons', LeaveReasons);
   }
 }
 

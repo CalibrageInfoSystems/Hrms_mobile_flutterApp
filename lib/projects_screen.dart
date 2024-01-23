@@ -43,7 +43,7 @@ class _ProjectsScreenState extends State<projects_screen> {
   void _loadProjectDetails() async {
     // Specify the API endpoint
     final loadedData = await SharedPreferencesHelper.getCategories();
-
+    String pm = "";
     if (loadedData != null) {
       final employeeName = loadedData['employeeName'];
       final workingProjects = loadedData['workingProjects'];
@@ -59,25 +59,52 @@ class _ProjectsScreenState extends State<projects_screen> {
           print("Project Description: ${project["projectDescription"]}");
           print("Project Logo: ${project["projectLogo"]}");
           print("\n");
-          String pm = project["projectName"];
+           pm = project["projectName"];
           String base64Image = project["projectLogo"].split(',')[1];
           print("Project Logo:108===? $base64Image");
           bytes = Uint8List.fromList(base64.decode(base64Image));
           print("bytes:108===? $bytes");
+          print("Project endAt: ${project["endAt"]}");
 
-          projectList.add(projectmodel(
+          var existingProjectIndex = projectList.indexWhere(
+                (existingProject) => existingProject.projectname == project["projectName"],
+          );
+
+          if (existingProjectIndex != -1) {
+            // If the project exists, add only the instance
+            projectList[existingProjectIndex].instances.add(ProjectInstance(
+              projectfromdate: project["sinceFrom"],
+              projecttodate: project["endAt"] ?? "Progress",
+            ));
+          } else {
+            // If the project doesn't exist, create a new project and add it to projectList
+            List<ProjectInstance> instances = [];
+            instances.add(ProjectInstance(
+              projectfromdate: project["sinceFrom"],
+              projecttodate: project["endAt"] ?? "Progress",
+            ));
+
+            projectList.add(projectmodel(
               projectlogo: bytes,
               projectname: project["projectName"],
-              projectfromdate: project["sinceFrom"]));
+              instances: instances,
+            ));
+          }
 
-          setState(() {
-            EmployeName = employeeName;
-            projectlist = projectList;
-            projectnamedetails = pm;
-          });
+
         }
+        setState(() {
+          EmployeName = employeeName;
+          projectlist = projectList;
+          projectnamedetails = pm;
+        });
       }
-    }
+
+
+
+
+
+  }
   }
 
   @override
@@ -122,197 +149,125 @@ class _ProjectsScreenState extends State<projects_screen> {
                     SizedBox(
                       height: 25.0,
                     ),
-                    GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16.0,
-                        mainAxisSpacing: 16.0,
-                        mainAxisExtent: 190,
-                      ),
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: projectlist.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        projectmodel projects = projectlist[index];
+                GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
+                    mainAxisExtent: 190,
+                  ),
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: projectlist.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    projectmodel project = projectlist[index];
 
-                        return Container(
-                          padding: EdgeInsets.only(
-                            top: 10.0,
+                    return Container(
+                      padding: EdgeInsets.only(top: 10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Display project name and logo only once
+                          CircleAvatar(
+                            radius: 40.0,
+                            backgroundImage: MemoryImage(project.projectlogo),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          SizedBox(height: 5.0),
+                          Text(
+                            "${project.projectname}",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 5.0),
+                          // Display from date and to date multiple times
+                          Column(
                             children: [
-                              // Circular image
-                              CircleAvatar(
-                                radius: 40.0,
-                                backgroundImage:
-                                    MemoryImage(projects.projectlogo),
-                              ),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              // Text below the image
-                              Text(
-                                "${projects.projectname}",
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
+                              for (var instance in project.instances)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 5,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(4, 5, 0, 0),
+                                            child: Text(
+                                              "${instance.projectfromdate}",
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Calibri',
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 0,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+                                            child: Text(
+                                              "-",
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 16,
+                                                fontFamily: 'Calibri',
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 5,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(4, 5, 0, 0),
+                                            child: Text(
+                                              "${instance.projecttodate}",
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Calibri',
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(8, 5, 0, 0),
-                                          child: Text(
-                                            "From Date",
-                                            style: TextStyle(
-                                                color: Color(0xFFf15f22),
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Calibri'),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 0,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                          child: Text(
-                                            ":",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 16,
-                                              fontFamily: 'Calibri',
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 5,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(4, 5, 0, 0),
-                                          child: Text(
-                                            "${projects.projectfromdate}",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Calibri',
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(8, 2, 0, 0),
-                                          child: Text(
-                                            "To Date",
-                                            style: TextStyle(
-                                                color: Color(0xFFf15f22),
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Calibri'),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 0,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                          child: Text(
-                                            ":",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 16,
-                                              fontFamily: 'Calibri',
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 5,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(4, 2, 0, 0),
-                                          child: Text(
-                                            "Present",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Calibri',
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
                             ],
                           ),
-                        );
-                      },
-                    )
+                        ],
+                      ),
+                    );
+                  },)
                   ],
                 ),
               ),
@@ -323,44 +278,5 @@ class _ProjectsScreenState extends State<projects_screen> {
     );
   }
 
-// Widget _buildProjectCard(
-//     {required Uint8List bytes, required String projectName}) {
-//   return Card(
-//     elevation: 5.0,
-//     margin: EdgeInsets.symmetric(vertical: 5.0),
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.circular(16.0),
-//     ),
-//     child: Column(
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: [
-//         // Circular image at the top of the card
-//         Container(
-//           width: 120,
-//           height: 120.0, // Overall size of the Container
-//           // Overall size of the Container
-//           child: ClipOval(
-//             child: Image.memory(
-//               bytes,
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-//         ),
-//
-//         // Project Name below the circular image
-//         Padding(
-//           padding: EdgeInsets.all(2.0),
-//           child: Text(
-//             projectName,
-//             style: TextStyle(
-//               fontSize: 15,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
+
 }

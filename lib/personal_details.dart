@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Commonutils.dart';
 import 'SharedPreferencesHelper.dart';
+import 'api config.dart';
 
 class personal_details extends StatefulWidget {
   @override
@@ -25,6 +28,9 @@ class _personal_screen_screenState extends State<personal_details> {
   String Bloodgroup = '';
   String formattedDOB = '';
   String Gender = '';
+  String photoData = "";
+  String empolyeid = '';
+  String Dateofjoining='';
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -35,6 +41,7 @@ class _personal_screen_screenState extends State<personal_details> {
       if (isConnected) {
         print('The Internet Is Connected');
         _loademployeresponse();
+        loademployeeimage();
       } else {
         print('The Internet Is not  Connected');
       }
@@ -53,6 +60,7 @@ class _personal_screen_screenState extends State<personal_details> {
       final mobilenum = loadedData['mobileNumber'];
       final bloodgroup = loadedData['bloodGroup'];
       final gender = loadedData["gender"];
+      final dateofjoining = loadedData['dateofJoin'];
       //   "gender"
       // : "Male"
       print('employeeName: $employeeName');
@@ -67,6 +75,12 @@ class _personal_screen_screenState extends State<personal_details> {
       DateTime dobDate = DateTime.parse(dateofbirth);
       String formattedDOB = DateFormat('dd-MM-yyyy').format(dobDate);
       print('formattedDOB: $formattedDOB');
+
+      DateTime dateofjoin = DateTime.parse(dateofjoining);
+      String formatteddateofjoining = DateFormat('dd-MM-yyyy').format(dateofjoin);
+      print('formatteddateofjoining: $formatteddateofjoining');
+
+
       setState(() {
         EmployeName = employeeName;
         dob = formattedDOB;
@@ -76,6 +90,7 @@ class _personal_screen_screenState extends State<personal_details> {
         Mobilenum = mobilenum;
         Bloodgroup = bloodgroup;
         Gender = gender;
+        Dateofjoining = formatteddateofjoining;
       });
     }
   }
@@ -150,18 +165,27 @@ class _personal_screen_screenState extends State<personal_details> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (Gender == "Male")
-                                Image.asset(
-                                  'assets/men_emp.jpg',
+                              if (photoData != null && photoData != "" )
+                                Image.memory(
+                                  _decodeBase64(photoData ?? ""),
                                   width: 90,
                                   height: 110,
                                 )
-                              else if (Gender == "Female")
-                                Image.asset(
-                                  'assets/women-emp.jpg',
-                                  width: 90,
-                                  height: 110,
-                                ),
+                              else
+                                getDefaultImage(Gender),
+
+                              // if (Gender == "Male")
+                              //   Image.asset(
+                              //     'assets/men_emp.jpg',
+                              //     width: 90,
+                              //     height: 110,
+                              //   )
+                              // else if (Gender == "Female")
+                              //   Image.asset(
+                              //     'assets/women-emp.jpg',
+                              //     width: 90,
+                              //     height: 110,
+                              //   ),
 
                               //  SizedBox(height: 40.0),
                               Padding(
@@ -415,6 +439,82 @@ class _personal_screen_screenState extends State<personal_details> {
                                               flex: 4,
                                               child: Column(
                                                 crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding:
+                                                    EdgeInsets.fromLTRB(
+                                                        12, 0, 0, 0),
+                                                    child: Text(
+                                                      "Date of Joining",
+                                                      style: TextStyle(
+                                                          color:
+                                                          Color(0xFFf15f22),
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          fontFamily:
+                                                          'Calibri'),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 0,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    EdgeInsets.fromLTRB(
+                                                        0, 0, 0, 0),
+                                                    child: Text(
+                                                      ":",
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                        FontWeight.bold,
+                                                        fontFamily: 'Calibri',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 5,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    EdgeInsets.fromLTRB(
+                                                        10, 0, 0, 0),
+                                                    child: Text(
+                                                      "$Dateofjoining",
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                        FontWeight.bold,
+                                                        fontFamily: 'Calibri',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 4,
+                                              child: Column(
+                                                crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   const Padding(
@@ -485,82 +585,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                             )
                                           ],
                                         ),
-                                        // Row(
-                                        //   children: [
-                                        //     Expanded(
-                                        //       flex: 4,
-                                        //       child: Column(
-                                        //         crossAxisAlignment:
-                                        //             CrossAxisAlignment.start,
-                                        //         children: [
-                                        //           const Padding(
-                                        //             padding:
-                                        //                 EdgeInsets.fromLTRB(
-                                        //                     12, 0, 0, 0),
-                                        //             child: Text(
-                                        //               "Overall Exp",
-                                        //               style: TextStyle(
-                                        //                   color:
-                                        //                       Color(0xFFf15f22),
-                                        //                   fontWeight:
-                                        //                       FontWeight.bold,
-                                        //                   fontFamily:
-                                        //                       'Calibri'),
-                                        //             ),
-                                        //           ),
-                                        //         ],
-                                        //       ),
-                                        //     ),
-                                        //     Expanded(
-                                        //       flex: 0,
-                                        //       child: Column(
-                                        //         crossAxisAlignment:
-                                        //             CrossAxisAlignment.center,
-                                        //         children: [
-                                        //           Padding(
-                                        //             padding:
-                                        //                 EdgeInsets.fromLTRB(
-                                        //                     0, 0, 0, 0),
-                                        //             child: Text(
-                                        //               ":",
-                                        //               style: TextStyle(
-                                        //                 color: Colors.black26,
-                                        //                 fontSize: 16,
-                                        //                 fontFamily: 'Calibri',
-                                        //                 fontWeight:
-                                        //                     FontWeight.bold,
-                                        //               ),
-                                        //             ),
-                                        //           ),
-                                        //         ],
-                                        //       ),
-                                        //     ),
-                                        //     Expanded(
-                                        //       flex: 5,
-                                        //       child: Column(
-                                        //         crossAxisAlignment:
-                                        //             CrossAxisAlignment.start,
-                                        //         children: [
-                                        //           Padding(
-                                        //             padding:
-                                        //                 EdgeInsets.fromLTRB(
-                                        //                     10, 0, 0, 0),
-                                        //             child: Text(
-                                        //               "1-11-2023",
-                                        //               style: TextStyle(
-                                        //                 color: Colors.black26,
-                                        //                 fontSize: 14,
-                                        //                 fontWeight:
-                                        //                     FontWeight.bold,
-                                        //                 fontFamily: 'Calibri',
-                                        //               ),
-                                        //             ),
-                                        //           ),
-                                        //         ],
-                                        //       ),
-                                        //     )
-                                        //   ],
-                                        // ),
+
                                         Row(
                                           children: [
                                             Expanded(
@@ -727,7 +752,65 @@ class _personal_screen_screenState extends State<personal_details> {
       ),
     );
   }
+  Future<void> loademployeeimage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      empolyeid = prefs.getString("employeeId") ?? "";
+
+    });
+    print("empolyeidinapplyleave:$empolyeid");
+   // final response = await http.get('http://182.18.157.215/HRMS/API/hrmsapi/Employee/GetEmployeePhoto/91');
+    final url = Uri.parse(baseUrl + GetEmployeePhoto + '$empolyeid');
+    print('loademployeeimage  $url');
+    final response = await http.get((url));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      setState(() {
+        photoData = data['ImageData'] ?? ""; // Initialize with an empty string if null
+        print('photoData==== $photoData');
+      });
+    } else {
+      // Handle error
+      print('Failed to load employee photo');
+    }
+  }
+
+  Widget getDefaultImage(String gender) {
+    return gender == "Male"
+        ? Image.asset(
+      'assets/men_emp.jpg',
+      width: 90,
+      height: 110,
+    )
+        : gender == "Female"
+        ? Image.asset(
+      'assets/women-emp.jpg',
+      width: 90,
+      height: 110,
+    )
+        : Container(); // You can replace Container() with another default image or widget
+  }
+
+
+  Uint8List _decodeBase64(String base64String) {
+    final List<String> parts = base64String.split(',');
+    print('====>${parts.length}');
+
+    if (parts.length != 2) {
+      throw FormatException('Invalid base64 string: Incorrect number of parts');
+    }
+
+    final String dataPart = parts[1];
+
+    try {
+      return Base64Codec().decode(dataPart);
+    } catch (e) {
+      throw FormatException('Invalid base64 string: $e');
+    }
+  }
 }
+
+
 
 class CurvedBottomClipper extends CustomClipper<Path> {
   @override

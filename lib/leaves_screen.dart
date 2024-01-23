@@ -24,24 +24,24 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   DateTime _selectedMonthPL = DateTime.now();
   DateTime _selectedMonthCL = DateTime.now();
   DateTime _selectedMonthlwp = DateTime.now();
-  int usedPrivilegeLeavesInYear = 0;
-  int allottedPrivilegeLeaves = 0;
-  int noOfleavesinPLs = 0;
-  int noOfleavesinCLs = 0;
-  int noOfleavesinLWP = 0;
-  int usedCasualLeavesInMonth = 0;
+  double usedPrivilegeLeavesInYear = 0.0;
+  double allottedPrivilegeLeaves = 0.0;
+  double noOfleavesinPLs = 0.0;
+  double noOfleavesinCLs = 0.0;
+  double noOfleavesinLWP = 0.0;
+  double usedCasualLeavesInMonth = 0.0;
   String EmployeName = '';
-  late int employeid;
-  int allottedPriviegeLeaves = 0;
-  int usedCasualLeavesInYear = 0;
-  int allotcausalleaves = 0;
-  int availablepls = 0;
-  int availablecls = 0;
+   int employeid=0;
+  double allottedPriviegeLeaves = 0.0;
+  double usedCasualLeavesInYear = 0.0;
+  double allotcausalleaves = 0.0;
+  double availablepls = 0.0;
+  double availablecls = 0.0;
   String accessToken = '';
   List<LookupDetail> lookupDetails = [];
 
-  late int DayWorkStatus;
 
+  int DayWorkStatus = 0;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -54,7 +54,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         loadAccessToken();
         _loademployeleaves();
         getDayWorkStatus();
-        fetchDataleavetype();
+
+
       } else {
         print('The Internet Is not  Connected');
       }
@@ -70,18 +71,18 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       final usedprivilegeleavesinyear = loadedData['usedPrivilegeLeavesInYear'];
       final allotedprivilegeleaves = loadedData['allottedPrivilegeLeaves'];
       final usedcausalleavesinmonth = loadedData['usedCasualLeavesInMonth'];
-      final allotedpls = loadedData['allottedPrivilegeLeaves'];
+  final usedPrivilegeLeavesInMonth = loadedData['usedPrivilegeLeavesInMonth'];
       final usedcasualleavesinyear = loadedData['usedCasualLeavesInYear'];
       final usdl = loadedData['allottedCasualLeaves'];
       // final mobilenum = loadedData['mobileNumber'];
       // final bloodgroup = loadedData['bloodGroup'];
       print('allottedCasualLeaves: $usdl');
 
-      print('usedprivilegeleavesinyear: $usedprivilegeleavesinyear');
+
       print('usedprivilegeleavesinyear: $usedprivilegeleavesinyear');
       print('allotedprivilegeleaves: $allotedprivilegeleaves');
       print('usedcausalleavesinmonth: $usedcausalleavesinmonth');
-      print('allotedpls: $allotedpls');
+    //  print('allotedpls: $allotedpls');
       print('usedcasualleavesinyear: $usedcasualleavesinyear');
       // print('mobilenum: $mobilenum');
       // print('bloodgroup: $bloodgroup');
@@ -89,17 +90,34 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       setState(() {
         employeid = emplyeid;
         print('employeid: $employeid');
-        allotcausalleaves = usdl;
+        allotcausalleaves = usdl.toDouble();
         EmployeName = employeeName;
-        usedPrivilegeLeavesInYear = usedprivilegeleavesinyear;
-        allottedPrivilegeLeaves = allotedprivilegeleaves;
-        usedCasualLeavesInMonth = usedcausalleavesinmonth;
-        allottedPriviegeLeaves = allotedpls;
-        usedCasualLeavesInYear = usedcasualleavesinyear;
+        usedPrivilegeLeavesInYear = usedprivilegeleavesinyear.toDouble();
+        allottedPrivilegeLeaves = allotedprivilegeleaves.toDouble();
+        usedCasualLeavesInMonth = usedcausalleavesinmonth.toDouble();
+        usedCasualLeavesInYear = usedcasualleavesinyear.toDouble();
+       // allottedPriviegeLeaves = allotedpls;
+      //  usedCasualLeavesInYear = usedcasualleavesinyear;
+        availablepls = allottedPrivilegeLeaves.toDouble() - usedPrivilegeLeavesInYear.toDouble();
+
+        print("Available Privilege Leaves: $availablepls");
+
+      availablecls = allotcausalleaves.toDouble() - usedCasualLeavesInYear.toDouble();
+
+        print('Available Causal Leaves: $availablecls');
+        DateTime now = DateTime.now();
+        // Extract the current month from the DateTime object
+        int currentMonth = now.month;
+        // Print the current month
+        print('Current month: $currentMonth');
+        montlyleavesPl(currentMonth);
+        montlyleavesCL(currentMonth);
+        montlyleaveslwp(currentMonth);
+      //  print('availablecls: $availablecls');
       });
     }
-    availablepls = allottedPrivilegeLeaves - usedCasualLeavesInMonth;
-    availablecls = allotcausalleaves - usedCasualLeavesInYear;
+    // availablepls = allottedPrivilegeLeaves - usedPrivilegeLeavesInYear;
+    // availablecls = allotcausalleaves - usedCasualLeavesInYear;
   }
 
   @override
@@ -125,22 +143,48 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
                       "Hello!",
                       style: TextStyle(
-                          fontSize: 26,
-                          color: Colors.black,
-                          fontFamily: 'Calibri'),
+                        fontSize: 26,
+                        color: Colors.black,
+                        fontFamily: 'Calibri',
+                      ),
                     ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => apply_leave(
+                              buttonName: "test", // Example button name
+                              lookupDetailId:
+                             -3, // Pass the lookupDetailId
+                            ),
+                          ),
+                        );
+                        // Handle the apply button click event
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue, // Choose a color for your button
+                      ),
+                      child: Text("Apply"),
+                    ),
+                  ],
+                ),
+
                     SizedBox(
                       height: 8.0,
                     ),
                     Text(
                       "$EmployeName",
                       style: TextStyle(
-                          fontSize: 26,
-                          color: Color(0xFFf15f22),
-                          fontFamily: 'Calibri'),
+                        fontSize: 26,
+                        color: Color(0xFFf15f22),
+                        fontFamily: 'Calibri',
+                      ),
                     ),
                     SizedBox(
                       height: 25.0,
@@ -584,18 +628,13 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               width: 2.0,
                             ),
                           ),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Your click listener logic here
-                              printLookupDetailId('CL');
-                              // Check if availablecls is less than or equal to 0
-                              // if (availablecls <= 0) {
-                              //   Commonutils.showCustomToastMessageLong(
-                              //       'No CLs available!', context, 1, 3);
-                              // } else {
-                              //   printLookupDetailId('CL');
-                              // }
-                            },
+                          child:
+                              InkWell(
+                                onTap: () {
+                                  printLookupDetailId('CL');
+                                },
+
+
                             child: Column(
                               children: [
                                 Padding(
@@ -646,6 +685,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               ],
                             ),
                           ),
+
                         ),
 
                         //
@@ -654,235 +694,235 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                     SizedBox(
                       height: 16.0,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width / 3.5,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6.0),
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color(0xFF875eca),
-                                Color(0xFFe83a4c),
-                              ], // Adjust the colors as needed
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 19.0),
-                                child: Text(
-                                  "LWP",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Calibri',
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "3",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Calibri',
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(width: 2.0),
-                                  Text(
-                                    "/",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(width: 2.0),
-                                  Text(
-                                    "10",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Calibri',
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 3.5,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(6.0),
-                            // Adjust the radius as needed
-                            border: Border.all(
-                              color: Color(0xFF7F7FE1),
-                              // Specify the border color
-                              width: 2.0, // Adjust the border width as needed
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 3.0),
-                                // Adjust the padding as needed
-                                child: Text(
-                                  "Monthly LWP",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Calibri',
-                                    color: Color(0xFFf15f22),
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: width / 6,
-                                    height: 30.0,
-                                    child: IconButton(
-                                      padding: EdgeInsets.only(right: 0.0),
-                                      onPressed: () {
-                                        //_selectPreviousMonth();
-                                        _selectPreviousMonthlwp();
-                                      },
-                                      iconSize: 20.0,
-                                      icon: Icon(
-                                        Icons.arrow_left,
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: width /
-                                        1.6, // Set your desired width here
-                                    child: Text(
-                                      DateFormat('MMMM')
-                                          .format(_selectedMonthlwp),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Color(0xFF746cdf),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: width / 6,
-                                    height: 30.0,
-                                    child: IconButton(
-                                        padding: EdgeInsets.only(left: 0),
-                                        onPressed: () {
-                                          // _selectNextMonth();
-                                          _selectNextMonthlwp();
-                                        },
-                                        iconSize: 20.0,
-                                        icon: Icon(
-                                          Icons.arrow_right,
-                                          color: Color(0xFFf15f22),
-                                        ),
-                                        alignment: Alignment.center),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.0),
-                                // Adjust the padding as needed
-                                child: Text(
-                                  "$noOfleavesinLWP",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Calibri',
-                                    color: Color(0xFFf15f22),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Other child widgets or content can be added here
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 3.5,
-                          height: 90,
-                          // decoration: BoxDecoration(
-                          //   color: Colors.white,
-                          //   borderRadius: BorderRadius.circular(6.0),
-                          //   // Adjust the radius as needed
-                          //   border: Border.all(
-                          //     color: Color(0xFF7F7FE1),
-                          //     // Specify the border color
-                          //     width: 2.0, // Adjust the border width as needed
-                          //   ),
-                          // ),
-                          child: Column(children: [
-                            // Padding(
-                            //   padding: const EdgeInsets.only(top: 3.0),
-                            //   // Adjust the padding as needed
-                            //   child: Text(
-                            //     "Available PL's",
-                            //     style: TextStyle(
-                            //       fontSize: 16,
-                            //       fontWeight: FontWeight.w600,
-                            //       fontFamily: 'Calibri',
-                            //       color: Color(0xFFf15f22),
-                            //     ),
-                            //   ),
-                            // ),
-                            // Container(
-                            //     padding: EdgeInsets.only(top: 4.0),
-                            //     child: Column(
-                            //       crossAxisAlignment: CrossAxisAlignment.center,
-                            //       children: [
-                            //         Text(
-                            //           "8",
-                            //           style: TextStyle(
-                            //             fontSize: 26,
-                            //             fontWeight: FontWeight.w600,
-                            //             fontFamily: 'Calibri',
-                            //             color: Color(0xFFf15f22),
-                            //           ),
-                            //         ),
-                            //         SizedBox(
-                            //           height: 3.0,
-                            //         ),
-                            //         Align(
-                            //           alignment: Alignment.bottomCenter,
-                            //           child: Text(
-                            //             "Click Hear to Apply",
-                            //             style: TextStyle(
-                            //               fontSize: 11,
-                            //               fontWeight: FontWeight.w600,
-                            //               fontFamily: 'Calibri',
-                            //               color: Color(0xFF7F7FE1),
-                            //             ),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ))
-                          ]),
-                          // Other child widgets or content can be added here
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width / 3.5,
+                    //       height: 90,
+                    //       decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(6.0),
+                    //         gradient: LinearGradient(
+                    //           begin: Alignment.topCenter,
+                    //           end: Alignment.bottomCenter,
+                    //           colors: [
+                    //             Color(0xFF875eca),
+                    //             Color(0xFFe83a4c),
+                    //           ], // Adjust the colors as needed
+                    //         ),
+                    //       ),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.center,
+                    //         children: [
+                    //           Padding(
+                    //             padding: const EdgeInsets.only(top: 19.0),
+                    //             child: Text(
+                    //               "LWP",
+                    //               style: TextStyle(
+                    //                 fontSize: 18,
+                    //                 fontWeight: FontWeight.w600,
+                    //                 fontFamily: 'Calibri',
+                    //                 color: Colors.white,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           SizedBox(height: 10.0),
+                    //           Row(
+                    //             mainAxisAlignment: MainAxisAlignment.center,
+                    //             children: [
+                    //               Text(
+                    //                 "0",
+                    //                 style: TextStyle(
+                    //                   fontSize: 15,
+                    //                   fontWeight: FontWeight.w600,
+                    //                   fontFamily: 'Calibri',
+                    //                   color: Colors.white,
+                    //                 ),
+                    //               ),
+                    //               SizedBox(width: 2.0),
+                    //               Text(
+                    //                 "/",
+                    //                 style: TextStyle(
+                    //                   fontSize: 18,
+                    //                   fontWeight: FontWeight.bold,
+                    //                   color: Colors.white,
+                    //                 ),
+                    //               ),
+                    //               SizedBox(width: 2.0),
+                    //               Text(
+                    //                 "10",
+                    //                 style: TextStyle(
+                    //                   fontSize: 15,
+                    //                   fontWeight: FontWeight.w600,
+                    //                   fontFamily: 'Calibri',
+                    //                   color: Colors.white,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width / 3.5,
+                    //       height: 90,
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.white,
+                    //         borderRadius: BorderRadius.circular(6.0),
+                    //         // Adjust the radius as needed
+                    //         border: Border.all(
+                    //           color: Color(0xFF7F7FE1),
+                    //           // Specify the border color
+                    //           width: 2.0, // Adjust the border width as needed
+                    //         ),
+                    //       ),
+                    //       child: Column(
+                    //         children: [
+                    //           Padding(
+                    //             padding: const EdgeInsets.only(top: 3.0),
+                    //             // Adjust the padding as needed
+                    //             child: Text(
+                    //               "Monthly LWP",
+                    //               style: TextStyle(
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.w600,
+                    //                 fontFamily: 'Calibri',
+                    //                 color: Color(0xFFf15f22),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           Row(
+                    //             children: [
+                    //               Container(
+                    //                 width: width / 6,
+                    //                 height: 30.0,
+                    //                 child: IconButton(
+                    //                   padding: EdgeInsets.only(right: 0.0),
+                    //                   onPressed: () {
+                    //                     //_selectPreviousMonth();
+                    //                     _selectPreviousMonthlwp();
+                    //                   },
+                    //                   iconSize: 20.0,
+                    //                   icon: Icon(
+                    //                     Icons.arrow_left,
+                    //                     color: Color(0xFFf15f22),
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //               Container(
+                    //                 width: width /
+                    //                     1.6, // Set your desired width here
+                    //                 child: Text(
+                    //                   DateFormat('MMMM')
+                    //                       .format(_selectedMonthlwp),
+                    //                   style: TextStyle(
+                    //                     fontSize: 14,
+                    //                     fontWeight: FontWeight.w600,
+                    //                     fontFamily: 'Calibri',
+                    //                     color: Color(0xFF746cdf),
+                    //                   ),
+                    //                   textAlign: TextAlign.center,
+                    //                 ),
+                    //               ),
+                    //               Container(
+                    //                 width: width / 6,
+                    //                 height: 30.0,
+                    //                 child: IconButton(
+                    //                     padding: EdgeInsets.only(left: 0),
+                    //                     onPressed: () {
+                    //                       // _selectNextMonth();
+                    //                       _selectNextMonthlwp();
+                    //                     },
+                    //                     iconSize: 20.0,
+                    //                     icon: Icon(
+                    //                       Icons.arrow_right,
+                    //                       color: Color(0xFFf15f22),
+                    //                     ),
+                    //                     alignment: Alignment.center),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //           Padding(
+                    //             padding: const EdgeInsets.only(top: 1.0),
+                    //             // Adjust the padding as needed
+                    //             child: Text(
+                    //               "$noOfleavesinLWP",
+                    //               style: TextStyle(
+                    //                 fontSize: 20,
+                    //                 fontWeight: FontWeight.w600,
+                    //                 fontFamily: 'Calibri',
+                    //                 color: Color(0xFFf15f22),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //
+                    //       // Other child widgets or content can be added here
+                    //     ),
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width / 3.5,
+                    //       height: 90,
+                    //       // decoration: BoxDecoration(
+                    //       //   color: Colors.white,
+                    //       //   borderRadius: BorderRadius.circular(6.0),
+                    //       //   // Adjust the radius as needed
+                    //       //   border: Border.all(
+                    //       //     color: Color(0xFF7F7FE1),
+                    //       //     // Specify the border color
+                    //       //     width: 2.0, // Adjust the border width as needed
+                    //       //   ),
+                    //       // ),
+                    //       child: Column(children: [
+                    //         // Padding(
+                    //         //   padding: const EdgeInsets.only(top: 3.0),
+                    //         //   // Adjust the padding as needed
+                    //         //   child: Text(
+                    //         //     "Available PL's",
+                    //         //     style: TextStyle(
+                    //         //       fontSize: 16,
+                    //         //       fontWeight: FontWeight.w600,
+                    //         //       fontFamily: 'Calibri',
+                    //         //       color: Color(0xFFf15f22),
+                    //         //     ),
+                    //         //   ),
+                    //         // ),
+                    //         // Container(
+                    //         //     padding: EdgeInsets.only(top: 4.0),
+                    //         //     child: Column(
+                    //         //       crossAxisAlignment: CrossAxisAlignment.center,
+                    //         //       children: [
+                    //         //         Text(
+                    //         //           "8",
+                    //         //           style: TextStyle(
+                    //         //             fontSize: 26,
+                    //         //             fontWeight: FontWeight.w600,
+                    //         //             fontFamily: 'Calibri',
+                    //         //             color: Color(0xFFf15f22),
+                    //         //           ),
+                    //         //         ),
+                    //         //         SizedBox(
+                    //         //           height: 3.0,
+                    //         //         ),
+                    //         //         Align(
+                    //         //           alignment: Alignment.bottomCenter,
+                    //         //           child: Text(
+                    //         //             "Click Hear to Apply",
+                    //         //             style: TextStyle(
+                    //         //               fontSize: 11,
+                    //         //               fontWeight: FontWeight.w600,
+                    //         //               fontFamily: 'Calibri',
+                    //         //               color: Color(0xFF7F7FE1),
+                    //         //             ),
+                    //         //           ),
+                    //         //         )
+                    //         //       ],
+                    //         //     ))
+                    //       ]),
+                    //       // Other child widgets or content can be added here
+                    //     ),
+                    //   ],
+                    // ),
                     // Your existing content...
 
                     // Add LeavesScreen content here if needed
@@ -900,24 +940,48 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   }
 
   void printLookupDetailId(String buttonName) {
-    // Find the item with the specified name in the lookupDetails list
-    LookupDetail? selectedItem =
-        lookupDetails.firstWhere((item) => item.name == buttonName);
 
-    if (selectedItem != null) {
-      print(selectedItem.lookupDetailId);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => apply_leave(
-            buttonName: buttonName, // Example button name
-            lookupDetailId:
-                selectedItem.lookupDetailId, // Pass the lookupDetailId
-          ),
-        ),
+    if (lookupDetails.isNotEmpty) {
+      LookupDetail selectedItem = lookupDetails.firstWhere(
+            (item) => item.name == buttonName,
+        orElse: () {
+          // Provide a default value when no element is found
+          return LookupDetail(
+            lookupDetailId: 0, // Adjust the default values accordingly
+            code: '',
+            name: '',
+            lookupId: 0,
+            isActive: false,
+            createdAt: '',
+            updatedAt: '',
+            createdBy: '',
+            updatedBy: '',
+          );
+        },
       );
+      if (selectedItem != null) {
+        // Handle the case when an element is found
+        print(selectedItem.lookupDetailId);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => apply_leave(
+              buttonName: buttonName, // Example button name
+              lookupDetailId:
+              selectedItem.lookupDetailId, // Pass the lookupDetailId
+            ),
+          ),
+        );
+      } else {
+        // Handle the case when no element is found
+        print('Item not found for buttonName: $buttonName');
+      }
     } else {
-      print('Item not found');
+      // Handle the case when the list is empty
+      print('lookupDetails list is empty');
     }
+
+    // Find the item with the specified name in the lookupDetails list
+
   }
 
   Future<void> getDayWorkStatus() async {
@@ -926,23 +990,29 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       DayWorkStatus = prefs.getInt('dayWorkStatus') ?? 0;
     });
     print("DayWorkStatus:$DayWorkStatus");
+    fetchDataleavetype(DayWorkStatus);
     // Provide a default value if not found
   }
 
-  Future<void> fetchDataleavetype() async {
-    final response = await http.get(Uri.parse(
-        'http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupDetails/44'));
+  Future<void> fetchDataleavetype(int dayWorkStatus) async {
+    final url = Uri.parse(baseUrl + getdropdown + '$dayWorkStatus');
+    print('fetchDataleavetype :${url}');
+    final response = await http.get((url));
 
+   // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupDetails/44'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = json.decode(response.body);
 
       setState(() {
-        lookupDetails =
-            jsonData.map((data) => LookupDetail.fromJson(data)).toList();
+        lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
       });
-    } else {
+    }
+    else {
+      Commonutils.showCustomToastMessageLong(
+          ' Error :  ${response.statusCode} ', context, 1, 3);
       throw Exception(
           'Failed to load data. Status Code: ${response.statusCode}');
+
     }
   }
 
@@ -1013,9 +1083,16 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   }
 
   Future<void> montlyleavesPl(int monthId) async {
+    DateTime now = DateTime.now();
+
+    // Extract the current year
+    int currentYear = now.year;
+
+    // Print the current year
+    print('Current Year: $currentYear');
     try {
       final url =
-          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid');
+          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' +'/$currentYear' );
       print('monthlyleavesPlsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1032,22 +1109,21 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         final List<dynamic> data = json.decode(response.body);
 
         print('response data : ${data}');
-        List<leave_model> leaveInfos =
-            data.map((json) => leave_model.fromJson(json)).toList();
+        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfo in leaveInfos) {
-          if (leaveInfo.leaveTypeId == 103) {
+
             print('LeavePLType: ${leaveInfo.leaveType}');
             // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
-            print('Used PLs in Month: ${leaveInfo.usedPLsInMonth}');
-            int noofPL = leaveInfo.usedPLsInMonth;
+            print('Used PLs in Month: ${leaveInfo.usedPLsInMonth.toDouble()}');
+            double noofPL = leaveInfo.usedPLsInMonth.toDouble();
             print('noofPL:$noofPL');
             setState(() {
-              noOfleavesinPLs = noofPL;
+              noOfleavesinPLs = noofPL.toDouble();
               print('noOfleavesinPLs:$noOfleavesinPLs');
             });
-          }
+
         }
       } else {
         // Handle error if the request was not successful
@@ -1060,9 +1136,16 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   }
 
   Future<void> montlyleavesCL(int monthId) async {
+    DateTime now = DateTime.now();
+
+    // Extract the current year
+    int currentYear = now.year;
+
+    // Print the current year
+    print('Current Year: $currentYear');
     try {
       final url =
-          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid');
+          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid'+'/$currentYear');
       print('monthlyleavesClsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1079,22 +1162,22 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         final List<dynamic> data = json.decode(response.body);
 
         print('response data : ${data}');
-        List<leave_model> leaveInfos =
-            data.map((json) => leave_model.fromJson(json)).toList();
+        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfoCl in leaveInfos) {
-          if (leaveInfoCl.leaveTypeId == 102) {
+
             print('LeaveClType: ${leaveInfoCl.leaveType}');
             // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
-            print('UsedCLsin Month: ${leaveInfoCl.usedCLsInMonth}');
-            int noofCL = leaveInfoCl.usedCLsInMonth;
+            print('UsedCLsin Month: ${leaveInfoCl.usedCLsInMonth.toDouble()}');
+
+            double noofCL = leaveInfoCl.usedCLsInMonth.toDouble();
             print('noofCL:$noofCL');
             setState(() {
-              noOfleavesinCLs = noofCL;
+              noOfleavesinCLs = noofCL.toDouble();
               print('noOfleavesinCls:$noOfleavesinCLs');
             });
-          }
+
         }
       } else {
         // Handle error if the request was not successful
@@ -1107,9 +1190,16 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   }
 
   Future<void> montlyleaveslwp(int monthId) async {
+    DateTime now = DateTime.now();
+
+    // Extract the current year
+    int currentYear = now.year;
+
+    // Print the current year
+    print('Current Year: $currentYear');
     try {
       final url =
-          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid');
+          Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid'+'/$currentYear');
       print('monthlyleaveslwpapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1131,14 +1221,14 @@ class _leaves_screen_screenState extends State<leaves_screen> {
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfoLWP in leaveInfos) {
-          if (leaveInfoLWP.leaveTypeId == 104) {
+          if (leaveInfoLWP.leaveType == "LWP") {
             print('LeaveLWPType: ${leaveInfoLWP.leaveType}');
             // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
             print('UsedLWPin Month: ${leaveInfoLWP.usedPLsInMonth}');
-            int noofCL = leaveInfoLWP.usedPLsInMonth;
+            double noofCL = leaveInfoLWP.usedPLsInMonth.toDouble();
 
             setState(() {
-              noOfleavesinLWP = noofCL;
+              noOfleavesinLWP = noofCL.toDouble();
               print('noOfleavesinLWP:$noOfleavesinLWP');
             });
           }

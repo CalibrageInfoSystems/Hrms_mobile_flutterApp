@@ -69,9 +69,20 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
     // final url = Uri.parse(baseUrl + getleavesapi + empolyeid);
     // print('myleavesapi$url');
     // Check if accessToken is not null before using it
+
+
+      // Get the current date and time
+      DateTime now = DateTime.now();
+
+      // Extract the current year
+      int currentYear = now.year;
+
+      // Print the current year
+      print('Current Year: $currentYear');
+
     if (accessToken != null) {
       try {
-        final url = Uri.parse(baseUrl + getleavesapi + empolyeid);
+        final url = Uri.parse(baseUrl + getleavesapi + empolyeid  +'/$currentYear' );
         print('myleavesapi$url');
         Map<String, String> headers = {
           'Content-Type': 'application/json',
@@ -98,6 +109,8 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
           print('API Response leaveData: $leaveData');
           print('API Response leaveData: ${leaveData.length}');
         } else {
+          Commonutils.showCustomToastMessageLong(
+              'Error: ${response.statusCode}', context, 1, 4);
           // Handle error if the request was not successful
           print('Error: ${response.statusCode} - ${response.reasonPhrase}');
         }
@@ -137,6 +150,9 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                       todate = leave.toDate!;
                       DateTime to_date = DateTime.parse(todate);
                       leavetodate = DateFormat('dd-MM-yyyy').format(to_date);
+                    }
+                    else{
+                      leavetodate =" ";
                     }
                     DateTime from_date = DateTime.parse(leave.fromDate);
                     String leavefromdate =

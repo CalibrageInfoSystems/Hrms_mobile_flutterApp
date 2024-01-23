@@ -1,8 +1,8 @@
 class leave_model {
   final String leaveType;
   final int leaveTypeId;
-  final int usedCLsInMonth;
-  final int usedPLsInMonth;
+  final double usedCLsInMonth;
+  final double usedPLsInMonth;
 
   leave_model(
       {required this.leaveType,
