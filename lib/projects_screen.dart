@@ -3,6 +3,8 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hrms/Model%20Class/projectmodel.dart';
+import 'package:hrms/home_screen.dart';
+import 'package:hrms/personal_details.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -59,7 +61,7 @@ class _ProjectsScreenState extends State<projects_screen> {
           print("Project Description: ${project["projectDescription"]}");
           print("Project Logo: ${project["projectLogo"]}");
           print("\n");
-           pm = project["projectName"];
+          pm = project["projectName"];
           String base64Image = project["projectLogo"].split(',')[1];
           print("Project Logo:108===? $base64Image");
           bytes = Uint8List.fromList(base64.decode(base64Image));
@@ -67,15 +69,16 @@ class _ProjectsScreenState extends State<projects_screen> {
           print("Project endAt: ${project["endAt"]}");
 
           var existingProjectIndex = projectList.indexWhere(
-                (existingProject) => existingProject.projectname == project["projectName"],
+            (existingProject) =>
+                existingProject.projectname == project["projectName"],
           );
 
           if (existingProjectIndex != -1) {
             // If the project exists, add only the instance
             projectList[existingProjectIndex].instances.add(ProjectInstance(
-              projectfromdate: project["sinceFrom"],
-              projecttodate: project["endAt"] ?? "Progress",
-            ));
+                  projectfromdate: project["sinceFrom"],
+                  projecttodate: project["endAt"] ?? "Progress",
+                ));
           } else {
             // If the project doesn't exist, create a new project and add it to projectList
             List<ProjectInstance> instances = [];
@@ -90,8 +93,6 @@ class _ProjectsScreenState extends State<projects_screen> {
               instances: instances,
             ));
           }
-
-
         }
         setState(() {
           EmployeName = employeeName;
@@ -99,184 +100,200 @@ class _ProjectsScreenState extends State<projects_screen> {
           projectnamedetails = pm;
         });
       }
-
-
-
-
-
-  }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Stack(
-          children: [
-            // Background Image
-            Image.asset(
-              'assets/background_layer_2.png', // Replace with your image path
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-            ),
-
-            // SingleChildScrollView for scrollable content
-            SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello!",
-                      style: TextStyle(
-                          fontSize: 26,
-                          color: Colors.black,
-                          fontFamily: 'Calibri'),
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Text(
-                      "$EmployeName",
-                      style: TextStyle(
-                          fontSize: 26,
-                          color: Color(0xFFf15f22),
-                          fontFamily: 'Calibri'),
-                    ),
-                    SizedBox(
-                      height: 25.0,
-                    ),
-                GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 16.0,
-                    mainAxisExtent: 190,
-                  ),
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: projectlist.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    projectmodel project = projectlist[index];
-
-                    return Container(
-                      padding: EdgeInsets.only(top: 10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Display project name and logo only once
-                          CircleAvatar(
-                            radius: 40.0,
-                            backgroundImage: MemoryImage(project.projectlogo),
-                          ),
-                          SizedBox(height: 5.0),
-                          Text(
-                            "${project.projectname}",
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 5.0),
-                          // Display from date and to date multiple times
-                          Column(
-                            children: [
-                              for (var instance in project.instances)
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 5,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(4, 5, 0, 0),
-                                            child: Text(
-                                              "${instance.projectfromdate}",
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Calibri',
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 0,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                            child: Text(
-                                              "-",
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontFamily: 'Calibri',
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(4, 5, 0, 0),
-                                            child: Text(
-                                              "${instance.projecttodate}",
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Calibri',
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },)
-                  ],
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => home_screen()),
+          ); // Navigate to the previous screen
+          return true; // Prevent default back navigation behavior
+        },
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: Stack(
+              children: [
+                // Background Image
+                Image.asset(
+                  'assets/background_layer_2.png', // Replace with your image path
+                  fit: BoxFit.cover,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
                 ),
-              ),
+
+                // SingleChildScrollView for scrollable content
+                SingleChildScrollView(
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Hello!",
+                          style: TextStyle(
+                              fontSize: 26,
+                              color: Colors.black,
+                              fontFamily: 'Calibri'),
+                        ),
+                        SizedBox(
+                          height: 8.0,
+                        ),
+                        Text(
+                          "$EmployeName",
+                          style: TextStyle(
+                              fontSize: 26,
+                              color: Color(0xFFf15f22),
+                              fontFamily: 'Calibri'),
+                        ),
+                        SizedBox(
+                          height: 25.0,
+                        ),
+                        GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16.0,
+                            mainAxisSpacing: 16.0,
+                            mainAxisExtent: 190,
+                          ),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: projectlist.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            projectmodel project = projectlist[index];
+
+                            return Container(
+                              padding: EdgeInsets.only(top: 10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Display project name and logo only once
+                                  CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundImage:
+                                        MemoryImage(project.projectlogo),
+                                  ),
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    "${project.projectname}",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5.0),
+                                  // Display from date and to date multiple times
+                                  Column(
+                                    children: [
+                                      for (var instance in project.instances)
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 5,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            4, 5, 0, 0),
+                                                    child: Text(
+                                                      "${instance.projectfromdate}",
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Calibri',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 0,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 2, 0, 0),
+                                                    child: Text(
+                                                      "-",
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 16,
+                                                        fontFamily: 'Calibri',
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 5,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            4, 5, 0, 0),
+                                                    child: Text(
+                                                      "${instance.projecttodate}",
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Calibri',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
-
-
 }

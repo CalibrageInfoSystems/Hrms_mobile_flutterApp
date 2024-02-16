@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hrms/api%20config.dart';
+import 'package:hrms/home_screen.dart';
+import 'package:hrms/personal_details.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -70,19 +72,19 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
     // print('myleavesapi$url');
     // Check if accessToken is not null before using it
 
+    // Get the current date and time
+    DateTime now = DateTime.now();
 
-      // Get the current date and time
-      DateTime now = DateTime.now();
+    // Extract the current year
+    int currentYear = now.year;
 
-      // Extract the current year
-      int currentYear = now.year;
-
-      // Print the current year
-      print('Current Year: $currentYear');
+    // Print the current year
+    print('Current Year: $currentYear');
 
     if (accessToken != null) {
       try {
-        final url = Uri.parse(baseUrl + getleavesapi + empolyeid  +'/$currentYear' );
+        final url =
+            Uri.parse(baseUrl + getleavesapi + empolyeid + '/$currentYear');
         print('myleavesapi$url');
         Map<String, String> headers = {
           'Content-Type': 'application/json',
@@ -126,187 +128,198 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Color(0xFFf15f22),
-        title: Text(
-          'HRMS',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : leaveData.isEmpty
-              ? Center(child: Text('No data available'))
-              : ListView.builder(
-                  itemCount: leaveData.length,
-                  itemBuilder: (context, index) {
-                    final leave = leaveData[index];
-                    final borderColor = _getStatusBorderColor(leave.status!);
-                    String? leavetodate;
-                    if (leave.toDate != null) {
-                      todate = leave.toDate!;
-                      DateTime to_date = DateTime.parse(todate);
-                      leavetodate = DateFormat('dd-MM-yyyy').format(to_date);
-                    }
-                    else{
-                      leavetodate =" ";
-                    }
-                    DateTime from_date = DateTime.parse(leave.fromDate);
-                    String leavefromdate =
-                        DateFormat('dd-MM-yyyy').format(from_date);
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => home_screen()),
+          ); // Navigate to the previous screen
+          return true; // Prevent default back navigation behavior
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Color(0xFFf15f22),
+            title: Text(
+              'HRMS',
+              style: TextStyle(color: Colors.white),
+            ),
+            centerTitle: true,
+          ),
+          body: isLoading
+              ? Center(child: CircularProgressIndicator())
+              : leaveData.isEmpty
+                  ? Center(child: Text('No data available'))
+                  : ListView.builder(
+                      itemCount: leaveData.length,
+                      itemBuilder: (context, index) {
+                        final leave = leaveData[index];
+                        final borderColor =
+                            _getStatusBorderColor(leave.status!);
+                        String? leavetodate;
+                        if (leave.toDate != null) {
+                          todate = leave.toDate!;
+                          DateTime to_date = DateTime.parse(todate);
+                          leavetodate =
+                              DateFormat('dd-MM-yyyy').format(to_date);
+                        } else {
+                          leavetodate = " ";
+                        }
+                        DateTime from_date = DateTime.parse(leave.fromDate);
+                        String leavefromdate =
+                            DateFormat('dd-MM-yyyy').format(from_date);
 
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFfbf2ed),
-                          borderRadius: BorderRadius.circular(16.0),
-                          border: Border.all(color: borderColor, width: 1.5),
-                        ),
-                        child: ListTile(
-                          // title: Text(
-                          //   '${leave.leaveType}',
-                          //   style: TextStyle(fontWeight: FontWeight.bold),
-                          // ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(top: 5.0, bottom: 4.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Leave Type: ',
-                                      style: TextStyle(
-                                        color: Color(0xFFf37345),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                      ),
-                                    ),
-                                    Text(
-                                      '${leave.leaveType}',
-                                      style: TextStyle(
-                                        color: Color(0xFF000000),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Calibri',
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    SizedBox(width: 16.0),
-                                    // Adjust the spacing between Leave Type and Leave Status
-                                    Container(
-                                      padding: EdgeInsets.all(8.0),
-
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        border: Border.all(
-                                          color:
-                                              borderColor, // Set the border color
-                                          width: 2.0, // Set the border width
-                                        ),
-                                      ),
-                                      // decoration: BoxDecoration(
-                                      //   color: Colors.white,
-                                      //   borderRadius: BorderRadius.circular(8.0),
-                                      // ),
-                                      child: Text(
-                                        '${leave.status}',
-                                        style: TextStyle(
-                                          color:
-                                              borderColor, // Border color of the card
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 4.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: 'From Date: ',
-                                        style: TextStyle(
-                                          color: Color(0xFFf37345),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '${leavefromdate}',
-                                        style: TextStyle(
-                                          color: Color(0xFF000000),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '   To Date:  ',
-                                        style: TextStyle(
-                                          color: Color(0xFFf37345),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '${leavetodate}',
-                                        style: TextStyle(
-                                          color: Color(0xFF000000),
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
-                                          fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 4.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: 'Leave Description : ',
-                                        style: TextStyle(
-                                            color: Color(0xFFF44614),
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFfbf2ed),
+                              borderRadius: BorderRadius.circular(16.0),
+                              border:
+                                  Border.all(color: borderColor, width: 1.5),
+                            ),
+                            child: ListTile(
+                              // title: Text(
+                              //   '${leave.leaveType}',
+                              //   style: TextStyle(fontWeight: FontWeight.bold),
+                              // ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 5.0, bottom: 4.0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Leave Type: ',
+                                          style: TextStyle(
+                                            color: Color(0xFFf37345),
                                             fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Calibri'),
-                                      ),
-                                      TextSpan(
-                                        text: '${leave.note}',
-                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Calibri',
+                                          ),
+                                        ),
+                                        Text(
+                                          '${leave.leaveType}',
+                                          style: TextStyle(
                                             color: Color(0xFF000000),
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            fontFamily: 'Calibri'),
-                                      ),
-                                    ],
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Calibri',
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        SizedBox(width: 16.0),
+                                        // Adjust the spacing between Leave Type and Leave Status
+                                        Container(
+                                          padding: EdgeInsets.all(8.0),
+
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            border: Border.all(
+                                              color:
+                                                  borderColor, // Set the border color
+                                              width:
+                                                  2.0, // Set the border width
+                                            ),
+                                          ),
+                                          // decoration: BoxDecoration(
+                                          //   color: Colors.white,
+                                          //   borderRadius: BorderRadius.circular(8.0),
+                                          // ),
+                                          child: Text(
+                                            '${leave.status}',
+                                            style: TextStyle(
+                                              color:
+                                                  borderColor, // Border color of the card
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Calibri',
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 4.0),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'From Date: ',
+                                            style: TextStyle(
+                                              color: Color(0xFFf37345),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Calibri',
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '${leavefromdate}',
+                                            style: TextStyle(
+                                              color: Color(0xFF000000),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'Calibri',
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '   To Date:  ',
+                                            style: TextStyle(
+                                              color: Color(0xFFf37345),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Calibri',
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '${leavetodate}',
+                                            style: TextStyle(
+                                              color: Color(0xFF000000),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16,
+                                              fontFamily: 'Calibri',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 4.0),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'Leave Description : ',
+                                            style: TextStyle(
+                                                color: Color(0xFFF44614),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Calibri'),
+                                          ),
+                                          TextSpan(
+                                            text: '${leave.note}',
+                                            style: TextStyle(
+                                                color: Color(0xFF000000),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'Calibri'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-    );
+                        );
+                      },
+                    ),
+        ));
   }
 
   Color _getStatusBorderColor(String status) {

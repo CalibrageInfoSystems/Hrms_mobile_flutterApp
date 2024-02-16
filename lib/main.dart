@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:hrms/Model%20Class/login%20model%20class.dart';
 import 'package:hrms/Splash_screen.dart';
 import 'package:hrms/custom_dialog.dart';
+import 'package:hrms/security_questions.dart';
+import 'package:hrms/security_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -47,7 +49,9 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   String? accessToken;
   bool _obscureText = true;
-
+  String isfirst_time = "";
+  bool _isLoading = false;
+  String userid = '';
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -96,8 +100,8 @@ class _LoginPageState extends State<LoginPage> {
 
     String username = _usernamecontroller.text;
     String password = _passwordcontroller.text;
-    // String username = "VamshiNune";
-    // String password = "Vamshi@240800";
+    // String username = "ArunShetty";
+    // String password = "Arun@120898";
 
     if (isValid) {
       final request = {
@@ -137,19 +141,34 @@ class _LoginPageState extends State<LoginPage> {
           print('accesstokensaved');
 
           Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken!);
-          employeeId = decodedToken['EmployeeId'];
 
-          SharedPreferences emplyid = await SharedPreferences.getInstance();
-          await emplyid.setString("employeeId", employeeId!);
-          print('EmployeeIdsaved');
+          isfirst_time = decodedToken['IsFirstTimeLogin'];
+          print('isfirst_timeloginornot:$isfirst_time');
+          userid = decodedToken['Id'];
+          print('useridfromjwttoken:$userid');
+          if (isfirst_time == 'True') {
+            //navigate to next screen
+            print('navigate to next screen');
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (context) => security_questionsscreen(
+                        userid: '$userid',
+                      )),
+            );
+          } else {
+            employeeId = decodedToken['EmployeeId'];
+            SharedPreferences emplyid = await SharedPreferences.getInstance();
+            await emplyid.setString("employeeId", employeeId!);
+            print('EmployeeIdsaved');
 
-          print('AccessToken: $accessToken');
-          print('RefreshToken: $refreshToken');
-          print('EmployeeId: $employeeId');
+            print('AccessToken: $accessToken');
+            print('RefreshToken: $refreshToken');
+            print('EmployeeId: $employeeId');
 
-          empolyelogin(employeeId!);
-          Commonutils.showCustomToastMessageLong(
-              'Login Successful', context, 0, 2);
+            empolyelogin(employeeId!);
+            Commonutils.showCustomToastMessageLong(
+                'Login Successful', context, 0, 2);
+          }
         } else {
           FocusScope.of(context).unfocus();
           Commonutils.showCustomToastMessageLong(
@@ -194,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         Commonutils.showCustomToastMessageLong(
-            'Error GetSelfEmployeeData: ${response.statusCode}', context, 1, 4);
+            'Error  ${response.statusCode}', context, 1, 4);
         print('response is not success');
         print(
             'Failed to send the request. Status code: ${response.statusCode}');
@@ -205,204 +224,257 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _loadNextPage() {
+    // Show progress indicator
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simulate a delay to mimic loading
+    Future.delayed(Duration(seconds: 2), () {
+      // Navigate to the next page when loading is complete
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => securityscreen()),
+      ).then((_) {
+        // Hide progress indicator when returning from the next page
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Stack(
-          children: [
-            // Background Image
+    return WillPopScope(
+        onWillPop: () async {
+          // Handle back button press here
+          // You can add any custom logic before closing the app
+          return true; // Return true to allow back button press and close the app
+        },
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: Stack(
+              children: [
+                // Background Image
 
-            Positioned.fill(
-              child: Image.asset(
-                'assets/background_layer_2.png',
-                fit: BoxFit.cover,
-              ),
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/background_layer_2.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                // Your Login Screen Widgets
+                Center(
+                  child: _isLoading
+                      ? CircularProgressIndicator.adaptive()
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Text Field for Username or Email
+
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: SvgPicture.asset(
+                                'assets/cislogo-new.svg',
+                                height: 120.0,
+                                width: 55.0,
+                              ),
+                            ),
+                            SizedBox(height: 2.0),
+                            Text(
+                              'HRMS',
+                              style: TextStyle(
+                                color: Color(0xFFf15f22),
+                                fontSize: 26.0,
+                                fontFamily: 'Calibri',
+                                fontWeight: FontWeight
+                                    .bold, // Set the font weight to bold
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 25.0, left: 40.0, right: 40.0),
+                              child: TextFormField(
+                                ///     keyboardType: TextInputType.name,
+
+                                controller: _usernamecontroller,
+                                onTap: () {
+                                  // requestPhonePermission();
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Username',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFf15f22),
+                                    ),
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFf15f22),
+                                    ),
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                  hintStyle: TextStyle(
+                                    color: Colors.black26, // Label text color
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 15, horizontal: 15),
+                                  alignLabelWithHint: true,
+                                ),
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'Calibri',
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 20.0, left: 40.0, right: 40.0),
+                              child: TextFormField(
+                                // keyboardType: TextInputType.phone,
+
+                                controller: _passwordcontroller,
+                                obscureText: _obscureText,
+                                onTap: () {
+                                  //requestPhonePermission();
+                                },
+
+                                decoration: InputDecoration(
+                                  hintText: 'Password',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFf15f22),
+                                    ),
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFf15f22),
+                                    ),
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                  hintStyle: TextStyle(
+                                    color: Colors.black26, // Label text color
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 15, horizontal: 15),
+                                  alignLabelWithHint: true,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscureText
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {
+                                      // Toggle the password visibility
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'Calibri',
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 6.0, left: 45.0, right: 43.0),
+                              child: GestureDetector(
+                                onTap: _loadNextPage,
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(
+                                        color: Color(0xFFf15f22),
+                                        fontSize: 14,
+                                        fontFamily: 'Calibri'),
+                                  ),
+                                ),
+                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     // Add your click handling logic here
+                              //     Future.delayed(Duration(seconds: 2), () {
+                              //       Navigator.of(context).pushReplacement(
+                              //         MaterialPageRoute(
+                              //             builder: (context) => securityscreen()),
+                              //       );
+                              //     });
+                              //   },
+                              //   child: Container(
+                              //     width: double.infinity,
+                              //     child: Text(
+                              //       'Forgot Password?',
+                              //       style: TextStyle(
+                              //         color: Color(0xFFf15f22),
+                              //         fontSize: 14,
+                              //         fontFamily: 'hind_semibold',
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
+                            ),
+                            // Login Button
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 35.0, left: 40.0, right: 40.0),
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFf15f22),
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  // Adjust the border radius as needed
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    validate();
+                                  },
+                                  child: Text(
+                                    'Login',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontFamily: 'Calibri'),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.transparent,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
             ),
-
-            // Your Login Screen Widgets
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Text Field for Username or Email
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: SvgPicture.asset(
-                      'assets/cislogo-new.svg',
-                      height: 120.0,
-                      width: 55.0,
-                    ),
-                  ),
-                  SizedBox(height: 2.0),
-                  Text(
-                    'HRMS',
-                    style: TextStyle(
-                      color: Color(0xFFf15f22),
-                      fontSize: 26.0,
-                      fontFamily: 'Calibri',
-                      fontWeight:
-                          FontWeight.bold, // Set the font weight to bold
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: 25.0, left: 40.0, right: 40.0),
-                    child: TextFormField(
-                      ///     keyboardType: TextInputType.name,
-
-                      controller: _usernamecontroller,
-                      onTap: () {
-                        // requestPhonePermission();
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Username',
-                        filled: true,
-                        fillColor: Colors.white,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf15f22),
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf15f22),
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.black26, // Label text color
-                        ),
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                        alignLabelWithHint: true,
-                      ),
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Calibri',
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
-                    child: TextFormField(
-                      // keyboardType: TextInputType.phone,
-
-                      controller: _passwordcontroller,
-                      obscureText: _obscureText,
-                      onTap: () {
-                        //requestPhonePermission();
-                      },
-
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf15f22),
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf15f22),
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        hintStyle: TextStyle(
-                          color: Colors.black26, // Label text color
-                        ),
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                        alignLabelWithHint: true,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            // Toggle the password visibility
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                        ),
-                      ),
-
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Calibri',
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                      padding:
-                          EdgeInsets.only(top: 6.0, left: 45.0, right: 43.0),
-                      child: Container(
-                        width: double.infinity,
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Color(0xFFf15f22),
-                            fontSize: 14,
-                            fontFamily: 'hind_semibold',
-                          ),
-                        ),
-                      )),
-                  // Login Button
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFf15f22),
-                        borderRadius: BorderRadius.circular(6.0),
-                        // Adjust the border radius as needed
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          validate();
-                        },
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: 'hind_semibold',
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.transparent,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   Future<void> saveAccessToken(String token) async {
