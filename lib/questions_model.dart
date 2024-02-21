@@ -1,15 +1,15 @@
 class questionmodel {
-  final int questionid;
+  final int questionId;
   final String question;
 
   questionmodel({
-    required this.questionid,
+    required this.questionId,
     required this.question,
   });
 
   factory questionmodel.fromJson(Map<String, dynamic> json) {
     return questionmodel(
-      questionid: json['questionId'],
+      questionId: json['questionId'],
       question: json['question'],
     );
   }

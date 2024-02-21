@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/Model%20Class/login%20model%20class.dart';
+import 'package:hrms/home_screen.dart';
 import 'package:hrms/questions_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -14,14 +15,16 @@ import 'main.dart';
 
 class security_questionsscreen extends StatefulWidget {
   final String userid;
+
   security_questionsscreen({required this.userid});
+
   @override
   _securityscreenscreenState createState() => _securityscreenscreenState();
 }
 
 class _securityscreenscreenState extends State<security_questionsscreen> {
   List<Map<String, dynamic>> questions = [];
-  List<Map<String, String>> selectedQuestionsAndAnswers = [];
+  List<Map<dynamic, dynamic>> selectedQuestionsAndAnswers = [];
   int? question_id;
   int selectedTypeCdId = -1;
   String? answerinlistview;
@@ -39,6 +42,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   questionmodel? selectedquestionmodel;
   int? selectedQuestionId; // Initialize selectedQuestionId with null
   TextEditingController answercontroller = new TextEditingController();
+
   Future<void> fetchQuestions() async {
     String apiUrl =
         'http://182.18.157.215/HRMS/API/hrmsapi/Security/SecureQuestions';
@@ -84,38 +88,6 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
             // color: Color(0xFFF05F22),
             debugShowCheckedModeBanner: false,
             home: Scaffold(
-              // appBar: AppBar(
-              //   elevation: 0,
-              //   title: Column(
-              //     children: [
-              //       Align(
-              //           alignment: Alignment.topLeft,
-              //           child: Container(
-              //             padding: EdgeInsets.only(left: 10.0, top: 5.0),
-              //             child: GestureDetector(
-              //               onTap: () {
-              //                 // Handle the back button press here
-              //                 Navigator.pop(context);
-              //               },
-              //               child: Container(
-              //                 width: 40.0,
-              //                 height: 40.0,
-              //                 decoration: BoxDecoration(
-              //                   shape: BoxShape.circle,
-              //                   color:
-              //                       Colors.white, // Change the color as needed
-              //                 ),
-              //                 child: Icon(
-              //                   Icons.arrow_back,
-              //                   color: Color(
-              //                       0xFFF44614), // Change the color as needed
-              //                 ),
-              //               ),
-              //             ),
-              //           )),
-              //     ],
-              //   ),
-              // ),
               body: SingleChildScrollView(
                 child: Container(
                   height: screenHeight,
@@ -165,7 +137,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        SizedBox(height: 10.0),
+                        SizedBox(height: 5.0),
                         Container(
                             width: double.infinity,
                             child: Column(
@@ -187,7 +159,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                       fontSize: 16,
                                       fontFamily: 'Calibri'),
                                 ),
-                                SizedBox(height: 10.0),
+                                SizedBox(height: 5.0),
                                 Text(
                                   'When you selected more questions while recovering a password system randomly request 2 questions only. ',
                                   style: TextStyle(
@@ -228,11 +200,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 10.0),
+
+                                // SizedBox(height: 10.0),
                               ],
                             )),
-                        SizedBox(height: 10.0),
-                        FutureBuilder(
+                        // SizedBox(height: 10.0),
+                        Expanded(
+                            child: FutureBuilder(
                           future: Future.value(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
@@ -241,15 +215,19 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             } else if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               if (selectedQuestionsAndAnswers.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                      'Answered Questions Will Be Displayed Here'),
-                                );
+                                return Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Container(
+                                      padding: EdgeInsets.only(top: 5.0),
+                                      child: Text(
+                                          'Answered Questions Will Be Displayed Here'),
+                                    ));
                               } else {
                                 return ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: selectedQuestionsAndAnswers.length,
-                                  physics: PageScrollPhysics(),
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  //physics: PageScrollPhysics(),
                                   scrollDirection: Axis.vertical,
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -279,7 +257,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                               BorderRadius.circular(10),
                                           color: Colors.white,
                                         ),
-                                        margin: EdgeInsets.only(bottom: 15.0),
+                                        margin: EdgeInsets.only(bottom: 10.0),
                                         padding: EdgeInsets.all(15.0),
                                         child: Column(
                                           crossAxisAlignment:
@@ -289,12 +267,19 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  '${selectedQuestionsAndAnswers[index]['question']}',
-                                                  style: TextStyle(
-                                                    color: Color(0xFFf15f22),
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFamily: 'Calibri',
+                                                Expanded(
+                                                  // Wrap the Text widget with Flexible
+                                                  // flex: 1,
+                                                  // fit: FlexFit.tight,
+                                                  flex: 5,
+                                                  child: Text(
+                                                    '${selectedQuestionsAndAnswers[index]['question']}',
+                                                    style: TextStyle(
+                                                      color: Color(0xFFf15f22),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily: 'Calibri',
+                                                    ),
                                                   ),
                                                 ),
                                                 Spacer(),
@@ -328,46 +313,85 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                               return Text('Error: Unable to fetch data');
                             }
                           },
-                        ),
+                        )),
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              //        decoration: BoxDecoration(color: Colors.transparent),
+                              //   color: Color(0xFFf0ab91),
+                              padding: EdgeInsets.only(
+                                  top: 12.0,
+                                  left: 0.0,
+                                  right: 0.0,
+                                  bottom: 0.0),
+                              child: Container(
+                                width: double.infinity,
+                                //color: Color(0x00ffffff),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFf15f22),
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  // Adjust the border radius as needed
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    sendingQuestion();
+                                  },
+                                  child: Text(
+                                    'Submit Security Questions',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontFamily: 'Calibri'),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.transparent,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ))
                       ],
                     ),
                   ),
                 ),
               ),
-              bottomNavigationBar: Container(
-                //        decoration: BoxDecoration(color: Colors.transparent),
-                color: Color(0xFFf0ab91),
-                padding: EdgeInsets.only(
-                    top: 12.0, left: 10.0, right: 10.0, bottom: 10.0),
-                child: Container(
-                  width: double.infinity,
-                  //color: Color(0x00ffffff),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFf15f22),
-                    borderRadius: BorderRadius.circular(5.0),
-                    // Adjust the border radius as needed
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      sendingQuestion();
-                    },
-                    child: Text(
-                      'Submit Security Questions',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: 'Calibri'),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // bottomNavigationBar: Container(
+              //   //        decoration: BoxDecoration(color: Colors.transparent),
+              //   color: Color(0xFFf0ab91),
+              //   padding: EdgeInsets.only(
+              //       top: 12.0, left: 10.0, right: 10.0, bottom: 10.0),
+              //   child: Container(
+              //     width: double.infinity,
+              //     //color: Color(0x00ffffff),
+              //     decoration: BoxDecoration(
+              //       color: Color(0xFFf15f22),
+              //       borderRadius: BorderRadius.circular(5.0),
+              //       // Adjust the border radius as needed
+              //     ),
+              //     child: ElevatedButton(
+              //       onPressed: () async {
+              //         sendingQuestion();
+              //       },
+              //       child: Text(
+              //         'Submit Security Questions',
+              //         style: TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 16,
+              //             fontFamily: 'Calibri'),
+              //       ),
+              //       style: ElevatedButton.styleFrom(
+              //         primary: Colors.transparent,
+              //         elevation: 0,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(4.0),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             )));
   }
 
@@ -421,64 +445,104 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             ),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
+
                           child: DropdownButtonHideUnderline(
-                            child: ButtonTheme(
-                              alignedDropdown: true,
-                              child: DropdownButton<int>(
-                                value: selectedTypeCdId,
-                                iconSize: 30,
-                                icon: null,
-                                isExpanded: true,
-                                style: TextStyle(
-                                    color: Color(0xFFFB4110),
-                                    fontFamily: 'Calibri'),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedTypeCdId = value!;
-                                    print('selectedTypeCdId$selectedTypeCdId');
-                                  });
-                                },
-                                items: [
-                                  DropdownMenuItem<int>(
-                                    value: -1,
-                                    child: Text(
-                                      'Choose Your Question',
-                                      style: TextStyle(
-                                        color:
-                                            Colors.black26, // Label text color
-                                      ),
+                            child: DropdownButton<int>(
+                              value: selectedTypeCdId,
+                              iconSize: 30,
+                              icon: null,
+                              isExpanded: true,
+                              style: TextStyle(
+                                color: Color(0xFFFB4110),
+                                fontFamily: 'Calibri',
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedTypeCdId = value!;
+                                  print('selectedTypeCdId$selectedTypeCdId');
+                                });
+                              },
+                              items: [
+                                DropdownMenuItem<int>(
+                                  value: -1,
+                                  child: Text(
+                                    '   Choose Your Question',
+                                    style: TextStyle(
+                                      color: Colors.black26, // Label text color
                                     ),
                                   ),
-                                  // Assuming responseData is your list of questions
-                                  ...responseData
-                                      .asMap()
-                                      .entries
-                                      .where((entry) =>
-                                          !answeredQuestionIds.contains(entry
-                                              .key)) // Filter out answered questions
-                                      .map((entry) {
-                                    final index = entry.key;
-                                    final item = entry.value;
-                                    return DropdownMenuItem<int>(
-                                      value: index,
-                                      child: Text(
-                                        item['question'],
-                                        style: TextStyle(fontFamily: 'Calibri'),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ],
-                              ),
+                                ),
+                                // Filter out answered questions from responseData
+                                ...responseData
+                                    .where((question) => !answeredQuestionIds
+                                        .contains(question['questionId']))
+                                    .map((question) {
+                                  return DropdownMenuItem<int>(
+                                      value: question['questionId'],
+                                      child: Padding(
+                                        padding: EdgeInsets.only(left: 10.0),
+                                        child: Text(
+                                          question['question'],
+                                          style:
+                                              TextStyle(fontFamily: 'Calibri'),
+                                        ),
+                                      ));
+                                }).toList(),
+                              ],
                             ),
                           ),
+
+                          //working code commented by Arun on 21st at 9:42
+                          // child: DropdownButtonHideUnderline(
+                          //   child: DropdownButton<int>(
+                          //     value: selectedTypeCdId,
+                          //     iconSize: 30,
+                          //     icon: null,
+                          //     isExpanded: true,
+                          //     style: TextStyle(
+                          //       color: Color(0xFFFB4110),
+                          //       fontFamily: 'Calibri',
+                          //     ),
+                          //     onChanged: (value) {
+                          //       setState(() {
+                          //         selectedTypeCdId = value!;
+                          //         print('selectedTypeCdId$selectedTypeCdId');
+                          //       });
+                          //     },
+                          //     items: [
+                          //       DropdownMenuItem<int>(
+                          //         value: -1,
+                          //         child: Text(
+                          //           'Choose Your Question',
+                          //           style: TextStyle(
+                          //             color: Colors.black26, // Label text color
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       // Assuming responseData is your list of questions
+                          //       ...responseData
+                          //           .asMap()
+                          //           .entries
+                          //           .where((entry) =>
+                          //               !answeredQuestionIds.contains(entry
+                          //                   .key)) // Filter out answered questions
+                          //           .map((entry) {
+                          //         final index = entry.key;
+                          //         final item = entry.value;
+                          //         return DropdownMenuItem<int>(
+                          //           value: item[
+                          //               'questionId'], // Use question ID instead of index
+                          //           child: Text(
+                          //             item['question'],
+                          //             style: TextStyle(fontFamily: 'Calibri'),
+                          //           ),
+                          //         );
+                          //       }).toList(),
+                          //     ],
+                          //   ),
+                          // ),
                         ),
                         SizedBox(height: 20),
-                        // TextFormField(
-                        //   controller: answercontroller,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Enter your Answer here',
-                        //   ),
-                        // ),
                         TextFormField(
                           ///     keyboardType: TextInputType.name,
 
@@ -528,7 +592,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                     _addQuestion();
                   },
                   child: Text(
-                    'Add Question',
+                    'Submit Question',
                     style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Calibri'), // Set text color to white
@@ -566,16 +630,17 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
     }
 
     setState(() {
+      final selectedQuestion = responseData
+          .firstWhere((question) => question['questionId'] == selectedTypeCdId);
       selectedQuestionsAndAnswers.add({
-        'question': responseData[selectedTypeCdId]['question'],
+        'question': selectedQuestion['question'], // Store the question text
+        'questionId': selectedTypeCdId, // Store the question ID
         'answer': answercontroller.text.trim(),
-        'questionid': responseData[selectedTypeCdId]['questionid'].toString(),
         'id': selectedTypeCdId.toString()
       });
 
       // Add the ID of the answered question to the list of answered question IDs
-      answeredQuestionIds.add(selectedTypeCdId);
-
+      answeredQuestionIds.add(selectedQuestion['questionId']);
       // Remove deleted question indices from the list
       deletedQuestionIndices.remove(selectedTypeCdId);
 
@@ -588,14 +653,30 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
         index >= 0 &&
         index < selectedQuestionsAndAnswers.length) {
       setState(() {
-        selectedQuestionsAndAnswers.removeAt(index);
+        final removedQuestion = selectedQuestionsAndAnswers.removeAt(index);
+        final removedQuestionId = removedQuestion['questionId'];
         if (!deletedQuestionIndices.contains(index)) {
           deletedQuestionIndices.add(index);
-          answeredQuestionIds.removeAt(index);
         }
+        // Add the removed question's ID back to the list of answered question IDs
+        answeredQuestionIds.remove(removedQuestionId);
       });
     }
   }
+
+  // void _removeQuestion(int index) {
+  //   if (selectedQuestionsAndAnswers.isNotEmpty &&
+  //       index >= 0 &&
+  //       index < selectedQuestionsAndAnswers.length) {
+  //     setState(() {
+  //       selectedQuestionsAndAnswers.removeAt(index);
+  //       if (!deletedQuestionIndices.contains(index)) {
+  //         deletedQuestionIndices.add(index);
+  //         answeredQuestionIds.removeAt(index);
+  //       }
+  //     });
+  //   }
+  // }
 
   Future<void> sendingQuestion() async {
     try {
@@ -605,20 +686,18 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
         // Show an error message or handle the case where the size is less than 2
         print('Error: At least 2 questions and answers are required.');
         Commonutils.showCustomToastMessageLong(
-            'Please Answer atleast Two Questions', context, 1, 4);
+            'Please Answer Atleast Two Questions', context, 1, 4);
         return;
       }
-      // List to store request bodies for each question and answer
+
       List<Map<String, dynamic>> requestBodies = [];
 
-      // Iterate over each question and answer in the ListView
       for (int index = 0; index < selectedQuestionsAndAnswers.length; index++) {
-        // Extract question ID and answer
-        int? questionId =
-            int.tryParse(selectedQuestionsAndAnswers[index]['id'].toString());
-        String answer = selectedQuestionsAndAnswers[index]['answer']!;
+        final selectedQuestion = selectedQuestionsAndAnswers[index];
+        final questionId = selectedQuestion['questionId'];
+        final questionText = selectedQuestion['question'];
+        final answer = selectedQuestion['answer'];
 
-        // Define request body for the current question and answer
         Map<String, dynamic> requestBody = {
           "userQuestionId": 0, // Assuming this value needs to be set
           "userId": "${widget.userid}",
@@ -626,7 +705,6 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
           "answer": answer,
         };
 
-        // Add the request body to the list
         requestBodies.add(requestBody);
       }
 
@@ -665,370 +743,4 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
       Commonutils.showCustomToastMessageLong('Error: $e', context, 1, 4);
     }
   }
-
-  // Future<void> sendingquestion() async {
-  //   try {
-  //     final url = Uri.parse(baseUrl + sendingquestionapi);
-  //     print('sendingquestionsapi: $url');
-  //
-  //     // Define your request body as a Map or a JSON String
-  //     Map<String, dynamic> requestBody = {
-  //       "userQuestionId": 0,
-  //       "userId": "${widget.userid}",
-  //       "questionId": question_id,
-  //       "answer": "$answerinlistview"
-  //     };
-  //
-  //     // Encode the request body as JSON
-  //     String requestBodyJson = jsonEncode(requestBody);
-  //
-  //     final response = await http.post(
-  //       url,
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //       },
-  //       body: requestBodyJson,
-  //     );
-  //     print('login response: ${response.body}');
-  //
-  //     // Check the response status code
-  //     if (response.statusCode == 200) {
-  //       Commonutils.showCustomToastMessageLong(
-  //           'Api is Successfully', context, 1, 4);
-  //       // Handle successful response
-  //     } else {
-  //       Commonutils.showCustomToastMessageLong(
-  //           'Error ${response.statusCode}', context, 1, 4);
-  //       print('response is not success');
-  //       print(
-  //           'Failed to send the request. Status code: ${response.statusCode}');
-  //       // Handle error scenarios
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  // }
 }
-
-// void _showAddQuestionDialog(BuildContext context) {
-//   answercontroller.text = '';
-//   selectedQuestion = null;
-//   showDialog(
-//     barrierDismissible: false,
-//     context: context,
-//     builder: (BuildContext context) {
-//       return StatefulBuilder(
-//         builder: (context, setState) {
-//           return Container(
-//             width: MediaQuery.of(context).size.width,
-//             child: AlertDialog(
-//               backgroundColor: Colors.white,
-//               title: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Text(
-//                     "Select Security Questions",
-//                     style: TextStyle(
-//                       color: Color(0xFFf15f22),
-//                     ),
-//                   ),
-//                   //  SizedBox(width: 8), // Adjust spacing between text and icon
-//                   InkWell(
-//                     onTap: () {
-//                       // Handle icon click event here
-//                       print("Icon clicked!");
-//                       Navigator.of(context).pop();
-//                     },
-//                     child: Icon(
-//                       CupertinoIcons.multiply,
-//                       color: Colors.grey,
-//                     ), // Add your icon here
-//                   ),
-//                 ],
-//               ),
-//               //  icon: Icon(CupertinoIcons.multiply_circle),
-//               content: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 children: [
-//                   // Change the type to String?
-//                   Container(
-//                     width: MediaQuery.of(context).size.width,
-//                     // decoration: BoxDecoration(
-//                     //   color: Colors.white,
-//                     // ),
-//                     child: Column(
-//                       children: [
-//                         Container(
-//                           width: MediaQuery.of(context).size.width,
-//                           decoration: BoxDecoration(
-//                             color: Colors.white,
-//                             border: Border.all(
-//                               color: Color(
-//                                   0xFFf15f22), // You can change the color here
-//                               width: 1.0, // You can adjust the width here
-//                             ),
-//                             borderRadius: BorderRadius.circular(
-//                                 5.0), // You can adjust the border radius here
-//                           ),
-//                           child: DropdownButtonHideUnderline(
-//                             child: ButtonTheme(
-//                               alignedDropdown: true,
-//                               child: DropdownButton<int>(
-//                                   value: selectedTypeCdId,
-//                                   iconSize: 30,
-//                                   icon: null,
-//                                   style: TextStyle(
-//                                     color: Color(0xFFFB4110),
-//                                   ),
-//                                   onChanged: (value) {
-//                                     setState(() {
-//                                       selectedTypeCdId = value!;
-//                                       if (selectedTypeCdId != -1) {
-//                                         selectedValue =
-//                                             responseData[selectedTypeCdId]
-//                                                 ['questionId'];
-//                                         selectedName =
-//                                             responseData[selectedTypeCdId]
-//                                                 ['question'];
-//
-//                                         print("selectedValue:$selectedValue");
-//                                         print(
-//                                             "selectedquestion:$selectedName");
-//                                       } else {
-//                                         print("==========");
-//                                         print(selectedValue);
-//                                         print(selectedName);
-//                                       }
-//                                       // isDropdownValid = selectedTypeCdId != -1;
-//                                     });
-//                                   },
-//                                   items: [
-//                                     DropdownMenuItem<int>(
-//                                       value: -1,
-//                                       child: Text(
-//                                           'Choose Your Question'), // Static text
-//                                     ),
-//                                     ...responseData
-//                                         .asMap()
-//                                         .entries
-//                                         .map((entry) {
-//                                       final index = entry.key;
-//                                       final item = entry.value;
-//                                       return DropdownMenuItem<int>(
-//                                         value: index,
-//                                         child: Text(item['question']),
-//                                       );
-//                                     }).toList(),
-//                                   ]),
-//                             ),
-//                           ),
-//                         ),
-//                         SizedBox(height: 20),
-//                         Padding(
-//                           padding: EdgeInsets.only(
-//                               top: 0.0, left: 0.0, right: 0.0),
-//                           child: TextFormField(
-//                             ///     keyboardType: TextInputType.name,
-//
-//                             controller: answercontroller,
-//                             onTap: () {
-//                               // requestPhonePermission();
-//                             },
-//                             decoration: InputDecoration(
-//                               hintText: 'Enter your Answer here',
-//                               filled: true,
-//                               fillColor: Colors.white,
-//                               focusedBorder: OutlineInputBorder(
-//                                 borderSide: BorderSide(
-//                                   color: Color(0xFFf15f22),
-//                                 ),
-//                                 borderRadius: BorderRadius.circular(6.0),
-//                               ),
-//                               enabledBorder: OutlineInputBorder(
-//                                 borderSide: BorderSide(
-//                                   color: Color(0xFFf15f22),
-//                                 ),
-//                                 borderRadius: BorderRadius.circular(6.0),
-//                               ),
-//                               hintStyle: TextStyle(
-//                                 color: Colors.black26, // Label text color
-//                               ),
-//                               border: InputBorder.none,
-//                               contentPadding: EdgeInsets.symmetric(
-//                                   vertical: 15, horizontal: 15),
-//                               alignLabelWithHint: true,
-//                             ),
-//                             textAlign: TextAlign.start,
-//                             style: TextStyle(
-//                               color: Colors.black,
-//                               fontFamily: 'Calibri',
-//                               fontSize: 16,
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   )
-//                 ],
-//               ),
-//               actions: [
-//                 ElevatedButton(
-//                   style: ButtonStyle(
-//                     backgroundColor: MaterialStateProperty.all<Color>(
-//                         Colors.deepOrangeAccent),
-//                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-//                       RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(
-//                             5.0), // Adjust the value as needed
-//                       ),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     bool isValid = true;
-//                     bool hasValidationFailed = false;
-//
-//                     // Check if a question type is selected
-//                     if (selectedTypeCdId == -1) {
-//                       Commonutils.showCustomToastMessageLong(
-//                         'Please Select Question',
-//                         context,
-//                         1,
-//                         4,
-//                       );
-//                       isValid = false;
-//                       hasValidationFailed = true;
-//                     }
-//
-//                     // Check if an answer is provided
-//                     if (isValid && answercontroller.text.trim().isEmpty) {
-//                       Commonutils.showCustomToastMessageLong(
-//                         'Please Enter Answer',
-//                         context,
-//                         1,
-//                         4,
-//                       );
-//                       isValid = false;
-//                       hasValidationFailed = true;
-//                       FocusScope.of(context).unfocus();
-//                     }
-//
-//                     // Check if the selected question is already in the list
-//                     // bool questionAlreadySelected =
-//                     //     listViewQuestionIds.contains(selectedTypeCdId);
-//                     // if (questionAlreadySelected) {
-//                     //   // Show a toast message indicating that the question is already selected
-//                     //   Commonutils.showCustomToastMessageLong(
-//                     //     'Please select another questons',
-//                     //     context,
-//                     //     1,
-//                     //     4,
-//                     //   );
-//                     // }
-//                     // If all validations pass, add the selected question and answer to the list
-//                     if (isValid) {
-//                       setState(() {
-//                         selectedQuestionsAndAnswers.add({
-//                           'question': selectedName,
-//                           'answer': answercontroller.text.trim(),
-//                           'questionid': selectedQuestionId.toString(),
-//                         });
-//                         Navigator.of(context).pop();
-//                       });
-//                     }
-//                   },
-//                   child: Text(
-//                     'Add Question',
-//                     style: TextStyle(color: Colors.white),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           );
-//         },
-//       );
-//     },
-//   );
-// }
-// actions: [
-// ElevatedButton(
-// onPressed: () {
-// Navigator.of(context).pop();
-// },
-// child: Text('Add Question'),
-// ),
-// ],
-// DropdownButton(
-//   hint: Text('Select a question'),
-//   value: null, // Initially, no value is selected
-//   onChanged: (newValue) {
-//     // Find the question ID corresponding to the selected question
-//     final selectedQuestion = questions.firstWhere(
-//         (question) => question['question'] == newValue);
-//     final questionId = selectedQuestion['questionId'];
-//     print('Question: $newValue, Question ID: $questionId');
-//   },
-//   items: questions.map<DropdownMenuItem<String>>((question) {
-//     return DropdownMenuItem<String>(
-//       value: question['question'],
-//       child: Text(question['question']),
-//     );
-//   }).toList(),
-// ),
-// DropdownButton(
-//   hint: Text(selectedQuestion),
-//   value: null, // Initially, no value is selected
-//   onChanged: (newValue) {
-//     // Find the question ID corresponding to the selected question
-//     final selectedQuestionData = questions.firstWhere(
-//         (question) => question['question'] == newValue);
-//     final questionId = selectedQuestionData['questionId'];
-//     setState(() {
-//       selectedQuestion = newValue!;
-//     });
-//     print('Question: $newValue, Question ID: $questionId');
-//   },
-//   items: questions.map<DropdownMenuItem<String>>((question) {
-//     return DropdownMenuItem<String>(
-//       value: question['question'],
-//       child: Text(question['question']),
-//     );
-//   }).toList(),
-// ),
-// DropdownButtonHideUnderline(
-//   child: ButtonTheme(
-//     alignedDropdown: true,
-//     child: DropdownButton<String>(
-//       hint: Text(selectedQuestion),
-//       value: null, // Initially, no value is selected
-//       onChanged: (newValue) {
-//         // Find the question ID corresponding to the selected question
-//         final selectedQuestionData = questions.firstWhere(
-//             (question) => question['question'] == newValue);
-//         final questionId = selectedQuestionData['questionId'];
-//         setState(() {
-//           selectedQuestion = newValue!;
-//         });
-//         print('Question: $newValue, Question ID: $questionId');
-//       },
-//       items: [
-//         DropdownMenuItem<String>(
-//           value: null,
-//           child: Text('Select a question'), // Static text
-//         ),
-//         ...questions.map<DropdownMenuItem<String>>((question) {
-//           return DropdownMenuItem<String>(
-//             value: question['question'],
-//             child: Text(question['question']),
-//           );
-//         }).toList(),
-//       ],
-//     ),
-//   ),
-// ),
-
-// questionlist.isEmpty
-//     ? LoadingAnimationWidget.newtonCradle(
-//         color: Colors.blue, // Set the color as needed
-//         size: 40.0,
-//       ) // S // Show a loading indicator
-//     :

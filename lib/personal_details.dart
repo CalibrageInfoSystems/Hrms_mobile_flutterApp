@@ -23,15 +23,17 @@ class _personal_screen_screenState extends State<personal_details> {
   String EmployeName = '';
   String dob = '';
   String EmailId = '';
-  String OfficeEmailid = '';
-  String Expincomapny = '';
-  String Mobilenum = '';
-  String Bloodgroup = '';
+  String? OfficeEmailid;
+  String? Expincomapny;
+  String? Mobilenum;
+  String? Bloodgroup;
   String formattedDOB = '';
-  String Gender = '';
+  String? Gender;
   String photoData = "";
   String empolyeid = '';
-  String Dateofjoining = '';
+  String? Dateofjoining;
+  String? formatteddateofjoining;
+  DateTime? dateofjoin;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -77,21 +79,61 @@ class _personal_screen_screenState extends State<personal_details> {
       String formattedDOB = DateFormat('dd-MM-yyyy').format(dobDate);
       print('formattedDOB: $formattedDOB');
 
-      DateTime dateofjoin = DateTime.parse(dateofjoining);
-      String formatteddateofjoining =
-          DateFormat('dd-MM-yyyy').format(dateofjoin);
+      // DateTime dateofjoin = DateTime.parse(dateofjoining);
+
+// Check if dateofjoining is not null before parsing
+      if (dateofjoining != null) {
+        dateofjoin = DateTime.parse(dateofjoining!);
+      }
+      // String formatteddateofjoining =
+      //     DateFormat('dd-MM-yyyy').format(dateofjoin!);
+
+// Check if dateofjoin is not null before formatting
+      if (dateofjoin != null) {
+        formatteddateofjoining = DateFormat('dd-MM-yyyy').format(dateofjoin!);
+        print('formatteddateofjoining$formatteddateofjoining');
+      } else {
+        formatteddateofjoining == ''; // Handle the case when dateofjoin is null
+        // For example, you could provide a default value or show an error message
+      }
+
       print('formatteddateofjoining: $formatteddateofjoining');
 
       setState(() {
         EmployeName = employeeName;
         dob = formattedDOB;
         EmailId = emailid;
-        OfficeEmailid = officemailid;
-        Expincomapny = expincompany;
+        // OfficeEmailid = officemailid;
+        if (loadedData['officeEmailId'] != null) {
+          OfficeEmailid = loadedData['officeEmailId'] as String;
+          print('OfficeEmailid$OfficeEmailid');
+        } else {
+          OfficeEmailid = '';
+          // Handle the case when loadedData['experienceInCompany'] is null
+          // For example, you could provide a default value or show an error message
+        }
+        print('OfficeEmailid$OfficeEmailid');
+        if (loadedData['experienceInCompany'] != null) {
+          Expincomapny = loadedData['experienceInCompany'] as String;
+          print('Expincomapny$Expincomapny');
+        } else {
+          Expincomapny = '';
+          // Handle the case when loadedData['experienceInCompany'] is null
+          // For example, you could provide a default value or show an error message
+        }
         Mobilenum = mobilenum;
         Bloodgroup = bloodgroup;
         Gender = gender;
-        Dateofjoining = formatteddateofjoining;
+
+// Check if formatteddateofjoining is not null before using it
+        if (formatteddateofjoining != null) {
+          Dateofjoining = formatteddateofjoining;
+          print('Dateofjoining$Dateofjoining');
+        } else {
+          Dateofjoining = '';
+          // Handle the case when formatteddateofjoining is null
+          // For example, you could provide a default value or show an error message
+        }
       });
     }
   }
@@ -185,7 +227,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                       height: 110,
                                     )
                                   else
-                                    getDefaultImage(Gender),
+                                    getDefaultImage(Gender!),
 
                                   // if (Gender == "Male")
                                   //   Image.asset(
@@ -401,7 +443,7 @@ class _personal_screen_screenState extends State<personal_details> {
                                                             EdgeInsets.fromLTRB(
                                                                 12, 0, 0, 0),
                                                         child: Text(
-                                                          "Officail Mail ID ",
+                                                          "Official Mail ID ",
                                                           style: TextStyle(
                                                               color: Color(
                                                                   0xFFf15f22),

@@ -112,7 +112,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
           print('API Response leaveData: ${leaveData.length}');
         } else {
           Commonutils.showCustomToastMessageLong(
-              'Error: ${response.statusCode}', context, 1, 4);
+              'Error: ${response.body}', context, 1, 4);
           // Handle error if the request was not successful
           print('Error: ${response.statusCode} - ${response.reasonPhrase}');
         }

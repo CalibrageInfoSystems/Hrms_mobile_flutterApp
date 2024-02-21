@@ -343,7 +343,7 @@ class _apply_leaveeState extends State<apply_leave> {
           "Rejected": null,
           "Comments": null,
           "IsApprovalEscalated": null,
-          "URL": "http://182.18.157.215/",
+          "URL": "http://182.18.157.215:/",
           "EmployeeName": "${widget.employename}",
           // "getLeaveType": null,
           if (widget.buttonName == "test") ...{
@@ -386,7 +386,24 @@ class _apply_leaveeState extends State<apply_leave> {
         // }
         print('Applyresponse: ${response.body}');
 
-        if (response.statusCode == 200) {
+        // Parse the JSON response
+        Map<String, dynamic> responseMap = json.decode(response.body);
+
+        // Access the value of isSuccess
+        bool isSuccess = responseMap['isSuccess'];
+        dynamic message = responseMap['message'];
+        String messageresponse =
+            message != null ? message.toString() : "No message provided";
+
+        print('messageresponse: ${messageresponse}');
+        // Check the value of isSuccess
+        // if (isSuccess) {
+        //   print('Operation was successful');
+        // } else {
+        //   print('Operation failed');
+        // }
+
+        if (isSuccess == true) {
           isLoading = false;
           print('response is success');
           disableButton();
@@ -405,10 +422,13 @@ class _apply_leaveeState extends State<apply_leave> {
           }
         } else {
           Commonutils.showCustomToastMessageLong(
-              ' ${response.body}', context, 1, 3);
+              ' ${messageresponse}', context, 1, 5);
           print('response is not success');
           // Commonutils.showCustomToastMessageLong(
           //     '${response.body}', context, 0, 3);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => home_screen()),
+          );
           print(
               'Failed to send the request. Status code: ${response.statusCode}');
         }
@@ -964,7 +984,7 @@ class _apply_leaveeState extends State<apply_leave> {
     }
 
     // Calculate the minimum selectable date based on the selected "from date"
-    DateTime minSelectableDate = selectedDate.add(const Duration(days: 1));
+    DateTime minSelectableDate = selectedDate;
 
     // Find the next available date that is not a holiday or a weekend
     while (_isHolidayOrWeekend(minSelectableDate)) {
