@@ -19,7 +19,7 @@ class projects_screen extends StatefulWidget {
 
 class _ProjectsScreenState extends State<projects_screen> {
   List<Widget> projectCardWidgets = [];
-  String EmployeName = '';
+  String? EmployeName;
   String projectnamedetails = '';
   late Uint8List bytes;
   List<projectmodel> projectlist = [];
@@ -51,55 +51,66 @@ class _ProjectsScreenState extends State<projects_screen> {
       final workingProjects = loadedData['workingProjects'];
       print("workingProjects ===>96 ${workingProjects}");
       print('workingProjects ====>97: $workingProjects');
-      List<dynamic> projects = json.decode(workingProjects);
 
-      if (projects != null && projects is List) {
-        List<projectmodel> projectList = [];
-        for (var project in projects) {
-          print("Project ID: ${project["projectId"]}");
-          print("Project Name: ${project["projectName"]}");
-          print("Project Description: ${project["projectDescription"]}");
-          print("Project Logo: ${project["projectLogo"]}");
-          print("\n");
-          pm = project["projectName"];
-          String base64Image = project["projectLogo"].split(',')[1];
-          print("Project Logo:108===? $base64Image");
-          bytes = Uint8List.fromList(base64.decode(base64Image));
-          print("bytes:108===? $bytes");
-          print("Project endAt: ${project["endAt"]}");
+      if (workingProjects != null) {
+        List<dynamic> projects = json.decode(workingProjects);
+        if (projects != null && projects is List) {
+          List<projectmodel> projectList = [];
+          for (var project in projects) {
+            print("Project ID: ${project["projectId"]}");
+            print("Project Name: ${project["projectName"]}");
+            print("Project Description: ${project["projectDescription"]}");
+            print("Project Logo: ${project["projectLogo"]}");
+            print("\n");
+            pm = project["projectName"];
+            String base64Image = project["projectLogo"].split(',')[1];
+            print("Project Logo:108===? $base64Image");
+            bytes = Uint8List.fromList(base64.decode(base64Image));
+            print("bytes:108===? $bytes");
+            print("Project endAt: ${project["endAt"]}");
 
-          var existingProjectIndex = projectList.indexWhere(
-            (existingProject) =>
-                existingProject.projectname == project["projectName"],
-          );
+            var existingProjectIndex = projectList.indexWhere(
+              (existingProject) =>
+                  existingProject.projectname == project["projectName"],
+            );
 
-          if (existingProjectIndex != -1) {
-            // If the project exists, add only the instance
-            projectList[existingProjectIndex].instances.add(ProjectInstance(
-                  projectfromdate: project["sinceFrom"],
-                  projecttodate: project["endAt"] ?? "Progress",
-                ));
-          } else {
-            // If the project doesn't exist, create a new project and add it to projectList
-            List<ProjectInstance> instances = [];
-            instances.add(ProjectInstance(
-              projectfromdate: project["sinceFrom"],
-              projecttodate: project["endAt"] ?? "Progress",
-            ));
+            if (existingProjectIndex != -1) {
+              // If the project exists, add only the instance
+              projectList[existingProjectIndex].instances.add(ProjectInstance(
+                    projectfromdate: project["sinceFrom"],
+                    projecttodate: project["endAt"] ?? "Progress",
+                  ));
+            } else {
+              // If the project doesn't exist, create a new project and add it to projectList
+              List<ProjectInstance> instances = [];
+              instances.add(ProjectInstance(
+                projectfromdate: project["sinceFrom"],
+                projecttodate: project["endAt"] ?? "Progress",
+              ));
 
-            projectList.add(projectmodel(
-              projectlogo: bytes,
-              projectname: project["projectName"],
-              instances: instances,
-            ));
+              projectList.add(projectmodel(
+                projectlogo: bytes,
+                projectname: project["projectName"],
+                instances: instances,
+              ));
+            }
           }
+          setState(() {
+            // EmployeName = employeeName;
+            projectlist = projectList;
+            projectnamedetails = pm;
+          });
         }
-        setState(() {
-          EmployeName = employeeName;
-          projectlist = projectList;
-          projectnamedetails = pm;
-        });
+      } else {
+        // Handle the case where workingProjects is null
+        // You may want to initialize projects to an empty list or handle the error differently
       }
+      setState(() {
+        EmployeName = employeeName;
+      });
+      // setState(() {
+      //
+      // });
     }
   }
 

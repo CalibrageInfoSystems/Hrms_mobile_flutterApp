@@ -14,8 +14,7 @@ class securityscreen extends StatefulWidget {
   _securityscreenscreenState createState() => _securityscreenscreenState();
 }
 
-class _securityscreenscreenState extends State<securityscreen>
-    with TickerProviderStateMixin {
+class _securityscreenscreenState extends State<securityscreen> with TickerProviderStateMixin {
   int currentstep = 0;
   bool isCompleted = false;
   final TextEditingController _usernamecontroller = TextEditingController();
@@ -30,12 +29,7 @@ class _securityscreenscreenState extends State<securityscreen>
   List<Map<String, dynamic>> questionsAndAnswers = [];
   List<Map<String, dynamic>> additionalQuestionsAndAnswers = [];
   int noofquestionavaiable = 0;
-  String? Question_1,
-      Question_2,
-      Answer_1,
-      Answer_2,
-      api_answer_1,
-      api_answer_2;
+  String? Question_1, Question_2, Answer_1, Answer_2, api_answer_1, api_answer_2;
   Map<int, TextEditingController> _answerControllers = {};
 
   @override
@@ -94,8 +88,7 @@ class _securityscreenscreenState extends State<securityscreen>
                             ),
                             child: Icon(
                               Icons.arrow_back,
-                              color: Color(
-                                  0xFFF44614), // Change the color as needed
+                              color: Color(0xFFF44614), // Change the color as needed
                             ),
                           ),
                         ),
@@ -104,8 +97,7 @@ class _securityscreenscreenState extends State<securityscreen>
               ),
             ),
             body: Theme(
-              data: Theme.of(context).copyWith(
-                  colorScheme: ColorScheme.light(primary: Color(0xFFf15f22))),
+              data: Theme.of(context).copyWith(colorScheme: ColorScheme.light(primary: Color(0xFFf15f22))),
               child: SingleChildScrollView(
                 child: Container(
                   height: screenHeight,
@@ -171,16 +163,11 @@ class _securityscreenscreenState extends State<securityscreen>
                         type: StepperType.vertical,
                         currentStep: currentstep,
                         onStepTapped: (step) {
-                          List<bool> completedSteps = List.generate(
-                              getSteps().length, (index) => false);
+                          List<bool> completedSteps = List.generate(getSteps().length, (index) => false);
 
                           //setState(() => currentstep = step);
                           if (step > 0 && !completedSteps[step - 1]) {
-                            Commonutils.showCustomToastMessageLong(
-                                'Please Complete Previous Steps',
-                                context,
-                                1,
-                                4);
+                            Commonutils.showCustomToastMessageLong('Please Complete Previous Steps', context, 1, 4);
                             // You may show a message or take other actions to inform the user
                             // that they need to complete the previous step first.
                             return;
@@ -189,14 +176,12 @@ class _securityscreenscreenState extends State<securityscreen>
                             // Check if the username field is empty
                             if (_usernamecontroller.text.isEmpty) {
                               // Show a toast message indicating that the username field is required
-                              Commonutils.showCustomToastMessageLong(
-                                  'Complete the Username', context, 1, 4);
+                              Commonutils.showCustomToastMessageLong('Complete the Username', context, 1, 4);
                               return; // Return to prevent proceeding to the next step
                             }
                           }
                         },
-                        controlsBuilder:
-                            (BuildContext context, ControlsDetails details) {
+                        controlsBuilder: (BuildContext context, ControlsDetails details) {
                           // if (currentstep == getSteps().length - 1) {
                           //   return SizedBox(); // Return an empty container if it's the last step
                           // } else {
@@ -206,8 +191,7 @@ class _securityscreenscreenState extends State<securityscreen>
                               children: <Widget>[
                                 Spacer(),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 10.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     height: 35,
                                     decoration: BoxDecoration(
@@ -228,8 +212,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -246,8 +229,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                 //   child: const Text('NEXT'),
                                 // ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 10.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
@@ -270,8 +252,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -281,8 +262,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                   width: 25.0,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 10.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
@@ -305,8 +285,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -328,8 +307,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                 //   child: const Text('NEXT'),
                                 // ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 10.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
@@ -352,8 +330,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -363,8 +340,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                   width: 25.0,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 10.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
@@ -387,8 +363,7 @@ class _securityscreenscreenState extends State<securityscreen>
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -417,12 +392,10 @@ class _securityscreenscreenState extends State<securityscreen>
                             case 0:
                               // Call API for Step 1
                               if (_usernamecontroller.text.trim().isEmpty) {
-                                Commonutils.showCustomToastMessageLong(
-                                    'Please Enter The Username', context, 1, 4);
+                                Commonutils.showCustomToastMessageLong('Please Enter The Username', context, 1, 4);
                                 return; // Return to prevent proceeding to the next step
                               } else {
-                                await fetchquestion(
-                                    _usernamecontroller.text.trim());
+                                await fetchquestion(_usernamecontroller.text.trim());
                               }
 
                               // setState(() => currentstep += 1);
@@ -455,8 +428,7 @@ class _securityscreenscreenState extends State<securityscreen>
                         steps: getSteps(),
                       ),
                       Padding(
-                        padding:
-                            EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
+                        padding: EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -467,12 +439,11 @@ class _securityscreenscreenState extends State<securityscreen>
                           child: ElevatedButton(
                             onPressed: () async {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
+                                MaterialPageRoute(builder: (context) => LoginPage()),
                               );
                             },
                             child: Text(
-                              'Back to Login',
+                              'Back to SignIn',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -532,8 +503,7 @@ class _securityscreenscreenState extends State<securityscreen>
                   color: Colors.black26, // Label text color
                 ),
                 border: InputBorder.none,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 alignLabelWithHint: true,
               ),
               textAlign: TextAlign.start,
@@ -569,11 +539,7 @@ class _securityscreenscreenState extends State<securityscreen>
                           ),
                           Text(
                             ' $noofquestionavaiable',
-                            style: TextStyle(
-                                color: Color(0xFFf15f22),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                fontFamily: 'Calibri'),
+                            style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Calibri'),
                             textAlign: TextAlign.start,
                           ),
                         ],
@@ -586,8 +552,7 @@ class _securityscreenscreenState extends State<securityscreen>
                         setState(() {
                           isLoading = true;
                         });
-                        fetchrefreshquestion(_usernamecontroller.text)
-                            .then((_) {
+                        fetchrefreshquestion(_usernamecontroller.text).then((_) {
                           setState(() {
                             isLoading = false;
                           });
@@ -618,10 +583,7 @@ class _securityscreenscreenState extends State<securityscreen>
                 children: [
                   Text(
                     '${Question_1}',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Calibri'),
+                    style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
                     textAlign: TextAlign.start,
                   ),
                   Padding(
@@ -648,8 +610,7 @@ class _securityscreenscreenState extends State<securityscreen>
                           color: Colors.black26,
                         ),
                         border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                         alignLabelWithHint: true,
                       ),
                       textAlign: TextAlign.start,
@@ -669,10 +630,7 @@ class _securityscreenscreenState extends State<securityscreen>
                 children: [
                   Text(
                     '${Question_2}',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Calibri'),
+                    style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
                     textAlign: TextAlign.start,
                   ),
                   Padding(
@@ -699,8 +657,7 @@ class _securityscreenscreenState extends State<securityscreen>
                           color: Colors.black26,
                         ),
                         border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                         alignLabelWithHint: true,
                       ),
                       textAlign: TextAlign.start,
@@ -730,8 +687,9 @@ class _securityscreenscreenState extends State<securityscreen>
                   obscureText: _obscureText_confirm,
                   controller: _confirmcontroller,
                   onTap: () {},
+
                   decoration: InputDecoration(
-                    hintText: 'Confirm Password',
+                    hintText: 'New Password',
                     filled: true,
                     fillColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
@@ -750,15 +708,12 @@ class _securityscreenscreenState extends State<securityscreen>
                       color: Colors.black26, // Label text color
                     ),
                     border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                     alignLabelWithHint: true,
                     suffixIcon: GestureDetector(
                       onTap: _togglePasswordVisibilityconfrim,
                       child: Icon(
-                        _obscureText_confirm
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _obscureText_confirm ? Icons.visibility_off : Icons.visibility,
                       ),
                     ),
                   ),
@@ -783,7 +738,7 @@ class _securityscreenscreenState extends State<securityscreen>
                     // requestPhonePermission();
                   },
                   decoration: InputDecoration(
-                    hintText: 'Re Confirm Password',
+                    hintText: 'Confirm Password',
                     filled: true,
                     fillColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
@@ -802,15 +757,12 @@ class _securityscreenscreenState extends State<securityscreen>
                       color: Colors.black26, // Label text color
                     ),
                     border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                     alignLabelWithHint: true,
                     suffixIcon: GestureDetector(
                       onTap: _togglePasswordVisibilityreconfrim,
                       child: Icon(
-                        _obscureText_reconfirm
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _obscureText_reconfirm ? Icons.visibility_off : Icons.visibility,
                       ),
                     ),
                   ),
@@ -916,8 +868,7 @@ class _securityscreenscreenState extends State<securityscreen>
           //       false; // Set the flag to false after the first API call
           // }
           if (data.isNotEmpty) {
-            Commonutils.showCustomToastMessageLong(
-                'Username Successful', context, 0, 2);
+            Commonutils.showCustomToastMessageLong('Username Successful', context, 0, 2);
             setState(() => currentstep += 1);
 
             // isFirstApiCall =
@@ -928,14 +879,11 @@ class _securityscreenscreenState extends State<securityscreen>
             questionsAndAnswers = List<Map<String, dynamic>>.from(data);
             print('questions${questionsAndAnswers}');
             if (questionsAndAnswers.isNotEmpty) {
-              String questionString =
-                  questionsAndAnswers[0]['question'].toString();
-              String questionString_1 =
-                  questionsAndAnswers[1]['question'].toString();
+              String questionString = questionsAndAnswers[0]['question'].toString();
+              String questionString_1 = questionsAndAnswers[1]['question'].toString();
               api_answer_1 = questionsAndAnswers[0]['answer'].toString();
               api_answer_2 = questionsAndAnswers[1]['answer'].toString();
-              noofquestionavaiable =
-                  questionsAndAnswers[0]['userSecureQuestionsCount'];
+              noofquestionavaiable = questionsAndAnswers[0]['userSecureQuestionsCount'];
               print('noofquestionavailable:$noofquestionavaiable');
               Question_1 = questionString;
               Question_2 = questionString_1;
@@ -949,13 +897,11 @@ class _securityscreenscreenState extends State<securityscreen>
             }
           });
         } else {
-          Commonutils.showCustomToastMessageLong(
-              'Please Enter Valid Username', context, 1, 4);
+          Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
           print('Invalid username');
         }
       } else {
-        Commonutils.showCustomToastMessageLong(
-            'Please Enter Valid Username', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -997,14 +943,11 @@ class _securityscreenscreenState extends State<securityscreen>
             questionsAndAnswers = List<Map<String, dynamic>>.from(data);
             print('questions${questionsAndAnswers}');
             if (questionsAndAnswers.isNotEmpty) {
-              String questionString =
-                  questionsAndAnswers[0]['question'].toString();
-              String questionString_1 =
-                  questionsAndAnswers[1]['question'].toString();
+              String questionString = questionsAndAnswers[0]['question'].toString();
+              String questionString_1 = questionsAndAnswers[1]['question'].toString();
               api_answer_1 = questionsAndAnswers[0]['answer'].toString();
               api_answer_2 = questionsAndAnswers[1]['answer'].toString();
-              noofquestionavaiable =
-                  questionsAndAnswers[1]['userSecureQuestionsCount'];
+              noofquestionavaiable = questionsAndAnswers[1]['userSecureQuestionsCount'];
               Question_1 = questionString;
               Question_2 = questionString_1;
               Answer_1 = api_answer_1;
@@ -1020,14 +963,12 @@ class _securityscreenscreenState extends State<securityscreen>
           });
         } else {
           // Username is not valid, show an error message
-          Commonutils.showCustomToastMessageLong(
-              'Please Enter Valid Username', context, 1, 4);
+          Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
           print('Invalid username');
           // You can show an error message or handle it as needed.
         }
       } else {
-        Commonutils.showCustomToastMessageLong(
-            'Please Enter Valid Username', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -1041,8 +982,7 @@ class _securityscreenscreenState extends State<securityscreen>
     String answer2 = _answer_2_controller.text.trim();
 
     if (answer1.isEmpty || answer2.isEmpty) {
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter Your Answer', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter Your Answer', context, 1, 4);
       return;
     }
 
@@ -1050,13 +990,11 @@ class _securityscreenscreenState extends State<securityscreen>
       // Answers match, navigate to the next step
       setState(() {
         currentstep += 1;
-        Commonutils.showCustomToastMessageLong(
-            'Answers are Correct', context, 0, 2);
+        Commonutils.showCustomToastMessageLong('Answers are Correct', context, 0, 2);
       });
     } else {
       // Answers do not match, show an error message
-      Commonutils.showCustomToastMessageLong(
-          'Incorrect Answers. Please try again.', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Incorrect Answers. Please try again.', context, 1, 4);
     }
   }
 
@@ -1123,26 +1061,31 @@ class _securityscreenscreenState extends State<securityscreen>
     // } else
 
     if (password1.trim().isEmpty) {
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter  Password', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter New Password', context, 1, 4);
       return;
     } else if (password2.trim().isEmpty) {
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter Confirm Password', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter Confirm Password', context, 1, 4);
       return;
     }
     if (password1.trim() == password2.trim()) {
-      changepasswordapi(password2.trim());
+      if (isPasswordValid(password2.trim())) {
+        changepasswordapi(password2.trim());
+      } else {
+        Commonutils.showCustomToastMessageLong('Password must Contain 1 Lowercase, 1 Uppercase, Numbers, Special Characters, and be Between 8 to 20 Characters in Length. Please Correct it.', context, 1, 6);
+      }
     } else {
       setState(() {
-        _confirmcontroller
-            .clear(); // Clear the text in the TextEditingController
-        _reconfirmcontroller
-            .clear(); // Clear the text in the TextEditingController
+        _confirmcontroller.clear(); // Clear the text in the TextEditingController
+        _reconfirmcontroller.clear(); // Clear the text in the TextEditingController
       });
-      Commonutils.showCustomToastMessageLong(
-          'Passwords do not match Please Correct it', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Passwords do not match Please Correct it', context, 1, 4);
     }
+  }
+
+  bool isPasswordValid(String password) {
+    // Password must contain 1 lowercase, 1 uppercase, numbers, special characters, and be between 8 to 20 characters in length.
+    RegExp passwordRegex = RegExp(r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,20}$');
+    return passwordRegex.hasMatch(password);
   }
 
   Future<void> changepasswordapi(String reconfrimpassword) async {
@@ -1167,8 +1110,7 @@ class _securityscreenscreenState extends State<securityscreen>
       print('statusCode=====>${response.statusCode}');
 
       if (response.statusCode == 200) {
-        Commonutils.showCustomToastMessageLong(
-            'Passwords Changed Succesfully!.', context, 0, 4);
+        Commonutils.showCustomToastMessageLong('Passwords Changed Succesfully!.', context, 0, 4);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
@@ -1180,8 +1122,7 @@ class _securityscreenscreenState extends State<securityscreen>
 
         print('response is not success');
 
-        print(
-            'Failed to send the request. Status code: ${response.statusCode}');
+        print('Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');

@@ -69,8 +69,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       final usedprivilegeleavesinyear = loadedData['usedPrivilegeLeavesInYear'];
       final allotedprivilegeleaves = loadedData['allottedPrivilegeLeaves'];
       final usedcausalleavesinmonth = loadedData['usedCasualLeavesInMonth'];
-      final usedPrivilegeLeavesInMonth =
-          loadedData['usedPrivilegeLeavesInMonth'];
+      final usedPrivilegeLeavesInMonth = loadedData['usedPrivilegeLeavesInMonth'];
       final usedcasualleavesinyear = loadedData['usedCasualLeavesInYear'];
       final usdl = loadedData['allottedCasualLeaves'];
       // final mobilenum = loadedData['mobileNumber'];
@@ -96,13 +95,11 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         usedCasualLeavesInYear = usedcasualleavesinyear.toDouble();
         // allottedPriviegeLeaves = allotedpls;
         //  usedCasualLeavesInYear = usedcasualleavesinyear;
-        availablepls = allottedPrivilegeLeaves.toDouble() -
-            usedPrivilegeLeavesInYear.toDouble();
+        availablepls = allottedPrivilegeLeaves.toDouble() - usedPrivilegeLeavesInYear.toDouble();
 
         print("Available Privilege Leaves: $availablepls");
 
-        availablecls =
-            allotcausalleaves.toDouble() - usedCasualLeavesInYear.toDouble();
+        availablecls = allotcausalleaves.toDouble() - usedCasualLeavesInYear.toDouble();
 
         print('Available Causal Leaves: $availablecls');
         DateTime now = DateTime.now();
@@ -148,8 +145,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                 // SingleChildScrollView for scrollable content
                 SingleChildScrollView(
                   child: Container(
-                    padding:
-                        EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+                    padding: EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -210,8 +206,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     builder: (context) => apply_leave(
                                       buttonName: "test", // Example button name
                                       lookupDetailId: -3,
-                                      employename:
-                                          '${EmployeName}', // Pass the lookupDetailId
+                                      employename: '${EmployeName}', // Pass the lookupDetailId
                                     ),
                                   ),
                                 );
@@ -275,11 +270,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     // Adjust the padding as needed
                                     child: Text(
                                       "PL",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontFamily: 'Calibri'),
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
                                     ),
                                   ),
                                   SizedBox(
@@ -290,11 +281,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     children: [
                                       Text(
                                         "$usedPrivilegeLeavesInYear",
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontFamily: 'Calibri'),
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
                                       ),
                                       SizedBox(
                                         width: 2.0,
@@ -312,11 +299,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                       ),
                                       Text(
                                         "$allottedPrivilegeLeaves",
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontFamily: 'Calibri'),
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
                                       ),
                                     ],
                                   )
@@ -333,8 +316,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                 border: Border.all(
                                   color: Color(0xFF7F7FE1),
                                   // Specify the border color
-                                  width:
-                                      2.0, // Adjust the border width as needed
+                                  width: 2.0, // Adjust the border width as needed
                                 ),
                               ),
                               child: Column(
@@ -344,11 +326,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     // Adjust the padding as needed
                                     child: Text(
                                       "Monthly PL's",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFFf15f22),
-                                          fontFamily: 'Calibri'),
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFFf15f22), fontFamily: 'Calibri'),
                                     ),
                                   ),
                                   Row(
@@ -369,11 +347,9 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                         ),
                                       ),
                                       Container(
-                                        width: width /
-                                            1.6, // Set your desired width here
+                                        width: width / 1.6, // Set your desired width here
                                         child: Text(
-                                          DateFormat('MMMM')
-                                              .format(_selectedMonthPL),
+                                          DateFormat('MMMM').format(_selectedMonthPL),
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
@@ -426,8 +402,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                 border: Border.all(
                                   color: Color(0xFF7F7FE1),
                                   // Specify the border color
-                                  width:
-                                      2.0, // Adjust the border width as needed
+                                  width: 2.0, // Adjust the border width as needed
                                 ),
                               ),
                               child: Column(children: [
@@ -451,14 +426,13 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                       // Your click listener logic here
                                       print("Container Clicked!");
 
-                                      printLookupDetailId('PL');
-                                      // if (availablepls <= 0) {
-                                      //   // Show a toast message
-                                      //   Commonutils.showCustomToastMessageLong(
-                                      //       'No PLs available!', context, 1, 3);
-                                      // } else {
-                                      //   printLookupDetailId('PL');
-                                      // }
+                                      //  printLookupDetailId('PL');
+                                      if (availablepls <= 0) {
+                                        // Show a toast message
+                                        Commonutils.showCustomToastMessageLong('No PLs Available!', context, 1, 3);
+                                      } else {
+                                        printLookupDetailId('PL');
+                                      }
 
                                       // Navigator.of(context).pushReplacement(
                                       //   MaterialPageRoute(
@@ -466,8 +440,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                       // );
                                     },
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Text(
                                           "$availablepls",
@@ -591,8 +564,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                 border: Border.all(
                                   color: Color(0xFF7F7FE1),
                                   // Specify the border color
-                                  width:
-                                      2.0, // Adjust the border width as needed
+                                  width: 2.0, // Adjust the border width as needed
                                 ),
                               ),
                               child: Column(
@@ -628,11 +600,9 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                         ),
                                       ),
                                       Container(
-                                        width: width /
-                                            1.6, // Set your desired width here
+                                        width: width / 1.6, // Set your desired width here
                                         child: Text(
-                                          DateFormat('MMMM')
-                                              .format(_selectedMonthCL),
+                                          DateFormat('MMMM').format(_selectedMonthCL),
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
@@ -691,7 +661,13 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               ),
                               child: InkWell(
                                 onTap: () {
-                                  printLookupDetailId('CL');
+                                  if (availablecls <= 0) {
+                                    // Show a toast message
+                                    Commonutils.showCustomToastMessageLong('No CLs Available!', context, 1, 3);
+                                  } else {
+                                    printLookupDetailId('CL');
+                                  }
+                                  //  printLookupDetailId('CL');
                                 },
                                 child: Column(
                                   children: [
@@ -710,8 +686,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                     Container(
                                       padding: EdgeInsets.only(top: 4.0),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Text(
                                             "$availablecls",
@@ -1059,14 +1034,11 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       List<dynamic> jsonData = json.decode(response.body);
 
       setState(() {
-        lookupDetails =
-            jsonData.map((data) => LookupDetail.fromJson(data)).toList();
+        lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
       });
     } else {
-      Commonutils.showCustomToastMessageLong(
-          ' Error :  ${response.statusCode} ', context, 1, 3);
-      throw Exception(
-          'Failed to load data. Status Code: ${response.statusCode}');
+      Commonutils.showCustomToastMessageLong(' Error :  ${response.statusCode} ', context, 1, 3);
+      throw Exception('Failed to load data. Status Code: ${response.statusCode}');
     }
   }
 
@@ -1145,11 +1117,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     // Print the current year
     print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl +
-          getmontlyleaves +
-          '/$monthId' +
-          '/$employeid' +
-          '/$currentYear');
+      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
       print('monthlyleavesPlsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1166,8 +1134,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         final List<dynamic> data = json.decode(response.body);
 
         print('response data : ${data}');
-        List<leave_model> leaveInfos =
-            data.map((json) => leave_model.fromJson(json)).toList();
+        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfo in leaveInfos) {
@@ -1200,11 +1167,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     // Print the current year
     print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl +
-          getmontlyleaves +
-          '/$monthId' +
-          '/$employeid' +
-          '/$currentYear');
+      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
       print('monthlyleavesClsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1221,8 +1184,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         final List<dynamic> data = json.decode(response.body);
 
         print('response data : ${data}');
-        List<leave_model> leaveInfos =
-            data.map((json) => leave_model.fromJson(json)).toList();
+        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfoCl in leaveInfos) {
@@ -1256,11 +1218,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     // Print the current year
     print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl +
-          getmontlyleaves +
-          '/$monthId' +
-          '/$employeid' +
-          '/$currentYear');
+      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
       print('monthlyleaveslwpapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -1277,8 +1235,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         final List<dynamic> data = json.decode(response.body);
 
         print('response data : ${data}');
-        List<leave_model> leaveInfos =
-            data.map((json) => leave_model.fromJson(json)).toList();
+        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
         for (var leaveInfoLWP in leaveInfos) {

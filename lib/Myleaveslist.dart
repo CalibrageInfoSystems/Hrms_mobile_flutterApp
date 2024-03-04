@@ -83,8 +83,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
 
     if (accessToken != null) {
       try {
-        final url =
-            Uri.parse(baseUrl + getleavesapi + empolyeid + '/$currentYear');
+        final url = Uri.parse(baseUrl + getleavesapi + empolyeid + '/$currentYear');
         print('myleavesapi$url');
         Map<String, String> headers = {
           'Content-Type': 'application/json',
@@ -101,8 +100,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
           // Parse the JSON response
           final List<dynamic> data = json.decode(response.body);
           setState(() {
-            leaveData =
-                data.map((json) => EmployeeLeave.fromJson(json)).toList();
+            leaveData = data.map((json) => EmployeeLeave.fromJson(json)).toList();
             isLoading = false;
           });
 
@@ -111,8 +109,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
           print('API Response leaveData: $leaveData');
           print('API Response leaveData: ${leaveData.length}');
         } else {
-          Commonutils.showCustomToastMessageLong(
-              'Error: ${response.body}', context, 1, 4);
+          Commonutils.showCustomToastMessageLong('Error: ${response.body}', context, 1, 4);
           // Handle error if the request was not successful
           print('Error: ${response.statusCode} - ${response.reasonPhrase}');
         }
@@ -148,25 +145,22 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
           body: isLoading
               ? Center(child: CircularProgressIndicator())
               : leaveData.isEmpty
-                  ? Center(child: Text('No data available'))
+                  ? Center(child: Text('No Leaves Applied!'))
                   : ListView.builder(
                       itemCount: leaveData.length,
                       itemBuilder: (context, index) {
                         final leave = leaveData[index];
-                        final borderColor =
-                            _getStatusBorderColor(leave.status!);
+                        final borderColor = _getStatusBorderColor(leave.status!);
                         String? leavetodate;
+                        DateTime from_date = DateTime.parse(leave.fromDate);
+                        String leavefromdate = DateFormat('dd-MM-yyyy').format(from_date);
                         if (leave.toDate != null) {
                           todate = leave.toDate!;
                           DateTime to_date = DateTime.parse(todate);
-                          leavetodate =
-                              DateFormat('dd-MM-yyyy').format(to_date);
+                          leavetodate = DateFormat('dd-MM-yyyy').format(to_date);
                         } else {
-                          leavetodate = " ";
+                          leavetodate = leavefromdate;
                         }
-                        DateTime from_date = DateTime.parse(leave.fromDate);
-                        String leavefromdate =
-                            DateFormat('dd-MM-yyyy').format(from_date);
 
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -174,8 +168,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                             decoration: BoxDecoration(
                               color: Color(0xFFfbf2ed),
                               borderRadius: BorderRadius.circular(16.0),
-                              border:
-                                  Border.all(color: borderColor, width: 1.5),
+                              border: Border.all(color: borderColor, width: 1.5),
                             ),
                             child: ListTile(
                               // title: Text(
@@ -186,8 +179,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(top: 5.0, bottom: 4.0),
+                                    padding: EdgeInsets.only(top: 5.0, bottom: 4.0),
                                     child: Row(
                                       children: [
                                         Text(
@@ -216,13 +208,10 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
 
                                           decoration: BoxDecoration(
                                             color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
+                                            borderRadius: BorderRadius.circular(8.0),
                                             border: Border.all(
-                                              color:
-                                                  borderColor, // Set the border color
-                                              width:
-                                                  2.0, // Set the border width
+                                              color: borderColor, // Set the border color
+                                              width: 2.0, // Set the border width
                                             ),
                                           ),
                                           // decoration: BoxDecoration(
@@ -232,8 +221,7 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                           child: Text(
                                             '${leave.status}',
                                             style: TextStyle(
-                                              color:
-                                                  borderColor, // Border color of the card
+                                              color: borderColor, // Border color of the card
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'Calibri',
                                             ),
@@ -275,14 +263,14 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: '${leavetodate}',
+                                            text: {leavetodate} != null ? leavetodate : '${leavefromdate}',
                                             style: TextStyle(
                                               color: Color(0xFF000000),
                                               fontWeight: FontWeight.w700,
                                               fontSize: 16,
                                               fontFamily: 'Calibri',
                                             ),
-                                          ),
+                                          )
                                         ],
                                       ),
                                     ),
@@ -294,19 +282,11 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                         children: [
                                           TextSpan(
                                             text: 'Leave Description : ',
-                                            style: TextStyle(
-                                                color: Color(0xFFF44614),
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Calibri'),
+                                            style: TextStyle(color: Color(0xFFF44614), fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
                                           ),
                                           TextSpan(
                                             text: '${leave.note}',
-                                            style: TextStyle(
-                                                color: Color(0xFF000000),
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: 'Calibri'),
+                                            style: TextStyle(color: Color(0xFF000000), fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Calibri'),
                                           ),
                                         ],
                                       ),

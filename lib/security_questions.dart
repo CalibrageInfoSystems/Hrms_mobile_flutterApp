@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'Commonutils.dart';
+import 'Constants.dart';
+import 'SharedPreferencesHelper.dart';
 import 'api config.dart';
 import 'main.dart';
 
@@ -44,8 +46,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   TextEditingController answercontroller = new TextEditingController();
 
   Future<void> fetchQuestions() async {
-    String apiUrl =
-        'http://182.18.157.215/HRMS/API/hrmsapi/Security/SecureQuestions';
+    String apiUrl = 'http://182.18.157.215/HRMS/API/hrmsapi/Security/SecureQuestions';
 
     final response = await http.get(Uri.parse(apiUrl));
 
@@ -57,8 +58,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
       responseData = json.decode(response.body);
 
       setState(() {
-        questionlist =
-            (responseData).map((item) => questionmodel.fromJson(item)).toList();
+        questionlist = (responseData).map((item) => questionmodel.fromJson(item)).toList();
       });
     } else {
       throw Exception('Failed to load questions');
@@ -118,10 +118,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                           width: double.infinity,
                           child: Text(
                             'HRMS',
-                            style: TextStyle(
-                                color: Color(0xFFf15f22),
-                                fontSize: 18,
-                                fontFamily: 'Calibri'),
+                            style: TextStyle(color: Color(0xFFf15f22), fontSize: 18, fontFamily: 'Calibri'),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -130,10 +127,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                           width: double.infinity,
                           child: Text(
                             'Security Questions',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontFamily: 'Calibri'),
+                            style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -146,30 +140,20 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                               children: [
                                 Text(
                                   'Note:',
-                                  style: TextStyle(
-                                      color: Color(0xFFf15f22),
-                                      fontSize: 18,
-                                      fontFamily: 'Calibri'),
+                                  style: TextStyle(color: Color(0xFFf15f22), fontSize: 18, fontFamily: 'Calibri'),
                                 ),
                                 SizedBox(height: 10.0),
                                 Text(
                                   'Minimum two Questions need to be answered out of 15 questions for recovering the password when you lost it.',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontFamily: 'Calibri'),
+                                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Calibri'),
                                 ),
                                 SizedBox(height: 5.0),
                                 Text(
                                   'When you selected more questions while recovering a password system randomly request 2 questions only. ',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontFamily: 'Calibri'),
+                                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Calibri'),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 35.0, left: 0.0, right: 0.0),
+                                  padding: EdgeInsets.only(top: 35.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
@@ -184,17 +168,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                       },
                                       child: Text(
                                         'Add Question',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontFamily: 'Calibri'),
+                                        style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         primary: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4.0),
+                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -209,18 +189,15 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             child: FutureBuilder(
                           future: Future.value(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
                               return CircularProgressIndicator();
-                            } else if (snapshot.connectionState ==
-                                ConnectionState.done) {
+                            } else if (snapshot.connectionState == ConnectionState.done) {
                               if (selectedQuestionsAndAnswers.isEmpty) {
                                 return Align(
                                     alignment: Alignment.topCenter,
                                     child: Container(
                                       padding: EdgeInsets.only(top: 5.0),
-                                      child: Text(
-                                          'Answered Questions Will Be Displayed Here'),
+                                      child: Text('Answered Questions Will Be Displayed Here'),
                                     ));
                               } else {
                                 return ListView.builder(
@@ -229,23 +206,16 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                   physics: AlwaysScrollableScrollPhysics(),
                                   //physics: PageScrollPhysics(),
                                   scrollDirection: Axis.vertical,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
+                                  itemBuilder: (BuildContext context, int index) {
                                     return GestureDetector(
                                       onTap: () {
                                         // Handle tap on item if needed
                                         //  setState(() {
-                                        question_id = int.tryParse(
-                                            selectedQuestionsAndAnswers[index]
-                                                ['id']!);
-                                        answerinlistview =
-                                            selectedQuestionsAndAnswers[index]
-                                                ['answer'];
+                                        question_id = int.tryParse(selectedQuestionsAndAnswers[index]['id']!);
+                                        answerinlistview = selectedQuestionsAndAnswers[index]['answer'];
                                         //  });
-                                        print(
-                                            'answerinlistview:${answerinlistview}');
-                                        print(
-                                            'questionidclicked:${question_id}');
+                                        print('answerinlistview:${answerinlistview}');
+                                        print('questionidclicked:${question_id}');
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -253,19 +223,16 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                             color: Colors.orange,
                                             width: 1.5,
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10),
                                           color: Colors.white,
                                         ),
                                         margin: EdgeInsets.only(bottom: 10.0),
                                         padding: EdgeInsets.all(15.0),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(
                                                   // Wrap the Text widget with Flexible
@@ -276,8 +243,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                                     '${selectedQuestionsAndAnswers[index]['question']}',
                                                     style: TextStyle(
                                                       color: Color(0xFFf15f22),
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                      fontWeight: FontWeight.bold,
                                                       fontFamily: 'Calibri',
                                                     ),
                                                   ),
@@ -319,11 +285,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             child: Container(
                               //        decoration: BoxDecoration(color: Colors.transparent),
                               //   color: Color(0xFFf0ab91),
-                              padding: EdgeInsets.only(
-                                  top: 12.0,
-                                  left: 0.0,
-                                  right: 0.0,
-                                  bottom: 0.0),
+                              padding: EdgeInsets.only(top: 12.0, left: 0.0, right: 0.0, bottom: 0.0),
                               child: Container(
                                 width: double.infinity,
                                 //color: Color(0x00ffffff),
@@ -338,10 +300,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                   },
                                   child: Text(
                                     'Submit Security Questions',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontFamily: 'Calibri'),
+                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     primary: Colors.transparent,
@@ -399,7 +358,8 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
     answercontroller.text = '';
     selectedTypeCdId = -1;
     showDialog(
-      barrierDismissible: false,
+      // barrierDismissible: false,
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
@@ -419,7 +379,9 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                   ),
                   InkWell(
                     onTap: () {
+                      // Navigator.of(context).pop();
                       Navigator.of(context).pop();
+                      Navigator.of(context, rootNavigator: true).pop(context);
                     },
                     child: Icon(
                       CupertinoIcons.multiply,
@@ -473,18 +435,14 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                   ),
                                 ),
                                 // Filter out answered questions from responseData
-                                ...responseData
-                                    .where((question) => !answeredQuestionIds
-                                        .contains(question['questionId']))
-                                    .map((question) {
+                                ...responseData.where((question) => !answeredQuestionIds.contains(question['questionId'])).map((question) {
                                   return DropdownMenuItem<int>(
                                       value: question['questionId'],
                                       child: Padding(
                                         padding: EdgeInsets.only(left: 10.0),
                                         child: Text(
                                           question['question'],
-                                          style:
-                                              TextStyle(fontFamily: 'Calibri'),
+                                          style: TextStyle(fontFamily: 'Calibri'),
                                         ),
                                       ));
                                 }).toList(),
@@ -570,8 +528,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                               color: Colors.black26, // Label text color
                             ),
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 15),
+                            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                             alignLabelWithHint: true,
                           ),
                           textAlign: TextAlign.start,
@@ -592,17 +549,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                     _addQuestion();
                   },
                   child: Text(
-                    'Submit Question',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Calibri'), // Set text color to white
+                    'Add Question',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
                   ),
                   style: ElevatedButton.styleFrom(
-                    primary: Color(
-                        0xFFf15f22), // Change to your desired background color
+                    primary: Color(0xFFf15f22), // Change to your desired background color
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(5), // Set border radius
+                      borderRadius: BorderRadius.circular(5), // Set border radius
                     ),
                   ),
                 ),
@@ -617,21 +570,18 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   void _addQuestion() {
     if (selectedTypeCdId == -1) {
       // Show toast or error message
-      Commonutils.showCustomToastMessageLong(
-          'Please Select Question', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Select Question', context, 1, 4);
       return;
     }
 
     if (answercontroller.text.trim().isEmpty) {
       // Show toast or error message
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter Answer', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter Answer', context, 1, 4);
       return;
     }
 
     setState(() {
-      final selectedQuestion = responseData
-          .firstWhere((question) => question['questionId'] == selectedTypeCdId);
+      final selectedQuestion = responseData.firstWhere((question) => question['questionId'] == selectedTypeCdId);
       selectedQuestionsAndAnswers.add({
         'question': selectedQuestion['question'], // Store the question text
         'questionId': selectedTypeCdId, // Store the question ID
@@ -649,9 +599,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   }
 
   void _removeQuestion(int index) {
-    if (selectedQuestionsAndAnswers.isNotEmpty &&
-        index >= 0 &&
-        index < selectedQuestionsAndAnswers.length) {
+    if (selectedQuestionsAndAnswers.isNotEmpty && index >= 0 && index < selectedQuestionsAndAnswers.length) {
       setState(() {
         final removedQuestion = selectedQuestionsAndAnswers.removeAt(index);
         final removedQuestionId = removedQuestion['questionId'];
@@ -685,8 +633,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
       if (selectedQuestionsAndAnswers.length < 2) {
         // Show an error message or handle the case where the size is less than 2
         print('Error: At least 2 questions and answers are required.');
-        Commonutils.showCustomToastMessageLong(
-            'Please Answer Atleast Two Questions', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('Please Answer Atleast Two Questions', context, 1, 4);
         return;
       }
 
@@ -725,17 +672,15 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
       // Check the response status code
       if (response.statusCode == 200) {
         // Handle successful response
-        Commonutils.showCustomToastMessageLong(
-            'Questions Added Successfully', context, 0, 4);
+        Commonutils.showCustomToastMessageLong('Questions Added Successfully', context, 0, 4);
+        SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => home_screen()),
         );
       } else {
         // Handle error scenarios
-        Commonutils.showCustomToastMessageLong(
-            'Error ${response.statusCode}', context, 1, 4);
-        print(
-            'Failed to send the request. Status code: ${response.statusCode}');
+        Commonutils.showCustomToastMessageLong('Error ${response.statusCode}', context, 1, 4);
+        print('Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       // Handle any errors that occur during the process

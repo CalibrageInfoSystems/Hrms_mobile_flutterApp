@@ -62,8 +62,7 @@ class _LoginPageState extends State<LoginPage> {
       if (isConnected) {
         print('The Internet Is Connected');
       } else {
-        Commonutils.showCustomToastMessageLong(
-            'Not connected to the internet', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('Not connected to the internet', context, 1, 4);
         print('The Internet Is not  Connected');
       }
     });
@@ -74,8 +73,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isValid = true;
     bool hasValidationFailed = false;
     if (isValid && _usernamecontroller.text.isEmpty) {
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter Username', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter Username', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
       FocusScope.of(context).unfocus();
@@ -83,16 +81,14 @@ class _LoginPageState extends State<LoginPage> {
     if (isValid && _passwordcontroller.text.isEmpty) {
       isValid = false;
       hasValidationFailed = true;
-      Commonutils.showCustomToastMessageLong(
-          'Please Enter Password', context, 1, 4);
+      Commonutils.showCustomToastMessageLong('Please Enter Password', context, 1, 4);
       FocusScope.of(context).unfocus();
     } else {
       bool isConnected = await Commonutils.checkInternetConnectivity();
       if (isConnected) {
         print('Connected to the internet');
       } else {
-        Commonutils.showCustomToastMessageLong(
-            'No Internet Connection', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
         FocusScope.of(context).unfocus();
         print('Not connected to the internet');
       }
@@ -104,11 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     // String password = "Arun@120898";
 
     if (isValid) {
-      final request = {
-        "userName": username,
-        "password": password,
-        "rememberMe": true
-      };
+      final request = {"userName": username, "password": password, "rememberMe": true};
       print('Request Body: ${json.encode(request)}');
       try {
         final url = Uri.parse(baseUrl + getlogin);
@@ -146,37 +138,34 @@ class _LoginPageState extends State<LoginPage> {
           print('isfirst_timeloginornot:$isfirst_time');
           userid = decodedToken['Id'];
           print('useridfromjwttoken:$userid');
-          if (isfirst_time == 'True') {
-            //navigate to next screen
-            print('navigate to next screen');
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                  builder: (context) => security_questionsscreen(
-                        userid: '$userid',
-                      )),
-            );
-          } else {
-            employeeId = decodedToken['EmployeeId'];
-            SharedPreferences emplyid = await SharedPreferences.getInstance();
-            await emplyid.setString("employeeId", employeeId!);
-            print('EmployeeIdsaved');
+          // if (isfirst_time == 'True') {
+          //   //navigate to next screen
+          //   print('navigate to next screen');
+          //   Navigator.of(context).pushReplacement(
+          //     MaterialPageRoute(
+          //         builder: (context) => security_questionsscreen(
+          //               userid: '$userid',
+          //             )),
+          //   );
+          // } else {
+          employeeId = decodedToken['EmployeeId'];
+          SharedPreferences emplyid = await SharedPreferences.getInstance();
+          await emplyid.setString("employeeId", employeeId!);
+          print('EmployeeIdsaved');
 
-            print('AccessToken: $accessToken');
-            print('RefreshToken: $refreshToken');
-            print('EmployeeId: $employeeId');
+          print('AccessToken: $accessToken');
+          print('RefreshToken: $refreshToken');
+          print('EmployeeId: $employeeId');
 
-            empolyelogin(employeeId!);
-            Commonutils.showCustomToastMessageLong(
-                'Login Successful', context, 0, 2);
-          }
+          empolyelogin(employeeId!, isfirst_time, userid);
+
+          // }
         } else {
           FocusScope.of(context).unfocus();
-          Commonutils.showCustomToastMessageLong(
-              'Invalid Username or Password ', context, 1, 4);
+          Commonutils.showCustomToastMessageLong('Invalid Username or Password ', context, 1, 4);
           print('response is not success');
 
-          print(
-              'Failed to send the request. Status code: ${response.statusCode}');
+          print('Failed to send the request. Status code: ${response.statusCode}');
         }
       } catch (e) {
         print('Error: $e');
@@ -185,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
     ;
   }
 
-  Future<void> empolyelogin(String empolyeid) async {
+  Future<void> empolyelogin(String empolyeid, String isfirst_time, String userid) async {
     try {
       final url = Uri.parse(baseUrl + getselfempolyee + empolyeid);
       print('SelfEmpolyeeUrl: $url');
@@ -203,20 +192,30 @@ class _LoginPageState extends State<LoginPage> {
         fetchLookupKeys();
         // Save the response data to shared preferences
         final Map<String, dynamic> responseData = json.decode(response.body);
+
         //await AuthService.saveSecondApiResponse(responseData);
         print('Savedresponse: ${responseData}');
         await SharedPreferencesHelper.saveCategories(responseData);
-        SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
+
+        if (isfirst_time == 'True') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => security_questionsscreen(
+                      userid: '$userid',
+                    )),
+          );
+        } else if (isfirst_time == 'False') {
+          SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => home_screen()),
+          );
+        }
+
         // Navigate to the home screen
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => home_screen()),
-        );
       } else {
-        Commonutils.showCustomToastMessageLong(
-            'Error  ${response.statusCode}', context, 1, 4);
+        Commonutils.showCustomToastMessageLong('Error  ${response.statusCode}', context, 1, 4);
         print('response is not success');
-        print(
-            'Failed to send the request. Status code: ${response.statusCode}');
+        print('Failed to send the request. Status code: ${response.statusCode}');
         // Handle error scenarios
       }
     } catch (e) {
@@ -292,13 +291,11 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Color(0xFFf15f22),
                                 fontSize: 26.0,
                                 fontFamily: 'Calibri',
-                                fontWeight: FontWeight
-                                    .bold, // Set the font weight to bold
+                                fontWeight: FontWeight.bold, // Set the font weight to bold
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(
-                                  top: 25.0, left: 40.0, right: 40.0),
+                              padding: EdgeInsets.only(top: 25.0, left: 40.0, right: 40.0),
                               child: TextFormField(
                                 ///     keyboardType: TextInputType.name,
 
@@ -326,8 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.black26, // Label text color
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 15),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                                   alignLabelWithHint: true,
                                 ),
                                 textAlign: TextAlign.start,
@@ -339,8 +335,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(
-                                  top: 20.0, left: 40.0, right: 40.0),
+                              padding: EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
                               child: TextFormField(
                                 // keyboardType: TextInputType.phone,
 
@@ -370,14 +365,11 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.black26, // Label text color
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 15),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                                   alignLabelWithHint: true,
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscureText
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
+                                      _obscureText ? Icons.visibility_off : Icons.visibility,
                                       color: Colors.black,
                                     ),
                                     onPressed: () {
@@ -398,18 +390,14 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(
-                                  top: 6.0, left: 45.0, right: 43.0),
+                              padding: EdgeInsets.only(top: 6.0, left: 45.0, right: 43.0),
                               child: GestureDetector(
                                 onTap: _loadNextPage,
                                 child: Container(
                                   width: double.infinity,
                                   child: Text(
                                     'Forgot Password?',
-                                    style: TextStyle(
-                                        color: Color(0xFFf15f22),
-                                        fontSize: 14,
-                                        fontFamily: 'Calibri'),
+                                    style: TextStyle(color: Color(0xFFf15f22), fontSize: 14, fontFamily: 'Calibri'),
                                   ),
                                 ),
                               ),
@@ -438,8 +426,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             // Login Button
                             Padding(
-                              padding: EdgeInsets.only(
-                                  top: 35.0, left: 40.0, right: 40.0),
+                              padding: EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
                               child: Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
@@ -452,11 +439,8 @@ class _LoginPageState extends State<LoginPage> {
                                     validate();
                                   },
                                   child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontFamily: 'Calibri'),
+                                    'SignIn',
+                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     primary: Colors.transparent,
@@ -499,8 +483,7 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       // If the server did not return a 200 OK response,
       // throw an exception.
-      throw Exception(
-          'Failed to load Lookup Keys. Status Code: ${response.statusCode}');
+      throw Exception('Failed to load Lookup Keys. Status Code: ${response.statusCode}');
     }
   }
 
