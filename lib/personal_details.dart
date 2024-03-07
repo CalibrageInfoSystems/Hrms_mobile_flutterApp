@@ -13,6 +13,8 @@ import 'api config.dart';
 import 'home_screen.dart';
 
 class personal_details extends StatefulWidget {
+  // final String logintime;
+  // personal_details({required this.logintime});
   @override
   _personal_screen_screenState createState() => _personal_screen_screenState();
 }
@@ -31,9 +33,11 @@ class _personal_screen_screenState extends State<personal_details> {
   String? Gender;
   String photoData = "";
   String empolyeid = '';
+  String accessToken = '';
   String? Dateofjoining;
   String? formatteddateofjoining;
   DateTime? dateofjoin;
+  String? logintime;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -45,10 +49,32 @@ class _personal_screen_screenState extends State<personal_details> {
         print('The Internet Is Connected');
         _loademployeresponse();
         loademployeeimage();
+        loadAccessToken();
+        getLoginTime();
+        //  _checkLoginTime();
       } else {
         print('The Internet Is not  Connected');
       }
     });
+  }
+
+  // Future<String> getLoginTime() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('loginTime') ?? 'Unknown';
+  // }
+  Future<String?> getLoginTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    logintime = prefs.getString('loginTime') ?? 'Unknown';
+    print('Login Time: $logintime');
+    return logintime;
+  }
+
+  Future<void> loadAccessToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      accessToken = prefs.getString("accessToken") ?? "";
+    });
+    print("accestokeninpersonaldetails:$accessToken");
   }
 
   void _loademployeresponse() async {
@@ -143,8 +169,114 @@ class _personal_screen_screenState extends State<personal_details> {
     }
   }
 
+  void _showtimeoutdialog(BuildContext context) {
+    showDialog(
+      // barrierDismissible: false,
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Session Time Out",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "Invalid Token",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "PLease Login Again",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    //width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [],
+                    ),
+                  )
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Ok',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFFf15f22), // Change to your desired background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Set border radius
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // void _checkLoginTime() {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     DateTime currentTime = DateTime.now();
+  //     DateTime formattedLoginTime = DateTime.parse(logintime!);
+  //
+  //     Duration timeDifference = currentTime.difference(formattedLoginTime);
+  //
+  //     if (timeDifference.inSeconds > 3600) {
+  //       _showtimeoutdialog(context);
+  //     }
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // DateTime currentTime = DateTime.now();
+    // DateTime formattedlogintime = DateTime.parse(logintime!);
+    // // Replace this with your actual login time
+    // DateTime loginTime = formattedlogintime /* Replace with your login time */;
+    //
+    // // Calculate the time difference
+    // Duration timeDifference = currentTime.difference(loginTime);
+    //
+    // // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+    // if (timeDifference.inSeconds <= 3600) {
+    //   // Login is within the allowed window
+    //
+    //   print("Login is within 1 hour of current time.");
+    // } else {
+    //   // Login is outside the allowed window
+    //   _showtimeoutdialog(context);
+    //   print("Login is more than 1 hour from current time.");
+    //   return Container(
+    //     child: Text('this is a sample text'),
+    //   );
+    // }
     return WillPopScope(
         onWillPop: () async {
           Navigator.of(context).pushReplacement(
@@ -707,7 +839,13 @@ class _personal_screen_screenState extends State<personal_details> {
     // final response = await http.get('http://182.18.157.215/HRMS/API/hrmsapi/Employee/GetEmployeePhoto/91');
     final url = Uri.parse(baseUrl + GetEmployeePhoto + '$empolyeid');
     print('loademployeeimage  $url');
-    final response = await http.get((url));
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      },
+    );
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       setState(() {

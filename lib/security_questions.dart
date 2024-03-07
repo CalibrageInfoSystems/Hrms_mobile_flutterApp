@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/Model%20Class/login%20model%20class.dart';
+import 'package:hrms/changepassword.dart';
 import 'package:hrms/home_screen.dart';
 import 'package:hrms/questions_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Commonutils.dart';
 import 'Constants.dart';
@@ -16,10 +18,13 @@ import 'api config.dart';
 import 'main.dart';
 
 class security_questionsscreen extends StatefulWidget {
+//  final String userid;
+
+  // security_questionsscreen({required this.userid});
+  final String newpassword;
+  final String confirmpassword;
   final String userid;
-
-  security_questionsscreen({required this.userid});
-
+  security_questionsscreen({required this.newpassword, required this.confirmpassword, required this.userid});
   @override
   _securityscreenscreenState createState() => _securityscreenscreenState();
 }
@@ -33,7 +38,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   int selectedValue = 0;
   late String selectedName;
   List<dynamic> responseData = [];
-
+  String accessToken = '';
   List<int> answeredQuestionIds = [];
   List<int> deletedQuestionIndices = [];
 
@@ -71,6 +76,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
     super.initState();
     print('useridinsecurityquestionscree:${widget.userid}');
     fetchQuestions();
+    loadAccessToken();
   }
 
   @override
@@ -80,7 +86,12 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
     return WillPopScope(
         onWillPop: () async {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(
+                builder: (context) => ChangePasword(
+                      newpassword: '${widget.newpassword}',
+                      confirmpassword: '${widget.confirmpassword}',
+                      userid: '${widget.userid}',
+                    )),
           ); // Navigate to the previous screen
           return true; // Prevent default back navigation behavior
         },
@@ -380,8 +391,14 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                   InkWell(
                     onTap: () {
                       // Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                      Navigator.of(context, rootNavigator: true).pop(context);
+                      //  Navigator.of(context).pop();
+                      //   Navigator.of(context, rootNavigator: true).pop(context);
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => security_questionsscreen(
+                                newpassword: '${widget.newpassword}',
+                                confirmpassword: '${widget.confirmpassword}',
+                                userid: '${widget.userid}',
+                              )));
                     },
                     child: Icon(
                       CupertinoIcons.multiply,
@@ -626,64 +643,136 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   //   }
   // }
 
+  // Future<void> sendingQuestion() async {
+  //   try {
+  //     final url = Uri.parse(baseUrl + sendingquestionapi);
+  //     print('Sending questions API: $url');
+  //     if (selectedQuestionsAndAnswers.length < 2) {
+  //       // Show an error message or handle the case where the size is less than 2
+  //       print('Error: At least 2 questions and answers are required.');
+  //       Commonutils.showCustomToastMessageLong('Please Answer Atleast Two Questions', context, 1, 4);
+  //       return;
+  //     }
+  //
+  //     List<Map<String, dynamic>> requestBodies = [];
+  //
+  //     for (int index = 0; index < selectedQuestionsAndAnswers.length; index++) {
+  //       final selectedQuestion = selectedQuestionsAndAnswers[index];
+  //       final questionId = selectedQuestion['questionId'];
+  //       final questionText = selectedQuestion['question'];
+  //       final answer = selectedQuestion['answer'];
+  //
+  //       Map<String, dynamic> requestBody = {
+  //         "userQuestionId": 0, // Assuming this value needs to be set
+  //         //   "userId": "${widget.userid}",
+  //         "questionId": questionId,
+  //         "answer": answer,
+  //       };
+  //
+  //       requestBodies.add(requestBody);
+  //     }
+  //
+  //     // Encode the list of request bodies as JSON
+  //     String requestBodyJson = jsonEncode(requestBodies);
+  //     print('requestBodyJson$requestBodyJson');
+  //     // Send the POST request with the JSON body
+  //     final response = await http.post(
+  //       url,
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: requestBodyJson,
+  //     );
+  //
+  //     print('Response: ${response.body}');
+  //
+  //     // Check the response status code
+  //     if (response.statusCode == 200) {
+  //       // Handle successful response
+  //       Commonutils.showCustomToastMessageLong('Questions Added Successfully', context, 0, 4);
+  //       SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
+  //       Navigator.of(context).pushReplacement(
+  //         MaterialPageRoute(builder: (context) => home_screen()),
+  //       );
+  //     } else {
+  //       // Handle error scenarios
+  //       Commonutils.showCustomToastMessageLong('Error ${response.statusCode}', context, 1, 4);
+  //       print('Failed to send the request. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     // Handle any errors that occur during the process
+  //     print('Error: $e');
+  //     Commonutils.showCustomToastMessageLong('Error: $e', context, 1, 4);
+  //   }
+  // }
+  Future<void> loadAccessToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      accessToken = prefs.getString("accessToken") ?? "";
+    });
+    print("accestokeninsecurity:$accessToken");
+  }
+
   Future<void> sendingQuestion() async {
     try {
-      final url = Uri.parse(baseUrl + sendingquestionapi);
-      print('Sending questions API: $url');
+      final url = Uri.parse(baseUrl + addquestionsuser);
+      print('addquestionstouser $url');
       if (selectedQuestionsAndAnswers.length < 2) {
-        // Show an error message or handle the case where the size is less than 2
         print('Error: At least 2 questions and answers are required.');
         Commonutils.showCustomToastMessageLong('Please Answer Atleast Two Questions', context, 1, 4);
         return;
       }
 
-      List<Map<String, dynamic>> requestBodies = [];
+      List<Map<String, dynamic>> userAnswers = [];
 
       for (int index = 0; index < selectedQuestionsAndAnswers.length; index++) {
         final selectedQuestion = selectedQuestionsAndAnswers[index];
         final questionId = selectedQuestion['questionId'];
-        final questionText = selectedQuestion['question'];
         final answer = selectedQuestion['answer'];
 
-        Map<String, dynamic> requestBody = {
-          "userQuestionId": 0, // Assuming this value needs to be set
-          "userId": "${widget.userid}",
+        Map<String, dynamic> userAnswer = {
+          "userId": widget.userid,
           "questionId": questionId,
           "answer": answer,
         };
 
-        requestBodies.add(requestBody);
+        userAnswers.add(userAnswer);
       }
 
-      // Encode the list of request bodies as JSON
-      String requestBodyJson = jsonEncode(requestBodies);
-      print('requestBodyJson$requestBodyJson');
-      // Send the POST request with the JSON body
+      // Construct the request body JSON
+      Map<String, dynamic> requestBody = {
+        "password": "${widget.newpassword}",
+        "confirmPassword": "${widget.confirmpassword}",
+        "userAnswers": userAnswers,
+      };
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      };
+      // Encode the request body as JSON
+      String requestBodyJson = jsonEncode(requestBody);
+      print('requestBodyJson: $requestBodyJson');
+
       final response = await http.post(
         url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: headers,
         body: requestBodyJson,
       );
-
+      print('headers: ${headers}');
       print('Response: ${response.body}');
 
-      // Check the response status code
       if (response.statusCode == 200) {
-        // Handle successful response
-        Commonutils.showCustomToastMessageLong('Questions Added Successfully', context, 0, 4);
-        SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
+        Commonutils.showCustomToastMessageLong('Password Changed SuccessFully', context, 0, 4);
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => home_screen()),
+          MaterialPageRoute(builder: (context) => LoginPage()),
         );
+        // print('api is succeessfull');
+        // print('${response}');
       } else {
-        // Handle error scenarios
         Commonutils.showCustomToastMessageLong('Error ${response.statusCode}', context, 1, 4);
         print('Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      // Handle any errors that occur during the process
       print('Error: $e');
       Commonutils.showCustomToastMessageLong('Error: $e', context, 1, 4);
     }

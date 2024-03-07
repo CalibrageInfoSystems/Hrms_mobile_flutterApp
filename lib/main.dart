@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hrms/Model%20Class/login%20model%20class.dart';
 import 'package:hrms/Splash_screen.dart';
+import 'package:hrms/changepassword.dart';
 import 'package:hrms/custom_dialog.dart';
 import 'package:hrms/security_questions.dart';
 import 'package:hrms/security_screen.dart';
@@ -11,10 +12,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/home_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 
 import 'Commonutils.dart';
 import 'Constants.dart';
@@ -198,13 +199,25 @@ class _LoginPageState extends State<LoginPage> {
         await SharedPreferencesHelper.saveCategories(responseData);
 
         if (isfirst_time == 'True') {
+          // Navigator.of(context).pushReplacement(
+          //   MaterialPageRoute(
+          //       builder: (context) => security_questionsscreen(
+          //             userid: '$userid',
+          //           )),
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-                builder: (context) => security_questionsscreen(
+                builder: (context) => ChangePasword(
                       userid: '$userid',
+                      newpassword: '',
+                      confirmpassword: '',
                     )),
           );
         } else if (isfirst_time == 'False') {
+          DateTime loginTime = DateTime.now();
+          String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(loginTime);
+          print('formattedTimelogin:$formattedTime');
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('loginTime', formattedTime);
           SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => home_screen()),
@@ -439,7 +452,7 @@ class _LoginPageState extends State<LoginPage> {
                                     validate();
                                   },
                                   child: Text(
-                                    'SignIn',
+                                    'Sign In',
                                     style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -466,10 +479,40 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString("accessToken", token);
   }
 
-  Future<List<dynamic>> fetchLookupKeys() async {
-    final response = await http.get(Uri.parse(baseUrl + lookupkeys));
-    // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupKeys'));
-
+  // Future<List<dynamic>> fetchLookupKeys() async {
+  //   final response = await http.get(Uri.parse(baseUrl + lookupkeys));
+  //   // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupKeys'));
+  //
+  //   if (response.statusCode == 200) {
+  //     // Parse the JSON response
+  //     Map<String, dynamic> jsonData = json.decode(response.body);
+  //     Map<String, dynamic> lookups = jsonData['Lookups'];
+  //
+  //     // Save DayWorkStatus in SharedPreferences
+  //     saveDayWorkStatus(lookups['DayWorkStatus']);
+  //     saveLeaveReasons(lookups['LeaveReasons']);
+  //     // Return the entire response as a List<dynamic>
+  //     return json.decode(response.body);
+  //   } else {
+  //     // If the server did not return a 200 OK response,
+  //     // throw an exception.
+  //     throw Exception('Failed to load Lookup Keys. Status Code: ${response.statusCode}');
+  //   }
+  // }
+  Future<Map<String, dynamic>> fetchLookupKeys() async {
+    final url = Uri.parse(baseUrl + lookupkeys);
+    print('LookupdetailsApi: $url');
+    // Send the POST request
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      },
+    );
+    print('Lookupdetailsresponse:$response');
+    //  final response = await http.get(Uri.parse(baseUrl + lookupkeys));
+    // final url = Uri.parse(baseUrl + getlogin);
     if (response.statusCode == 200) {
       // Parse the JSON response
       Map<String, dynamic> jsonData = json.decode(response.body);
@@ -478,8 +521,9 @@ class _LoginPageState extends State<LoginPage> {
       // Save DayWorkStatus in SharedPreferences
       saveDayWorkStatus(lookups['DayWorkStatus']);
       saveLeaveReasons(lookups['LeaveReasons']);
-      // Return the entire response as a List<dynamic>
-      return json.decode(response.body);
+
+      // Return the entire response as a Map<String, dynamic>
+      return jsonData;
     } else {
       // If the server did not return a 200 OK response,
       // throw an exception.

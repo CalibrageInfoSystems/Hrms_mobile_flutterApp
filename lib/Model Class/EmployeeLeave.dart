@@ -6,10 +6,13 @@ class EmployeeLeave {
   final String leaveType;
   final String fromDate;
   final String? toDate;
+
   // final int leaveTypeId;
   // final int usedCLsInMonth;
   // final int usedPLsInMonth;
-//  final bool? rejected;
+  final bool? isHalfDayLeave;
+  final bool? isDeleted;
+
   // final String? acceptedAt;
   // final String? acceptedBy;
   // final String? approvedAt;
@@ -29,6 +32,8 @@ class EmployeeLeave {
     required this.leaveType,
     required this.fromDate,
     required this.toDate,
+    required this.isHalfDayLeave,
+    required this.isDeleted,
     // required this.leaveTypeId,
     // required this.usedCLsInMonth,
     // required this.usedPLsInMonth,
@@ -54,6 +59,8 @@ class EmployeeLeave {
       leaveType: json['leaveType'],
       fromDate: json['fromDate'],
       toDate: json['toDate'],
+      isHalfDayLeave: json['isHalfDayLeave'],
+      isDeleted: json['isDeleted'],
       // leaveTypeId: json['leaveTypeId'],
       // usedCLsInMonth: json['usedCLsInMonth'],
       // usedPLsInMonth: json['usedPLsInMonth'],

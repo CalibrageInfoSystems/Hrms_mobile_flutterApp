@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hrms/leave_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -9,11 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Commonutils.dart';
+import 'Constants.dart';
 import 'Model Class/LookupDetail.dart';
 import 'SharedPreferencesHelper.dart';
 import 'api config.dart';
 import 'apply_leave.dart';
 import 'home_screen.dart';
+import 'main.dart';
 
 class leaves_screen extends StatefulWidget {
   @override
@@ -40,7 +43,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   double availablecls = 0.0;
   String accessToken = '';
   List<LookupDetail> lookupDetails = [];
-
+  String? logintime;
   int DayWorkStatus = 0;
   @override
   void initState() {
@@ -54,10 +57,118 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         loadAccessToken();
         _loademployeleaves();
         getDayWorkStatus();
+        getLoginTime();
       } else {
         print('The Internet Is not  Connected');
       }
     });
+  }
+
+  void onConfirmLogout() {
+    SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
+    Commonutils.showCustomToastMessageLong("Logout Successful", context, 0, 3);
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false,
+    );
+  }
+
+  Future<String?> getLoginTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    logintime = prefs.getString('loginTime') ?? 'Unknown';
+    print('Login Time: $logintime');
+    return logintime;
+  }
+
+  Future<void> deleteLoginTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('loginTime');
+  }
+
+  void _showtimeoutdialog(BuildContext context) {
+    showDialog(
+      // barrierDismissible: false,
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Column(
+                //mainAxisAlignment: MainAxisAlignment.,
+                children: [
+                  Container(
+                    height: 50.0,
+                    width: 60.0,
+                    child: SvgPicture.asset(
+                      'assets/cislogo-new.svg',
+                      height: 120.0,
+                      width: 55.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 7.0,
+                  ),
+                  Text(
+                    "Session Time Out",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 3.0,
+                  ),
+                  Text(
+                    "Invalid Token",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 3.0,
+                  ),
+                  Text(
+                    "PLease Login Again",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Calibri',
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    deleteLoginTime();
+                    onConfirmLogout();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Ok',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFFf15f22), // Change to your desired background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Set border radius
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _loademployeleaves() async {
@@ -201,15 +312,33 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                             //  ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => apply_leave(
-                                      buttonName: "test", // Example button name
-                                      lookupDetailId: -3,
-                                      employename: '${EmployeName}', // Pass the lookupDetailId
+                                DateTime currentTime = DateTime.now();
+                                DateTime formattedlogintime = DateTime.parse(logintime!);
+                                // Replace this with your actual login time
+                                DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+                                // Calculate the time difference
+                                Duration timeDifference = currentTime.difference(loginTime);
+
+                                // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+                                if (timeDifference.inSeconds <= 3600) {
+                                  // Login is within the allowed window
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => apply_leave(
+                                        buttonName: "test", // Example button name
+                                        lookupDetailId: -3,
+                                        employename: '${EmployeName}', // Pass the lookupDetailId
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                  print("Login is within 1 hour of current time.");
+                                } else {
+                                  // Login is outside the allowed window
+                                  _showtimeoutdialog(context);
+                                  print("Login is more than 1 hour from current time.");
+                                }
+
                                 // Handle the apply button click event
                               },
                               style: ElevatedButton.styleFrom(
@@ -427,11 +556,29 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                       print("Container Clicked!");
 
                                       //  printLookupDetailId('PL');
-                                      if (availablepls <= 0) {
-                                        // Show a toast message
-                                        Commonutils.showCustomToastMessageLong('No PLs Available!', context, 1, 3);
+
+                                      DateTime currentTime = DateTime.now();
+                                      DateTime formattedlogintime = DateTime.parse(logintime!);
+                                      // Replace this with your actual login time
+                                      DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+                                      // Calculate the time difference
+                                      Duration timeDifference = currentTime.difference(loginTime);
+
+                                      // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+                                      if (timeDifference.inSeconds <= 3600) {
+                                        // Login is within the allowed window
+                                        if (availablepls <= 0) {
+                                          // Show a toast message
+                                          Commonutils.showCustomToastMessageLong('No PLs Available!', context, 1, 3);
+                                        } else {
+                                          printLookupDetailId('PL');
+                                        }
+                                        print("Login is within 1 hour of current time.");
                                       } else {
-                                        printLookupDetailId('PL');
+                                        // Login is outside the allowed window
+                                        _showtimeoutdialog(context);
+                                        print("Login is more than 1 hour from current time.");
                                       }
 
                                       // Navigator.of(context).pushReplacement(
@@ -661,11 +808,28 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                               ),
                               child: InkWell(
                                 onTap: () {
-                                  if (availablecls <= 0) {
-                                    // Show a toast message
-                                    Commonutils.showCustomToastMessageLong('No CLs Available!', context, 1, 3);
+                                  DateTime currentTime = DateTime.now();
+                                  DateTime formattedlogintime = DateTime.parse(logintime!);
+                                  // Replace this with your actual login time
+                                  DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+                                  // Calculate the time difference
+                                  Duration timeDifference = currentTime.difference(loginTime);
+
+                                  // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+                                  if (timeDifference.inSeconds <= 3600) {
+                                    // Login is within the allowed window
+                                    if (availablecls <= 0) {
+                                      // Show a toast message
+                                      Commonutils.showCustomToastMessageLong('No CLs Available!', context, 1, 3);
+                                    } else {
+                                      printLookupDetailId('CL');
+                                    }
+                                    print("Login is within 1 hour of current time.");
                                   } else {
-                                    printLookupDetailId('CL');
+                                    // Login is outside the allowed window
+                                    _showtimeoutdialog(context);
+                                    print("Login is more than 1 hour from current time.");
                                   }
                                   //  printLookupDetailId('CL');
                                 },
@@ -1027,18 +1191,37 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   Future<void> fetchDataleavetype(int dayWorkStatus) async {
     final url = Uri.parse(baseUrl + getdropdown + '$dayWorkStatus');
     print('fetchDataleavetype :${url}');
-    final response = await http.get((url));
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      },
+    );
 
     // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupDetails/44'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+    // if (response.statusCode == 200) {
+    //   List<dynamic> jsonData = json.decode(response.body);
+    //
+    //   setState(() {
+    //     lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
+    //   });
+    // } else {
+    //   Commonutils.showCustomToastMessageLong(' Error :  ${response.statusCode} ', context, 1, 3);
+    //   throw Exception('Failed to load data. Status Code: ${response.statusCode}');
+    // }
+    final dynamic jsonData = json.decode(response.body);
 
+// Check if jsonData is a List<dynamic>
+    if (jsonData is List<dynamic>) {
+      // If it's a list, process it as usual
       setState(() {
         lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
       });
     } else {
-      Commonutils.showCustomToastMessageLong(' Error :  ${response.statusCode} ', context, 1, 3);
-      throw Exception('Failed to load data. Status Code: ${response.statusCode}');
+      // If it's not a list, handle the single string case
+      // For example, you might want to display it or process it differently
+      print('Response is not a list: $jsonData');
     }
   }
 

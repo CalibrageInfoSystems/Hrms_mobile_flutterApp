@@ -161,25 +161,23 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                         } else {
                           leavetodate = leavefromdate;
                         }
-
+                        Color backgroundColor = leave.isDeleted == null || leave.isDeleted == false
+                            ? Color(0xFFfbf2ed) // Default color
+                            : Colors.grey.shade300;
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Color(0xFFfbf2ed),
+                              color: backgroundColor,
                               borderRadius: BorderRadius.circular(16.0),
                               border: Border.all(color: borderColor, width: 1.5),
                             ),
                             child: ListTile(
-                              // title: Text(
-                              //   '${leave.leaveType}',
-                              //   style: TextStyle(fontWeight: FontWeight.bold),
-                              // ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.only(top: 5.0, bottom: 4.0),
+                                    padding: EdgeInsets.only(top: 5.0, bottom: 0.0),
                                     child: Row(
                                       children: [
                                         Text(
@@ -227,6 +225,30 @@ class Myleaveslist_screenState extends State<Myleaveslist> {
                                             ),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Half Day Leave :',
+                                          style: TextStyle(
+                                            color: Color(0xFFf37345),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Calibri',
+                                          ),
+                                        ),
+                                        leave.isHalfDayLeave == null || leave.isHalfDayLeave == false
+                                            ? Icon(
+                                                Icons.close,
+                                                color: Colors.red,
+                                              )
+                                            : Icon(
+                                                Icons.check,
+                                                color: Colors.green,
+                                              ),
                                       ],
                                     ),
                                   ),

@@ -1071,7 +1071,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
       if (isPasswordValid(password2.trim())) {
         changepasswordapi(password2.trim());
       } else {
-        Commonutils.showCustomToastMessageLong('Password must Contain 1 Lowercase, 1 Uppercase, Numbers, Special Characters, and be Between 8 to 20 Characters in Length. Please Correct it.', context, 1, 6);
+        Commonutils.showCustomToastMessageLong('Password must Contain 1 Lowercase, 1 Uppercase, Numbers, Special Characters, and be Between 8 to 25 Characters in Length. Please Correct it.', context, 1, 6);
       }
     } else {
       setState(() {
@@ -1084,7 +1084,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
 
   bool isPasswordValid(String password) {
     // Password must contain 1 lowercase, 1 uppercase, numbers, special characters, and be between 8 to 20 characters in length.
-    RegExp passwordRegex = RegExp(r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,20}$');
+    RegExp passwordRegex = RegExp(r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,25}$');
     return passwordRegex.hasMatch(password);
   }
 

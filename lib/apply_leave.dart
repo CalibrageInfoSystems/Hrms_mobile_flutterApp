@@ -9,10 +9,12 @@ import 'package:hrms/leaves_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'Constants.dart';
 import 'Model Class/HolidayResponse.dart';
 import 'Model Class/LookupDetail.dart';
 import 'SharedPreferencesHelper.dart';
 import 'api config.dart';
+import 'main.dart';
 
 class apply_leave extends StatefulWidget {
   final String buttonName;
@@ -34,7 +36,7 @@ class _apply_leaveeState extends State<apply_leave> {
   TextEditingController _todateController = TextEditingController();
   TextEditingController _leavetext = TextEditingController();
   DateTime selectedDate = DateTime.now();
-
+  String? logintime;
   DateTime? selectedToDate;
   bool isButtonEnabled = true;
   bool isTodayHoliday = false;
@@ -68,7 +70,21 @@ class _apply_leaveeState extends State<apply_leave> {
     getleavereasonlookupid();
     _loademployeleaves();
     getDayWorkStatus();
+    getLoginTime();
+
     print('buttonName===${widget.buttonName}');
+  }
+
+  Future<String?> getLoginTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    logintime = prefs.getString('loginTime') ?? 'Unknown';
+    print('Login Time: $logintime');
+    return logintime;
+  }
+
+  Future<void> deleteLoginTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('loginTime');
   }
 
   void _loademployeleaves() async {
@@ -123,7 +139,7 @@ class _apply_leaveeState extends State<apply_leave> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       accessToken = prefs.getString("accessToken") ?? "";
-      fetchHolidayList(2023);
+      fetchHolidayList();
     });
     print("accestokeninapplyleave:$accessToken");
   }
@@ -136,6 +152,55 @@ class _apply_leaveeState extends State<apply_leave> {
     print("empolyeidinapplyleave:$empolyeid");
   }
 
+  // Future<void> _selectDate(bool isTodayHoliday) async {
+  //   setState(() {
+  //     _isTodayHoliday = isTodayHoliday;
+  //   });
+  //
+  //   DateTime initialDate = selectedDate;
+  //
+  //   // Adjust the initial date if it doesn't satisfy the selectableDayPredicate
+  //   if (_isTodayHoliday && initialDate.isBefore(DateTime.now())) {
+  //     initialDate = DateTime.now().add(const Duration(days: 1));
+  //   }
+  //
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialEntryMode: DatePickerEntryMode.calendarOnly,
+  //     initialDate: initialDate,
+  //     firstDate: DateTime(2023),
+  //     lastDate: DateTime(2125),
+  //     // Assuming you have a variable '_isTodayHoliday' indicating whether today is a holiday or not.
+  //
+  //     selectableDayPredicate: (DateTime date) {
+  //       print('Checking date: $date');
+  //       //  final isPastDate = date.isBefore(DateTime.now().subtract(Duration(days: 1)));
+  //
+  //       final saturday = date.weekday == DateTime.saturday; // Change to DateTime.sunday
+  //       final sunday = date.weekday == DateTime.sunday;
+  //
+  //       final isHoliday = holidayList.any((holiday) => date.year == holiday.fromDate.year && date.month == holiday.fromDate.month && date.day == holiday.fromDate.day);
+  //
+  //       // If today is a holiday and the selected date is a past date, allow selecting the holiday date
+  //       if (_isTodayHoliday && isHoliday) {
+  //         return true;
+  //       }
+  //
+  //       final isPreviousYear = date.year < DateTime.now().year;
+  //
+  //       // Return false if any of the conditions are met
+  //       return !saturday && !sunday && !isHoliday && !isPreviousYear && date.year >= DateTime.now().year;
+  //     },
+  //   );
+  //
+  //   if (pickedDate != null) {
+  //     setState(() {
+  //       selectedDate = pickedDate;
+  //       _fromdateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
+  //       //  onDateSelected(pickedDate);
+  //     });
+  //   }
+  // }
   Future<void> _selectDate(bool isTodayHoliday) async {
     setState(() {
       _isTodayHoliday = isTodayHoliday;
@@ -148,42 +213,36 @@ class _apply_leaveeState extends State<apply_leave> {
       initialDate = DateTime.now().add(const Duration(days: 1));
     }
 
+    // Find the next selectable date after the initialDate
+    while (!selectableDayPredicate(initialDate)) {
+      initialDate = initialDate.add(const Duration(days: 1));
+    }
+
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: initialDate,
-      firstDate: DateTime(2023),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2125),
-      // Assuming you have a variable '_isTodayHoliday' indicating whether today is a holiday or not.
-
-      selectableDayPredicate: (DateTime date) {
-        print('Checking date: $date');
-        //  final isPastDate = date.isBefore(DateTime.now().subtract(Duration(days: 1)));
-
-        final saturday = date.weekday == DateTime.saturday; // Change to DateTime.sunday
-        final sunday = date.weekday == DateTime.sunday;
-
-        final isHoliday = holidayList.any((holiday) => date.year == holiday.fromDate.year && date.month == holiday.fromDate.month && date.day == holiday.fromDate.day);
-
-        // If today is a holiday and the selected date is a past date, allow selecting the holiday date
-        if (_isTodayHoliday && isHoliday) {
-          return true;
-        }
-
-        final isPreviousYear = date.year < DateTime.now().year;
-
-        // Return false if any of the conditions are met
-        return !saturday && !sunday && !isHoliday && !isPreviousYear && date.year >= DateTime.now().year;
-      },
+      selectableDayPredicate: selectableDayPredicate,
     );
 
     if (pickedDate != null) {
       setState(() {
         selectedDate = pickedDate;
         _fromdateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
-        //  onDateSelected(pickedDate);
       });
     }
+  }
+
+  bool selectableDayPredicate(DateTime date) {
+    final saturday = date.weekday == DateTime.saturday;
+    final sunday = date.weekday == DateTime.sunday;
+
+    final isHoliday = holidayList.any((holiday) => date.year == holiday.fromDate.year && date.month == holiday.fromDate.month && date.day == holiday.fromDate.day);
+
+    // Return false if any of the conditions are met
+    return !saturday && !sunday && !isHoliday && date.isAfter(DateTime.now());
   }
 
   Future<void> _selectToDate() async {
@@ -275,6 +334,18 @@ class _apply_leaveeState extends State<apply_leave> {
     });
   }
 
+  void onConfirmLogout() {
+    SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
+    Commonutils.showCustomToastMessageLong("Logout Successful", context, 0, 3);
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => LoginPage()));
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false,
+    );
+  }
+
   Future<void> applyleave() async {
     bool isValid = true;
     bool hasValidationFailed = false;
@@ -286,7 +357,7 @@ class _apply_leaveeState extends State<apply_leave> {
     else if (selectedToDate != null) todate = DateFormat('yyyy-MM-dd').format(selectedToDate!);
 
     print('tosendfromdate:$fromdate');
-    print('tosendfromdate:$todate');
+    print('tosendtodate:$todate');
     if (widget.buttonName == "test") if (isValid && selectedleaveValue == 0) {
       Commonutils.showCustomToastMessageLong('Please Select Leave Type', context, 1, 4);
       isValid = false;
@@ -364,6 +435,24 @@ class _apply_leaveeState extends State<apply_leave> {
       print('Not connected to the internet');
     }
     print('====>$selectedleaveName');
+    DateTime currentTime = DateTime.now();
+    DateTime formattedlogintime = DateTime.parse(logintime!);
+    // Replace this with your actual login time
+    DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+    // Calculate the time difference
+    Duration timeDifference = currentTime.difference(loginTime);
+
+    // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+    if (timeDifference.inSeconds <= 3600) {
+      // Login is within the allowed window
+
+      print("Login is within 1 hour of current time.");
+    } else {
+      // Login is outside the allowed window
+      // _showtimeoutdialog(context);
+      print("Login is more than 1 hour from current time.");
+    }
     if (isValid) {
       isLoading = true;
       try {
@@ -457,6 +546,7 @@ class _apply_leaveeState extends State<apply_leave> {
                 );
               }
             } else {
+              Commonutils.showCustomToastMessageLong('${responseMap['message']}', context, 1, 4);
               print('Apply Leave Failed: ${response.body}');
             }
           } else {
@@ -628,13 +718,16 @@ class _apply_leaveeState extends State<apply_leave> {
                                     onChanged: (value) {
                                       setState(() {
                                         selectedleaveTypeId = value!;
-                                        print('selectedTypeCdId==$selectedleaveTypeId');
+                                        print('selectedleaveTypeId==$selectedleaveTypeId');
                                         if (selectedleaveTypeId != -1) {
                                           LookupDetail selectedDetail = lookupDetails.firstWhere((item) => item.lookupDetailId == selectedleaveTypeId);
                                           print("selectedDetail$selectedDetail");
                                           selectedleaveValue = selectedDetail.lookupDetailId;
                                           selectedleaveName = selectedDetail.name;
-
+                                          selectedTypeCdId = -1;
+                                          _fromdateController.clear();
+                                          _todateController.clear();
+                                          _leavetext.clear();
                                           print("selectedleaveValue==========>$selectedleaveValue");
                                           print("selectedleaveName: $selectedleaveName");
                                           if (selectedleaveName == 'WFH') {
@@ -888,6 +981,7 @@ class _apply_leaveeState extends State<apply_leave> {
                                   fontWeight: FontWeight.w300,
                                 ),
                                 maxLines: null,
+                                maxLength: 256,
                                 // Set maxLines to null for multiline input
                                 decoration: InputDecoration(
                                   hintText: hintText,
@@ -952,11 +1046,14 @@ class _apply_leaveeState extends State<apply_leave> {
         ));
   }
 
-  Future<void> fetchHolidayList(int year) async {
+  Future<void> fetchHolidayList() async {
+    int currentYear = DateTime.now().year;
+    print('Currentyearinapplyleave: $currentYear');
+
     // final url = Uri.parse(
     //     'http://182.18.157.215/SaloonApp/API/GetHolidayListByBranchId/$branchId');
-    final url = Uri.parse(baseUrl + GetHolidayList + '$year');
-    print('url========>: $url');
+    final url = Uri.parse(baseUrl + GetHolidayList + '$currentYear');
+    print('urlholidaylistapi: $url');
     print('API headers:1 $accessToken');
     try {
       Map<String, String> headers = {
@@ -1056,16 +1153,42 @@ class _apply_leaveeState extends State<apply_leave> {
     }
   }
 
-  Future<void> getleavereasontype(int leavereasonlookupid, int lookupDetailId) async {
-    final url = Uri.parse(baseUrl + getdropdown + '$leavereasonlookupid' + '/$lookupDetailId');
-    print('leave reson $url');
-    final response = await http.get((url));
+  // Future<void> getleavereasontype(int leavereasonlookupid, int lookupDetailId) async {
+  //   final url = Uri.parse(baseUrl + getdropdown + '$leavereasonlookupid' + '/$lookupDetailId');
+  //   print('leave reson $url');
+  //   final response = await http.get((url));
+  //   // final url =  Uri.parse(baseUrl+GetHolidayListByBranchId+'$branchId');
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     setState(() {
+  //       dropdownItems = data;
+  //     });
+  //   } else {
+  //     print('Failed to fetch data');
+  //   }
+  // }
+  Future<void> getleavereasontype(int leaveReasonLookupId, int lookupDetailId) async {
+    final url = Uri.parse(baseUrl + getdropdown + '$leaveReasonLookupId' + '/$lookupDetailId');
+    print('leave reason $url');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      },
+    );
+    // final response = await http.get(url); // Removed extra parentheses
     // final url =  Uri.parse(baseUrl+GetHolidayListByBranchId+'$branchId');
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        dropdownItems = data;
-      });
+      final dynamic responseData = json.decode(response.body); // Parse response
+      if (responseData is List<dynamic>) {
+        // Check if response is a list
+        setState(() {
+          dropdownItems = responseData; // Assign parsed data to dropdownItems
+        });
+      } else {
+        print('Response is not in expected format');
+      }
     } else {
       print('Failed to fetch data');
     }
@@ -1103,16 +1226,27 @@ class _apply_leaveeState extends State<apply_leave> {
   Future<void> fetchDataleavetype(int dayWorkStatus) async {
     final url = Uri.parse(baseUrl + getdropdown + '$dayWorkStatus');
     print('fetchDataleavetype :${url}');
-    final response = await http.get((url));
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$accessToken',
+      },
+    );
 
-    // final response = await http.get(Uri.parse('http://182.18.157.215/HRMS/API/hrmsapi/Lookup/LookupDetails/44'));
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+      final dynamic jsonData = json.decode(response.body);
 
-      setState(() {
-        lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
-      });
+      if (jsonData is List<dynamic>) {
+        setState(() {
+          lookupDetails = jsonData.map((data) => LookupDetail.fromJson(data)).toList();
+        });
+      } else {
+        print('Unexpected response format: $jsonData');
+        throw Exception('Failed to load data. Unexpected response format.');
+      }
     } else {
+      print('HTTP error: ${response.statusCode}');
       throw Exception('Failed to load data. Status Code: ${response.statusCode}');
     }
   }

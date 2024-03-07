@@ -95,8 +95,7 @@ class _home_screenState extends State<home_screen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => Myleaveslist()),
+                          MaterialPageRoute(builder: (context) => Myleaveslist()),
                         );
                       },
                     ),
@@ -134,18 +133,13 @@ class _home_screenState extends State<home_screen> {
                     currentTab = 0;
                   });
                 },
-                backgroundColor:
-                    Color(0xFFf15f22), // Set the background color to orange
+                backgroundColor: Color(0xFFf15f22), // Set the background color to orange
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.white,
-                      width: 3.0), // Set border color and width
-                  borderRadius:
-                      BorderRadius.circular(60), // Adjust the radius as needed
+                  side: BorderSide(color: Colors.white, width: 3.0), // Set border color and width
+                  borderRadius: BorderRadius.circular(60), // Adjust the radius as needed
                 ),
               ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: BottomAppBar(
                 height: 58,
                 shape: CircularNotchedRectangle(),
@@ -180,18 +174,14 @@ class _home_screenState extends State<home_screen> {
                                       padding: EdgeInsets.all(14.0),
                                       child: SvgPicture.asset(
                                         'assets/2560114.svg', // Replace with the actual path to your SVG icon
-                                        height:
-                                            20, // Adjust the height as needed
+                                        height: 20, // Adjust the height as needed
                                         width: 20, // Adjust the width as needed
                                         color: Color(0xFFf15f22),
                                       ),
                                     ),
                                     const Text(
                                       "Projects",
-                                      style: TextStyle(
-                                          color: Color(0xFFf15f22),
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Calibri'),
+                                      style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
                                     ),
                                   ],
                                 ),
@@ -202,9 +192,7 @@ class _home_screenState extends State<home_screen> {
                                 width: 90,
                                 height: 4,
                                 child: Container(
-                                  color: currentTab == 1
-                                      ? Color(0xFFf15f22)
-                                      : Colors.transparent,
+                                  color: currentTab == 1 ? Color(0xFFf15f22) : Colors.transparent,
                                 ),
                               ),
                             ],
@@ -228,18 +216,14 @@ class _home_screenState extends State<home_screen> {
                                       padding: EdgeInsets.all(13.0),
                                       child: SvgPicture.asset(
                                         'assets/leave_8.svg', // Replace with the actual path to your SVG icon
-                                        height:
-                                            22, // Adjust the height as needed
+                                        height: 22, // Adjust the height as needed
                                         width: 20, // Adjust the width as needed
                                         color: Color(0xFFf15f22),
                                       ),
                                     ),
                                     const Text(
                                       "Leaves",
-                                      style: TextStyle(
-                                          color: Color(0xFFf15f22),
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Calibri'),
+                                      style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
                                     ),
                                   ],
                                 ),
@@ -249,9 +233,7 @@ class _home_screenState extends State<home_screen> {
                                   width: 90,
                                   height: 4,
                                   child: Container(
-                                    color: currentTab == 2
-                                        ? Color(0xFFf15f22)
-                                        : Colors.transparent,
+                                    color: currentTab == 2 ? Color(0xFFf15f22) : Colors.transparent,
                                   ),
                                 ),
                               ],
