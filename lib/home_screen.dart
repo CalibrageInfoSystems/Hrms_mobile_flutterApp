@@ -1,16 +1,17 @@
-import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/Commonutils.dart';
+import 'package:hrms/Notifications_screen.dart';
 import 'package:hrms/SharedPreferencesHelper.dart';
 import 'package:hrms/personal_details.dart';
 import 'package:hrms/projects_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Constants.dart';
+
 import 'Myleaveslist.dart';
+import 'Resginaton_request.dart';
+import 'feedback_Screen.dart';
 import 'leaves_screen.dart';
 import 'main.dart';
 
@@ -19,13 +20,21 @@ import 'main.dart';
 // const AVATAR_DIAMETER = AVATAR_RADIUS * 2.5;
 
 class home_screen extends StatefulWidget {
+  const home_screen({super.key});
+
   @override
   _home_screenState createState() => _home_screenState();
 }
 
-class _home_screenState extends State<home_screen> {
+class _home_screenState extends State<home_screen> with SingleTickerProviderStateMixin {
   int currentTab = 0;
   bool islogin = false;
+  final FocusNode _projectsFocusNode = FocusNode();
+  final FocusNode _leavesFocusNode = FocusNode();
+
+  late AnimationController _animationController;
+  late Animation<double> scalAnimation;
+  late Animation<double> animation;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -56,18 +65,36 @@ class _home_screenState extends State<home_screen> {
             home: Scaffold(
               appBar: AppBar(
                 elevation: 0,
-                backgroundColor: Color(0xFFf15f22),
-                title: Text(
+                backgroundColor: const Color(0xFFf15f22),
+                title: const Text(
                   'HRMS',
                   style: TextStyle(color: Colors.white),
                 ),
                 centerTitle: true,
+                actions: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Notifications()),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.notification_important,
+                      //  size: 15.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15.0,
+                  )
+                ],
               ),
               drawer: Drawer(
                 child: ListView(
                   children: [
                     DrawerHeader(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           // Remove the DecorationImage with AssetImage
                           ),
                       child: SvgPicture.asset(
@@ -85,7 +112,7 @@ class _home_screenState extends State<home_screen> {
                         fit: BoxFit.contain,
                         color: Colors.black,
                       ),
-                      title: Text(
+                      title: const Text(
                         'My Leaves',
                         style: TextStyle(
                           color: Colors.black,
@@ -95,14 +122,84 @@ class _home_screenState extends State<home_screen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Myleaveslist()),
+                          MaterialPageRoute(builder: (context) => const Myleaveslist()),
                         );
                       },
                     ),
-
                     ListTile(
-                      leading: Icon(Icons.logout), // Change the icon as needed
-                      title: Text(
+                      leading: const Icon(Icons.star), // Change the icon as needed
+                      title: const Text(
+                        'Feedback',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'hind_semibold',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const feedback_Screen()),
+                        );
+                        // Handle the onTap action for Logout
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.notification_important,
+                        color: Colors.black,
+                        weight: 20,
+                      ),
+                      // SvgPicture.asset(
+                      //   'assets/atten.svg',
+                      //   width: 20,
+                      //   height: 20,
+                      //   fit: BoxFit.contain,
+                      //   color: Colors.black,
+                      // ),
+                      title: const Text(
+                        'Notifications',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'hind_semibold',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Notifications()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.copy,
+                        color: Colors.black,
+                        weight: 20,
+                      ),
+                      // SvgPicture.asset(
+                      //   'assets/atten.svg',
+                      //   width: 20,
+                      //   height: 20,
+                      //   fit: BoxFit.contain,
+                      //   color: Colors.black,
+                      // ),
+                      title: const Text(
+                        'Resignation Request',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'hind_semibold',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Resgination_req()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.logout), // Change the icon as needed
+                      title: const Text(
                         'Logout',
                         style: TextStyle(
                           color: Colors.black,
@@ -121,6 +218,16 @@ class _home_screenState extends State<home_screen> {
               body: _buildBody(),
               floatingActionButton: FloatingActionButton(
                 elevation: 0,
+                onPressed: () {
+                  setState(() {
+                    currentTab = 0;
+                  });
+                },
+                backgroundColor: const Color(0xFFf15f22), // Set the background color to orange
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(color: Colors.white, width: 3.0), // Set border color and width
+                  borderRadius: BorderRadius.circular(60), // Adjust the radius as needed
+                ),
                 //   mini: true,
                 child: Image.asset(
                   'assets/user_1.png',
@@ -128,118 +235,140 @@ class _home_screenState extends State<home_screen> {
                   height: 23,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  setState(() {
-                    currentTab = 0;
-                  });
-                },
-                backgroundColor: Color(0xFFf15f22), // Set the background color to orange
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.white, width: 3.0), // Set border color and width
-                  borderRadius: BorderRadius.circular(60), // Adjust the radius as needed
-                ),
               ),
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: BottomAppBar(
                 height: 58,
-                shape: CircularNotchedRectangle(),
-                padding: EdgeInsets.only(bottom: 10.0),
+                shape: const CircularNotchedRectangle(),
+                padding: const EdgeInsets.only(bottom: 10.0),
                 notchMargin: currentTab == 0 ? 8 : 0,
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              currentTab = 1;
-                            });
-                          },
-                          // child: Container(
-                          // width: MediaQuery.of(context).size.width,
-
-                          child: Stack(
-                            children: [
-                              GestureDetector(
+                        InkWell(
+                            onTap: () {
+                              setState(() {
+                                currentTab = 1;
+                              });
+                              _projectsFocusNode.requestFocus();
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 3 / 1,
+                              //    padding: EdgeInsets.only(left: 25.0),
+                              margin: const EdgeInsets.only(left: 25.0),
+                              child: GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     currentTab = 1;
                                   });
+                                  _projectsFocusNode.requestFocus();
                                 },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(14.0),
-                                      child: SvgPicture.asset(
-                                        'assets/2560114.svg', // Replace with the actual path to your SVG icon
-                                        height: 20, // Adjust the height as needed
-                                        width: 20, // Adjust the width as needed
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                    const Text(
-                                      "Projects",
-                                      style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                    ),
-                                  ],
-                                ),
+                                // child: Container(
+                                // width: MediaQuery.of(context).size.width,
+
+                                child: Focus(
+                                    focusNode: _projectsFocusNode,
+                                    child: Stack(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              currentTab = 1;
+                                            });
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(14.0),
+                                                child: SvgPicture.asset(
+                                                  'assets/2560114.svg', // Replace with the actual path to your SVG icon
+                                                  height: 20, // Adjust the height as needed
+                                                  width: 20, // Adjust the width as needed
+                                                  color: const Color(0xFFf15f22),
+                                                ),
+                                              ),
+                                              const Text(
+                                                "Projects",
+                                                style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          width: MediaQuery.of(context).size.width / 3 / 1,
+                                          height: 4,
+                                          child: Container(
+                                            color: currentTab == 1 ? const Color(0xFFf15f22) : Colors.transparent,
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                                // ),
                               ),
-                              Positioned(
-                                top: 0,
-                                left: 15,
-                                width: 90,
-                                height: 4,
-                                child: Container(
-                                  color: currentTab == 1 ? Color(0xFFf15f22) : Colors.transparent,
-                                ),
-                              ),
-                            ],
-                          ),
-                          // ),
-                        ),
-                        SizedBox(width: 15.0),
-                        GestureDetector(
+                            )),
+
+                        // SizedBox(width: 10.0),
+                        InkWell(
                           onTap: () {
                             setState(() {
                               currentTab = 2;
                             });
+                            _leavesFocusNode.requestFocus();
                           },
                           child: Container(
-                            child: Stack(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(13.0),
-                                      child: SvgPicture.asset(
-                                        'assets/leave_8.svg', // Replace with the actual path to your SVG icon
-                                        height: 22, // Adjust the height as needed
-                                        width: 20, // Adjust the width as needed
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                    const Text(
-                                      "Leaves",
-                                      style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                  top: 0,
-                                  left: 15,
-                                  width: 90,
-                                  height: 4,
-                                  child: Container(
-                                    color: currentTab == 2 ? Color(0xFFf15f22) : Colors.transparent,
-                                  ),
-                                ),
-                              ],
+                            width: MediaQuery.of(context).size.width / 2.7 / 1,
+                            padding: const EdgeInsets.only(right: 15.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  currentTab = 2;
+                                });
+                                _leavesFocusNode.requestFocus();
+                              },
+                              child: Container(
+                                // padding: EdgeInsets.only(right: 20.0),
+                                child: Focus(
+                                    focusNode: _leavesFocusNode,
+                                    child: Stack(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(13.0),
+                                              child: SvgPicture.asset(
+                                                'assets/leave_8.svg', // Replace with the actual path to your SVG icon
+                                                height: 22, // Adjust the height as needed
+                                                width: 20, // Adjust the width as needed
+                                                color: const Color(0xFFf15f22),
+                                              ),
+                                            ),
+                                            const Text(
+                                              "Leaves",
+                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
+                                            ),
+                                          ],
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          width: MediaQuery.of(context).size.width / 2.5 / 1,
+                                          height: 4,
+                                          child: Container(
+                                            color: currentTab == 2 ? const Color(0xFFf15f22) : Colors.transparent,
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                              ),
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ],
@@ -251,14 +380,14 @@ class _home_screenState extends State<home_screen> {
   Widget _buildBody() {
     switch (currentTab) {
       case 0:
-        return personal_details();
+        return const personal_details();
       case 1:
-        return projects_screen();
+        return const projects_screen();
       case 2:
-        return leaves_screen();
+        return const leaves_screen();
 
       default:
-        return home_screen();
+        return const home_screen();
       //return Container();
     }
   }
@@ -268,21 +397,21 @@ class _home_screenState extends State<home_screen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Logout'),
-          content: Text('Are you sure you want to Logout?'),
+          title: const Text('Logout'),
+          content: const Text('Are You Sure You Want to Logout?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 onConfirmLogout(); // Perform logout action
               },
-              child: Text('Logout'),
+              child: const Text('Logout'),
             ),
           ],
         );
@@ -292,12 +421,12 @@ class _home_screenState extends State<home_screen> {
 
   void onConfirmLogout() {
     SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
-    Commonutils.showCustomToastMessageLong("Logout Successful", context, 0, 3);
+    Commonutils.showCustomToastMessageLong("Logout Successfully", context, 0, 3);
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => LoginPage()));
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
       (route) => false,
     );
   }

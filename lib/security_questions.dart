@@ -3,17 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hrms/Model%20Class/login%20model%20class.dart';
 import 'package:hrms/changepassword.dart';
-import 'package:hrms/home_screen.dart';
 import 'package:hrms/questions_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Commonutils.dart';
-import 'Constants.dart';
-import 'SharedPreferencesHelper.dart';
 import 'api config.dart';
 import 'main.dart';
 
@@ -24,7 +19,7 @@ class security_questionsscreen extends StatefulWidget {
   final String newpassword;
   final String confirmpassword;
   final String userid;
-  security_questionsscreen({required this.newpassword, required this.confirmpassword, required this.userid});
+  const security_questionsscreen({super.key, required this.newpassword, required this.confirmpassword, required this.userid});
   @override
   _securityscreenscreenState createState() => _securityscreenscreenState();
 }
@@ -48,12 +43,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
   String? selectedQuestion;
   questionmodel? selectedquestionmodel;
   int? selectedQuestionId; // Initialize selectedQuestionId with null
-  TextEditingController answercontroller = new TextEditingController();
+  TextEditingController answercontroller = TextEditingController();
 
   Future<void> fetchQuestions() async {
-    String apiUrl = 'http://182.18.157.215/HRMS/API/hrmsapi/Security/SecureQuestions';
-
-    final response = await http.get(Uri.parse(apiUrl));
+    //  String apiUrl = 'http://182.18.157.215/HRMS/API/hrmsapi/Security/SecureQuestions';
+    final response = await http.get(Uri.parse(baseUrl + fetchquestion));
+    print('url>>>$response');
+    // final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
       // setState(() {
@@ -88,9 +84,9 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
                 builder: (context) => ChangePasword(
-                      newpassword: '${widget.newpassword}',
-                      confirmpassword: '${widget.confirmpassword}',
-                      userid: '${widget.userid}',
+                      newpassword: widget.newpassword,
+                      confirmpassword: widget.confirmpassword,
+                      userid: widget.userid,
                     )),
           ); // Navigate to the previous screen
           return true; // Prevent default back navigation behavior
@@ -103,7 +99,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                 child: Container(
                   height: screenHeight,
                   width: screenWidth,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
                         'assets/background_layer_2.png',
@@ -112,11 +108,11 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                     ),
                   ),
                   child: Container(
-                    padding: EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: 35.0),
+                          padding: const EdgeInsets.only(top: 35.0),
                           child: SvgPicture.asset(
                             'assets/cislogo-new.svg',
                             height: 120.0,
@@ -124,8 +120,8 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             //  color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 5.0),
-                        Container(
+                        const SizedBox(height: 5.0),
+                        const SizedBox(
                           width: double.infinity,
                           child: Text(
                             'HRMS',
@@ -133,42 +129,42 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        SizedBox(height: 5.0),
-                        Container(
+                        const SizedBox(height: 5.0),
+                        const SizedBox(
                           width: double.infinity,
                           child: Text(
                             'Security Questions',
-                            style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
+                            style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Calibri', fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        SizedBox(height: 5.0),
-                        Container(
+                        const SizedBox(height: 5.0),
+                        SizedBox(
                             width: double.infinity,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   'Note:',
                                   style: TextStyle(color: Color(0xFFf15f22), fontSize: 18, fontFamily: 'Calibri'),
                                 ),
-                                SizedBox(height: 10.0),
-                                Text(
-                                  'Minimum two Questions need to be answered out of 15 questions for recovering the password when you lost it.',
+                                const SizedBox(height: 10.0),
+                                const Text(
+                                  '1. A Minimum of Two Questions Need To Be Answered Out of 15 to Recover The Password When You Lose It.',
                                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Calibri'),
                                 ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'When you selected more questions while recovering a password system randomly request 2 questions only. ',
+                                const SizedBox(height: 5.0),
+                                const Text(
+                                  '2. When You Select More Questions While Recovering a Password, The System Randomly Requests Only 2 Questions.',
                                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Calibri'),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 35.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 35.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                       // Adjust the border radius as needed
                                     ),
@@ -177,16 +173,16 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                         _showAddQuestionDialog(context);
                                         fetchQuestions();
                                       },
-                                      child: Text(
-                                        'Add Question',
-                                        style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
-                                      ),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
+                                        backgroundColor: Colors.transparent,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(4.0),
                                         ),
+                                      ),
+                                      child: const Text(
+                                        'Add Question',
+                                        style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                       ),
                                     ),
                                   ),
@@ -201,20 +197,20 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                           future: Future.value(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return CircularProgressIndicator();
+                              return const CustomCircularProgressIndicator();
                             } else if (snapshot.connectionState == ConnectionState.done) {
                               if (selectedQuestionsAndAnswers.isEmpty) {
                                 return Align(
                                     alignment: Alignment.topCenter,
                                     child: Container(
-                                      padding: EdgeInsets.only(top: 5.0),
-                                      child: Text('Answered Questions Will Be Displayed Here'),
+                                      padding: const EdgeInsets.only(top: 5.0),
+                                      child: const Text('Answered Questions Will Be Displayed Here'),
                                     ));
                               } else {
                                 return ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: selectedQuestionsAndAnswers.length,
-                                  physics: AlwaysScrollableScrollPhysics(),
+                                  physics: const AlwaysScrollableScrollPhysics(),
                                   //physics: PageScrollPhysics(),
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (BuildContext context, int index) {
@@ -225,8 +221,8 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                         question_id = int.tryParse(selectedQuestionsAndAnswers[index]['id']!);
                                         answerinlistview = selectedQuestionsAndAnswers[index]['answer'];
                                         //  });
-                                        print('answerinlistview:${answerinlistview}');
-                                        print('questionidclicked:${question_id}');
+                                        print('answerinlistview:$answerinlistview');
+                                        print('questionidclicked:$question_id');
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -237,8 +233,8 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                           borderRadius: BorderRadius.circular(10),
                                           color: Colors.white,
                                         ),
-                                        margin: EdgeInsets.only(bottom: 10.0),
-                                        padding: EdgeInsets.all(15.0),
+                                        margin: const EdgeInsets.only(bottom: 10.0),
+                                        padding: const EdgeInsets.all(15.0),
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -252,19 +248,19 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                                   flex: 5,
                                                   child: Text(
                                                     '${selectedQuestionsAndAnswers[index]['question']}',
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       color: Color(0xFFf15f22),
                                                       fontWeight: FontWeight.bold,
                                                       fontFamily: 'Calibri',
                                                     ),
                                                   ),
                                                 ),
-                                                Spacer(),
+                                                const Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
                                                     _removeQuestion(index);
                                                   },
-                                                  child: Icon(
+                                                  child: const Icon(
                                                     CupertinoIcons.delete,
                                                     color: Colors.red,
                                                   ),
@@ -273,7 +269,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                             ),
                                             Text(
                                               '${selectedQuestionsAndAnswers[index]['answer']}',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.black,
                                                 fontFamily: 'Calibri',
                                                 fontWeight: FontWeight.bold,
@@ -287,7 +283,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                 );
                               }
                             } else {
-                              return Text('Error: Unable to fetch data');
+                              return const Text('Error: Unable to fetch data');
                             }
                           },
                         )),
@@ -296,12 +292,12 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             child: Container(
                               //        decoration: BoxDecoration(color: Colors.transparent),
                               //   color: Color(0xFFf0ab91),
-                              padding: EdgeInsets.only(top: 12.0, left: 0.0, right: 0.0, bottom: 0.0),
+                              padding: const EdgeInsets.only(top: 12.0, left: 0.0, right: 0.0, bottom: 0.0),
                               child: Container(
                                 width: double.infinity,
                                 //color: Color(0x00ffffff),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFf15f22),
+                                  color: const Color(0xFFf15f22),
                                   borderRadius: BorderRadius.circular(5.0),
                                   // Adjust the border radius as needed
                                 ),
@@ -309,16 +305,16 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                   onPressed: () async {
                                     sendingQuestion();
                                   },
-                                  child: Text(
-                                    'Submit Security Questions',
-                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
-                                  ),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
+                                    backgroundColor: Colors.transparent,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(4.0),
                                     ),
+                                  ),
+                                  child: const Text(
+                                    'Submit Security Questions',
+                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                   ),
                                 ),
                               ),
@@ -377,7 +373,8 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: Colors.white,
-              title: Row(
+              surfaceTintColor: Colors.transparent,
+              title: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -388,23 +385,23 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                       color: Color(0xFFf15f22),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      // Navigator.of(context).pop();
-                      //  Navigator.of(context).pop();
-                      //   Navigator.of(context, rootNavigator: true).pop(context);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => security_questionsscreen(
-                                newpassword: '${widget.newpassword}',
-                                confirmpassword: '${widget.confirmpassword}',
-                                userid: '${widget.userid}',
-                              )));
-                    },
-                    child: Icon(
-                      CupertinoIcons.multiply,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     // Navigator.of(context).pop();
+                  //     Navigator.of(context).pop();
+                  //     Navigator.of(context, rootNavigator: true).pop(context);
+                  //     // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  //     //     builder: (context) => security_questionsscreen(
+                  //     //           newpassword: '${widget.newpassword}',
+                  //     //           confirmpassword: '${widget.confirmpassword}',
+                  //     //           userid: '${widget.userid}',
+                  //     //         )));
+                  //   },
+                  //   child: Icon(
+                  //     CupertinoIcons.multiply,
+                  //     color: Colors.grey,
+                  //   ),
+                  // ),
                 ],
               ),
               content: Column(
@@ -419,7 +416,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: Color(0xFFf15f22),
+                              color: const Color(0xFFf15f22),
                               width: 1.0,
                             ),
                             borderRadius: BorderRadius.circular(5.0),
@@ -431,7 +428,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                               iconSize: 30,
                               icon: null,
                               isExpanded: true,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color(0xFFFB4110),
                                 fontFamily: 'Calibri',
                               ),
@@ -442,7 +439,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                 });
                               },
                               items: [
-                                DropdownMenuItem<int>(
+                                const DropdownMenuItem<int>(
                                   value: -1,
                                   child: Text(
                                     '   Choose Your Question',
@@ -456,13 +453,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                                   return DropdownMenuItem<int>(
                                       value: question['questionId'],
                                       child: Padding(
-                                        padding: EdgeInsets.only(left: 10.0),
+                                        padding: const EdgeInsets.only(left: 10.0),
                                         child: Text(
                                           question['question'],
-                                          style: TextStyle(fontFamily: 'Calibri'),
+                                          style: const TextStyle(fontFamily: 'Calibri'),
                                         ),
                                       ));
-                                }).toList(),
+                                }),
                               ],
                             ),
                           ),
@@ -517,7 +514,7 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                           //   ),
                           // ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         TextFormField(
                           ///     keyboardType: TextInputType.name,
 
@@ -530,26 +527,27 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
                             filled: true,
                             fillColor: Colors.white,
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                 color: Color(0xFFf15f22),
                               ),
                               borderRadius: BorderRadius.circular(6.0),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                 color: Color(0xFFf15f22),
                               ),
                               borderRadius: BorderRadius.circular(6.0),
                             ),
-                            hintStyle: TextStyle(
+                            hintStyle: const TextStyle(
                               color: Colors.black26, // Label text color
                             ),
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                             alignLabelWithHint: true,
                           ),
+                          maxLength: 50,
                           textAlign: TextAlign.start,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.black,
                             fontFamily: 'Calibri',
                             fontSize: 16,
@@ -563,17 +561,36 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
               actions: [
                 ElevatedButton(
                   onPressed: () {
-                    _addQuestion();
+                    //    Navigator.of(context, rootNavigator: true).pop(context);
+                    Navigator.of(context).pop();
                   },
-                  child: Text(
-                    'Add Question',
-                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
-                  ),
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFf15f22), // Change to your desired background color
+                    backgroundColor: const Color(0xFFf15f22), // Change to your desired background color
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5), // Set border radius
                     ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
+                  ),
+                ),
+                const SizedBox(
+                  width: 5.0,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addQuestion();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf15f22), // Change to your desired background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Set border radius
+                    ),
+                  ),
+                  child: const Text(
+                    'Add Question',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
                   ),
                 ),
               ],
@@ -741,13 +758,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
 
       // Construct the request body JSON
       Map<String, dynamic> requestBody = {
-        "password": "${widget.newpassword}",
-        "confirmPassword": "${widget.confirmpassword}",
+        "password": widget.newpassword,
+        "confirmPassword": widget.confirmpassword,
         "userAnswers": userAnswers,
       };
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       };
       // Encode the request body as JSON
       String requestBodyJson = jsonEncode(requestBody);
@@ -758,13 +775,13 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
         headers: headers,
         body: requestBodyJson,
       );
-      print('headers: ${headers}');
+      print('headers: $headers');
       print('Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        Commonutils.showCustomToastMessageLong('Password Changed SuccessFully', context, 0, 4);
+        Commonutils.showCustomToastMessageLong('Password Changed Successfully', context, 0, 4);
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
         // print('api is succeessfull');
         // print('${response}');
@@ -776,5 +793,55 @@ class _securityscreenscreenState extends State<security_questionsscreen> {
       print('Error: $e');
       Commonutils.showCustomToastMessageLong('Error: $e', context, 1, 4);
     }
+  }
+}
+
+class CustomCircularProgressIndicator extends StatelessWidget {
+  const CustomCircularProgressIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 50, // Adjust the width as needed
+        height: 50, // Adjust the height as needed
+        // decoration: BoxDecoration(
+        // color: Colors.white,
+        //  shape: BoxShape.circle,
+        // gradient: LinearGradient(
+        //   colors: [
+        //     Colors.blue,
+        //     Colors.green,
+        //   ],
+        //   begin: Alignment.topCenter,
+        //   end: Alignment.bottomCenter,
+        // ),
+        //),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 33.0,
+              width: 33.0,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                'assets/cislogo-new.svg',
+                height: 30.0,
+                width: 30.0,
+              ),
+            ),
+            const CircularProgressIndicator(
+              strokeWidth: 3, // Adjust the stroke width of the CircularProgressIndicator
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color(0xFFf15f22),
+              ), // Color for the progress indicator itself
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

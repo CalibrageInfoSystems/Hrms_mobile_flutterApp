@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +12,8 @@ import 'api config.dart';
 import 'home_screen.dart';
 
 class personal_details extends StatefulWidget {
+  const personal_details({super.key});
+
   // final String logintime;
   // personal_details({required this.logintime});
   @override
@@ -38,6 +39,9 @@ class _personal_screen_screenState extends State<personal_details> {
   String? formatteddateofjoining;
   DateTime? dateofjoin;
   String? logintime;
+  String? cisid;
+  String? employee_designation;
+  String? ReportingTo;
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -90,6 +94,10 @@ class _personal_screen_screenState extends State<personal_details> {
       final bloodgroup = loadedData['bloodGroup'];
       final gender = loadedData["gender"];
       final dateofjoining = loadedData['dateofJoin'];
+      final code = loadedData['code'];
+      final designation = loadedData['designation'];
+      final reportingTo = loadedData['reportingTo'];
+
       //   "gender"
       // : "Male"
       print('employeeName: $employeeName');
@@ -102,7 +110,7 @@ class _personal_screen_screenState extends State<personal_details> {
 
       // Format the date of birth into "dd/MM/yyyy"
       DateTime dobDate = DateTime.parse(dateofbirth);
-      String formattedDOB = DateFormat('dd-MM-yyyy').format(dobDate);
+      String formattedDOB = DateFormat('dd MMM yyyy').format(dobDate);
       print('formattedDOB: $formattedDOB');
 
       // DateTime dateofjoin = DateTime.parse(dateofjoining);
@@ -116,10 +124,10 @@ class _personal_screen_screenState extends State<personal_details> {
 
 // Check if dateofjoin is not null before formatting
       if (dateofjoin != null) {
-        formatteddateofjoining = DateFormat('dd-MM-yyyy').format(dateofjoin!);
+        formatteddateofjoining = DateFormat('dd MMM yyyy').format(dateofjoin!);
         print('formatteddateofjoining$formatteddateofjoining');
       } else {
-        formatteddateofjoining == ''; // Handle the case when dateofjoin is null
+        formatteddateofjoining = ''; // Handle the case when dateofjoin is null
         // For example, you could provide a default value or show an error message
       }
 
@@ -139,6 +147,15 @@ class _personal_screen_screenState extends State<personal_details> {
           // For example, you could provide a default value or show an error message
         }
         print('OfficeEmailid$OfficeEmailid');
+
+        if (loadedData['reportingTo'] != null) {
+          ReportingTo = reportingTo;
+          print('reportingTo$reportingTo');
+        } else {
+          ReportingTo = '';
+          // Handle the case when loadedData['experienceInCompany'] is null
+          // For example, you could provide a default value or show an error message
+        }
         if (loadedData['experienceInCompany'] != null) {
           Expincomapny = loadedData['experienceInCompany'] as String;
           print('Expincomapny$Expincomapny');
@@ -149,6 +166,17 @@ class _personal_screen_screenState extends State<personal_details> {
         }
         Mobilenum = mobilenum;
         Bloodgroup = bloodgroup;
+        if (code != null) {
+          cisid = code;
+        } else {
+          cisid = '';
+        }
+        if (designation != null) {
+          employee_designation = designation;
+        } else {
+          employee_designation = '';
+        }
+
         // Gender = gender;
         if (gender != null) {
           Gender = gender;
@@ -179,7 +207,7 @@ class _personal_screen_screenState extends State<personal_details> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: Colors.white,
-              title: Row(
+              title: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -213,7 +241,7 @@ class _personal_screen_screenState extends State<personal_details> {
                 children: [
                   Container(
                     //width: MediaQuery.of(context).size.width,
-                    child: Column(
+                    child: const Column(
                       children: [],
                     ),
                   )
@@ -222,15 +250,19 @@ class _personal_screen_screenState extends State<personal_details> {
               actions: [
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
-                  ),
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFf15f22), // Change to your desired background color
+                    backgroundColor: const Color(
+                        0xFFf15f22), // Change to your desired background color
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5), // Set border radius
+                      borderRadius:
+                          BorderRadius.circular(5), // Set border radius
                     ),
+                  ),
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Calibri'), // Set text color to white
                   ),
                 ),
               ],
@@ -280,7 +312,7 @@ class _personal_screen_screenState extends State<personal_details> {
     return WillPopScope(
         onWillPop: () async {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => home_screen()),
+            MaterialPageRoute(builder: (context) => const home_screen()),
           );
           // Handle back button press here
           // You can add any custom logic before closing the app
@@ -294,7 +326,7 @@ class _personal_screen_screenState extends State<personal_details> {
                 //   physics: NeverScrollableScrollPhysics(),
                 // child:
                 isLoading
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(),
                       )
                     : Stack(
@@ -306,524 +338,1060 @@ class _personal_screen_screenState extends State<personal_details> {
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.height,
                           ),
-
-                          // ClipPath for the curved bottom
-                          ClipPath(
-                            clipper: CurvedBottomClipper(),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFFf15f22),
-                              ),
+                          SizedBox(
                               width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height / 3,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 20, top: 15),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        "Hello!",
-                                        style: TextStyle(fontSize: 22, color: Colors.black, fontFamily: 'Calibri'),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 8.0,
-                                    ),
-                                    Text(
-                                      "$EmployeName",
-                                      style: TextStyle(fontSize: 22, color: Colors.white, fontFamily: 'Calibri'),
-                                    ),
-                                    // Add more widgets if needed
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                              height: MediaQuery.of(context).size.height,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height /
+                                        3.0,
+                                    child: ClipPath(
+                                      clipper: CurvedBottomClipper(),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFf15f22),
+                                        ),
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                3.0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 0, top: 5),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              // Container(
+                                              //   child: Text(
+                                              //     "Welcome!",
+                                              //     style: TextStyle(fontSize: 22, color: Colors.black, fontFamily: 'Calibri'),
+                                              //   ),
+                                              // ),
+                                              const SizedBox(height: 8.0),
+                                              Align(
+                                                alignment: Alignment.topCenter,
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height /
+                                                      3.2,
+                                                  child: Column(
+                                                    children: [
+                                                      if (photoData != "")
+                                                        // SizedBox(
+                                                        //     width: 90,
+                                                        //     height: 85,
+                                                        //     child: Image.memory(
+                                                        //       _decodeBase64(
+                                                        //           photoData),
+                                                        //       width: 90,
+                                                        //       height: 90,
+                                                        //     ))
+                                                        Container(
+                                                          width: 120,
+                                                          height: 120,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            gradient:
+                                                                LinearGradient(
+                                                              colors: [
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    184,
+                                                                    55,
+                                                                    0),
+                                                                Colors.white,
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    184,
+                                                                    55,
+                                                                    0),
+                                                                Colors.white,
+                                                              ], // Gradient colors
+                                                              // begin: Alignment
+                                                              //     .topLeft,
+                                                              // end: Alignment
+                                                              //     .bottomRight,
+                                                            ),
+                                                          ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(
+                                                                    3.0), // Adjust the padding as needed
+                                                            child: ClipOval(
+                                                              child:
+                                                                  Image.memory(
+                                                                _decodeBase64(
+                                                                    photoData),
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      else if (Gender !=
+                                                          null) ...{
+                                                        getDefaultImage(
+                                                            Gender!),
+                                                      } else ...{
+                                                        Container(
+                                                          child: Image.asset(
+                                                            'assets/app_logo.png',
+                                                            width: 90,
+                                                            height: 90,
+                                                          ),
+                                                        )
+                                                      },
+                                                      const SizedBox(
+                                                          height: 5.0),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width /
+                                                            1.5,
+                                                        child: Text(
+                                                          EmployeName,
+                                                          softWrap: true,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: const TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontFamily:
+                                                                  'Calibri'),
+                                                        ),
+                                                      ),
+                                                      // SizedBox(height: 2.0),
+                                                      // Text(
+                                                      //   "$cisid",
+                                                      //   style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Calibri'),
+                                                      // ),
+                                                      const SizedBox(
+                                                          height: 2.0),
+                                                      Text(
+                                                        "$employee_designation",
+                                                        style: const TextStyle(
+                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'Calibri'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
 
-                          Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: MediaQuery.of(context).size.height,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: 10.0,
-                                      ),
+                                              // SizedBox(
+                                              //   height: 8.0,
+                                              // ),
 
-                                      if (photoData != null && photoData != "")
-                                        Image.memory(
-                                          _decodeBase64(photoData),
-                                          width: 90,
-                                          height: 110,
-                                        )
-                                      else if (Gender != null) ...{
-                                        getDefaultImage(Gender!),
-                                      } else ...{
-                                        Container(
-                                          child: Image.asset(
-                                            'assets/app_logo.png',
-                                            width: 90,
-                                            height: 110,
-                                          ),
-                                        )
-                                      }
-
-                                      // if (Gender == "Male")
-                                      //   Image.asset(
-                                      //     'assets/men_emp.jpg',
-                                      //     width: 90,
-                                      //     height: 110,
-                                      //   )
-                                      // else if (Gender == "Female")
-                                      //   Image.asset(
-                                      //     'assets/women-emp.jpg',
-                                      //     width: 90,
-                                      //     height: 110,
-                                      //   ),
-
-                                      //  SizedBox(height: 40.0),
-                                      ,
-                                      Padding(
-                                        padding: EdgeInsets.all(16.0),
-                                        child: Card(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.0),
-                                            side: BorderSide(
-                                              color: Color(0xFFf15f22),
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(10.0), // Adjust the padding as needed
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 5, 0, 0),
-                                                            child: Text(
-                                                              "DOB",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                                            child: Text(
-                                                              "$dob",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Email",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$EmailId",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Official Mail ID ",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$OfficeEmailid",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Date of Joining",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$Dateofjoining",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Exp in this Company",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$Expincomapny",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Mobile Number ",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$Mobilenum",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 4,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          const Padding(
-                                                            padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                                            child: Text(
-                                                              "Blood Group",
-                                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 0,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                            child: Text(
-                                                              ":",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 16,
-                                                                fontFamily: 'Calibri',
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 5,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                                            child: Text(
-                                                              "$Bloodgroup",
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontFamily: 'Calibri',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                              // Add more widgets if needed
+                                            ],
                                           ),
                                         ),
                                       ),
+                                    ),
+                                  ),
 
-                                      // SizedBox(height: MediaQuery.of(context).size.height * 0.12),
-                                    ],
-                                  )))
+                                  // Align(
+                                  //     alignment: Alignment.center,
+                                  //     child:
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      //height: MediaQuery.of(context).size.height,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // SizedBox(
+                                          //   height: 35.0,
+                                          // ),
+
+                                          // if (Gender == "Male")
+                                          //   Image.asset(
+                                          //     'assets/men_emp.jpg',
+                                          //     width: 90,
+                                          //     height: 110,
+                                          //   )
+                                          // else if (Gender == "Female")
+                                          //   Image.asset(
+                                          //     'assets/women-emp.jpg',
+                                          //     width: 90,
+                                          //     height: 110,
+                                          //   ),
+
+                                          //  SizedBox(height: 40.0),
+                                          // SizedBox(height: 40.0),
+                                          Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                side: const BorderSide(
+                                                  color: Color(0xFFf15f22),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            5,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Employee Id",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            5,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        5,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$cisid",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Gender",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$Gender",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Office Email Id ",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$OfficeEmailid",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "DOJ",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$formatteddateofjoining",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Mobile Number ",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$Mobilenum",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "DOB",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  dob,
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Reporting To",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$ReportingTo",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(
+                                                          flex: 4,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  "Experience In Company",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFf15f22),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontFamily:
+                                                                          'Calibri'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Expanded(
+                                                          flex: 0,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child: Text(
+                                                                  ":",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        10,
+                                                                        0,
+                                                                        0,
+                                                                        0),
+                                                                child: Text(
+                                                                  "$Expincomapny",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontFamily:
+                                                                        'Calibri',
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5.0),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          // SizedBox(height: MediaQuery.of(context).size.height * 0.12),
+                                        ],
+                                      ))
+                                  //)
+                                ],
+                              )),
+
+                          // ClipPath for the curved bottom
                         ],
                       ),
           ),
@@ -837,19 +1405,20 @@ class _personal_screen_screenState extends State<personal_details> {
     });
     print("empolyeidinapplyleave:$empolyeid");
     // final response = await http.get('http://182.18.157.215/HRMS/API/hrmsapi/Employee/GetEmployeePhoto/91');
-    final url = Uri.parse(baseUrl + GetEmployeePhoto + '$empolyeid');
+    final url = Uri.parse('$baseUrl$GetEmployeePhoto$empolyeid');
     print('loademployeeimage  $url');
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       },
     );
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       setState(() {
-        photoData = data['ImageData'] ?? ""; // Initialize with an empty string if null
+        photoData =
+            data['ImageData'] ?? ""; // Initialize with an empty string if null
         print('photoData==== $photoData');
       });
     } else {
@@ -885,13 +1454,14 @@ class _personal_screen_screenState extends State<personal_details> {
     print('====>${parts.length}');
 
     if (parts.length != 2) {
-      throw FormatException('Invalid base64 string: Incorrect number of parts');
+      throw const FormatException(
+          'Invalid base64 string: Incorrect number of parts');
     }
 
     final String dataPart = parts[1];
 
     try {
-      return Base64Codec().decode(dataPart);
+      return const Base64Codec().decode(dataPart);
     } catch (e) {
       throw FormatException('Invalid base64 string: $e');
     }
@@ -907,12 +1477,14 @@ class CurvedBottomClipper extends CustomClipper<Path> {
     //   final roundingHeight =  size.height ;
 
     // this is top part of path, rectangle without any rounding
-    final filledRectangle = Rect.fromLTRB(0, 0, size.width, size.height - roundingHeight);
+    final filledRectangle =
+        Rect.fromLTRB(0, 0, size.width, size.height - roundingHeight);
 
     // this is rectangle that will be used to draw arc
     // arc is drawn from center of this rectangle, so it's height has to be twice roundingHeight
     // also I made it to go 5 units out of screen on left and right, so curve will have some incline there
-    final roundingRectangle = Rect.fromLTRB(-79, size.height - roundingHeight * 2, size.width + 5, size.height);
+    final roundingRectangle = Rect.fromLTRB(
+        -5, size.height - roundingHeight * 2, size.width + 5, size.height);
 
     final path = Path();
     path.addRect(filledRectangle);

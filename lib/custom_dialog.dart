@@ -14,11 +14,11 @@ class CustomDialog {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline,
                     color: Colors.blue,
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Flexible(
                     child: Text(
                       message,
@@ -27,17 +27,17 @@ class CustomDialog {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Container(
+              const SizedBox(height: 20),
+              SizedBox(
                 width: 80,
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Color(0xFFf15f22), // Set the background color
+                    backgroundColor: const Color(0xFFf15f22), // Set the background color
                   ),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
                   },
-                  child: Text(
+                  child: const Text(
                     'OK',
                     style: TextStyle(
                       color: Colors.white, // Set the text color

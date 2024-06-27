@@ -32,11 +32,11 @@ class Commonutils {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: Center(
                 child: Text(
                   message,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
                       fontFamily: 'Calibri'),

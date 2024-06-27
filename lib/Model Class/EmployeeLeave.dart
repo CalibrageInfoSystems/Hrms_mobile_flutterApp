@@ -6,12 +6,15 @@ class EmployeeLeave {
   final String leaveType;
   final String fromDate;
   final String? toDate;
+  final int employeeLeaveId;
+  bool isMarkedForDeletion;
 
   // final int leaveTypeId;
   // final int usedCLsInMonth;
   // final int usedPLsInMonth;
   final bool? isHalfDayLeave;
-  final bool? isDeleted;
+  late final bool? isDeleted;
+  final bool isLeaveUsed;
 
   // final String? acceptedAt;
   // final String? acceptedBy;
@@ -34,6 +37,9 @@ class EmployeeLeave {
     required this.toDate,
     required this.isHalfDayLeave,
     required this.isDeleted,
+    required this.employeeLeaveId,
+    this.isMarkedForDeletion = false,
+    required this.isLeaveUsed,
     // required this.leaveTypeId,
     // required this.usedCLsInMonth,
     // required this.usedPLsInMonth,
@@ -56,11 +62,13 @@ class EmployeeLeave {
       // employeeName: json['employeeName'],
       // code: json['code'],
       // employeeLeaveId: json['employeeLeaveId'],
+      employeeLeaveId: json['employeeLeaveId'],
       leaveType: json['leaveType'],
       fromDate: json['fromDate'],
       toDate: json['toDate'],
       isHalfDayLeave: json['isHalfDayLeave'],
       isDeleted: json['isDeleted'],
+      isLeaveUsed: json['isLeaveUsed'],
       // leaveTypeId: json['leaveTypeId'],
       // usedCLsInMonth: json['usedCLsInMonth'],
       // usedPLsInMonth: json['usedPLsInMonth'],

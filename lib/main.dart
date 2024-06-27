@@ -1,20 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hrms/Model%20Class/login%20model%20class.dart';
 import 'package:hrms/Splash_screen.dart';
 import 'package:hrms/changepassword.dart';
-import 'package:hrms/custom_dialog.dart';
-import 'package:hrms/security_questions.dart';
 import 'package:hrms/security_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/home_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Commonutils.dart';
@@ -23,13 +21,15 @@ import 'SharedPreferencesHelper.dart';
 import 'api config.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
@@ -37,6 +37,8 @@ class MyApp extends StatelessWidget {
 }
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -70,9 +72,227 @@ class _LoginPageState extends State<LoginPage> {
     // requestPhonePermission();
   }
 
+  // Future<void> validate() async {
+  //   // Define timeout duration (15 seconds)
+  //   const Duration timeoutDuration = Duration(seconds: 15);
+  //
+  //   // Create a Completer to handle API request completion
+  //   Completer<void> completer = Completer<void>();
+  //
+  //   // Start a timer
+  //   Timer timer = Timer(timeoutDuration, () {
+  //     if (!completer.isCompleted) {
+  //       // Cancel the API request
+  //       print('Timeout occurred: Timer function executed');
+  //       completer.completeError('Timeout occurred');
+  //     }
+  //   });
+  //
+  //   bool isValid = true;
+  //   bool hasValidationFailed = false;
+  //   if (isValid && _usernamecontroller.text.isEmpty) {
+  //     print('Validation failed: Username is empty');
+  //     Commonutils.showCustomToastMessageLong('Please Enter Username', context, 1, 4);
+  //     isValid = false;
+  //     hasValidationFailed = true;
+  //     FocusScope.of(context).unfocus();
+  //   }
+  //   if (isValid && _passwordcontroller.text.isEmpty) {
+  //     print('Validation failed: Password is empty');
+  //     isValid = false;
+  //     hasValidationFailed = true;
+  //     Commonutils.showCustomToastMessageLong('Please Enter Password', context, 1, 4);
+  //     FocusScope.of(context).unfocus();
+  //   } else {
+  //     bool isConnected = await Commonutils.checkInternetConnectivity();
+  //     if (isConnected) {
+  //       print('Connected to the internet');
+  //     } else {
+  //       print('No internet connection');
+  //       Commonutils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
+  //       FocusScope.of(context).unfocus();
+  //     }
+  //   }
+  //
+  //   String username = _usernamecontroller.text;
+  //   String password = _passwordcontroller.text;
+  //
+  //   if (isValid) {
+  //     await _performAPICall(completer, username, password);
+  //   }
+  //
+  //   // Wait for API request completion or timeout
+  //   try {
+  //     await completer.future;
+  //   } catch (e) {
+  //     // Handle API request completion or timeout
+  //     print('Error or Timeout: $e');
+  //     if (e.toString() == 'Timeout occurred') {
+  //       // Show toast message for timeout
+  //       print('API request timed out. Retrying...');
+  //       Commonutils.showCustomToastMessageLong('API request timed out. Retrying...', context, 1, 4);
+  //       // Retry the API request after 15 seconds
+  //       Future.delayed(Duration(seconds: 15), () {
+  //         validate();
+  //       });
+  //     } else {
+  //       // Show toast message for other errors
+  //       Commonutils.showCustomToastMessageLong('Error occurred: $e', context, 1, 4);
+  //     }
+  //   } finally {
+  //     // Cancel the timer
+  //     timer.cancel();
+  //   }
+  // }
+
+  // Future<void> validate() async {
+  //   // Define timeout duration (15 seconds)
+  //   Duration timeoutDuration = Duration(seconds: 5);
+  //
+  //   // Create a Completer to handle API request completion
+  //   Completer<void> completer = Completer<void>();
+  //
+  //   // Start a timer
+  //   Timer timer = Timer(timeoutDuration, () {
+  //     if (!completer.isCompleted) {
+  //       // Cancel the API request
+  //       completer.completeError('Timeout occurred');
+  //     }
+  //   });
+  //
+  //   bool isValid = true;
+  //   bool hasValidationFailed = false;
+  //   if (isValid && _usernamecontroller.text.isEmpty) {
+  //     Commonutils.showCustomToastMessageLong('Please Enter Username', context, 1, 4);
+  //     isValid = false;
+  //     hasValidationFailed = true;
+  //     FocusScope.of(context).unfocus();
+  //   }
+  //   if (isValid && _passwordcontroller.text.isEmpty) {
+  //     isValid = false;
+  //     hasValidationFailed = true;
+  //     Commonutils.showCustomToastMessageLong('Please Enter Password', context, 1, 4);
+  //     FocusScope.of(context).unfocus();
+  //   } else {
+  //     bool isConnected = await Commonutils.checkInternetConnectivity();
+  //     if (isConnected) {
+  //       print('Connected to the internet');
+  //     } else {
+  //       Commonutils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
+  //       FocusScope.of(context).unfocus();
+  //       print('Not connected to the internet');
+  //     }
+  //   }
+  //
+  //   String username = _usernamecontroller.text;
+  //   String password = _passwordcontroller.text;
+  //
+  //   if (isValid) {
+  //     await _performAPICall(completer, username, password);
+  //   }
+  //
+  //   // Wait for API request completion or timeout
+  //   try {
+  //     await completer.future;
+  //   } catch (e) {
+  //     // Handle API request completion or timeout
+  //     print('Error or Timeout: $e');
+  //     if (e.toString() == 'Timeout occurred') {
+  //       // Show toast message for timeout
+  //       Commonutils.showCustomToastMessageLong('Something went wrong. This is taking longer than expected. Please login again', context, 1, 4);
+  //       //Commonutils.showCustomToastMessageLong('API request timed out', context, 1, 4);
+  //       // Retry the API request after 15 seconds
+  //       Future.delayed(Duration(seconds: 15), () {
+  //         //   validate();
+  //         Navigator.of(context).pushReplacement(
+  //           MaterialPageRoute(builder: (context) => LoginPage()),
+  //         );
+  //       });
+  //     } else {
+  //       // Show toast message for other errors
+  //       Commonutils.showCustomToastMessageLong('Error occurred: $e', context, 1, 4);
+  //     }
+  //   } finally {
+  //     // Cancel the timer
+  //     timer.cancel();
+  //   }
+  // }
+
+  // Future<void> _performAPICall(Completer<void> completer, String username, String password) async {
+  //   final request = {"userName": username, "password": password, "rememberMe": true};
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //   print('Request Body: ${json.encode(request)}');
+  //   try {
+  //     final url = Uri.parse(baseUrl + getlogin);
+  //     print('LoginUrl: $url');
+  //     // Send the POST request
+  //     final response = await http.post(
+  //       url,
+  //       body: json.encode(request),
+  //       headers: {
+  //         'Content-Type': 'application/json', // Set the content type header
+  //       },
+  //     );
+  //     print('loginreponse$response');
+  //     print('login response: ${response.statusCode}');
+  //
+  //     if (response.statusCode == 200) {
+  //       Map<String, dynamic> jsonResponse = json.decode(response.body);
+  //
+  //       accessToken = jsonResponse['accessToken'];
+  //       String refreshToken = jsonResponse['refreshToken'];
+  //
+  //       SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       await prefs.setString("accessToken", accessToken!);
+  //       print('accesstokensaved');
+  //
+  //       Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken!);
+  //
+  //       isfirst_time = decodedToken['IsFirstTimeLogin'];
+  //       print('isfirst_timeloginornot:$isfirst_time');
+  //       userid = decodedToken['Id'];
+  //       print('useridfromjwttoken:$userid');
+  //
+  //       employeeId = decodedToken['EmployeeId'];
+  //       SharedPreferences emplyid = await SharedPreferences.getInstance();
+  //       await emplyid.setString("employeeId", employeeId!);
+  //       print('EmployeeIdsaved');
+  //
+  //       print('AccessToken: $accessToken');
+  //       print('RefreshToken: $refreshToken');
+  //       print('EmployeeId: $employeeId');
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //       empolyelogin(employeeId!, isfirst_time, userid);
+  //     } else {
+  //       FocusScope.of(context).unfocus();
+  //       Commonutils.showCustomToastMessageLong('Invalid Username or Password ', context, 1, 4);
+  //       print('response is not success');
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //       print('Failed to send the request. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     print('Error: $e');
+  //     completer.completeError('Error: $e');
+  //   } finally {
+  //     // Cancel the timer
+  //     completer.complete(); // Complete the completer
+  //   }
+  // }
+
+//Working Code commented by Arun on 19/4/2024 for adding timer
   Future<void> validate() async {
     bool isValid = true;
     bool hasValidationFailed = false;
+    bool apiCallCompleted = false;
     if (isValid && _usernamecontroller.text.isEmpty) {
       Commonutils.showCustomToastMessageLong('Please Enter Username', context, 1, 4);
       isValid = false;
@@ -100,8 +320,11 @@ class _LoginPageState extends State<LoginPage> {
     // String username = "ArunShetty";
     // String password = "Arun@120898";
 
-    if (isValid) {
+    if (isValid && !hasValidationFailed) {
       final request = {"userName": username, "password": password, "rememberMe": true};
+      setState(() {
+        _isLoading = true;
+      });
       print('Request Body: ${json.encode(request)}');
       try {
         final url = Uri.parse(baseUrl + getlogin);
@@ -113,19 +336,22 @@ class _LoginPageState extends State<LoginPage> {
           headers: {
             'Content-Type': 'application/json', // Set the content type header
           },
-        );
+        ).timeout(const Duration(seconds: 10), onTimeout: () {
+          apiCallCompleted = false;
+          Commonutils.showCustomToastMessageLong('Something Went Wrong Please Login Again', context, 1, 4);
+          return http.Response('Timeout', HttpStatus.requestTimeout);
+        });
+        // if (apiCallCompleted == false) {
+        //   Commonutils.showCustomToastMessageLong('Something Went Wrong Please Login Again', context, 1, 4);
+        // }
         print('loginreponse$response');
         print('login response: ${response.statusCode}');
         print('statusCode=====>${response.statusCode}');
-        // if (response.body == "User not found") {
-        //   Commonutils.showCustomToastMessageLong(
-        //       'Please Check the User Name & Password', context, 1, 4);
-        // }
-        // Check the response status code
 
         if (response.statusCode == 200) {
           //  Map<String, dynamic> jsonResponse = json.decode(response.body);
           Map<String, dynamic> jsonResponse = json.decode(response.body);
+
           accessToken = jsonResponse['accessToken'];
           String refreshToken = jsonResponse['refreshToken'];
 
@@ -152,11 +378,18 @@ class _LoginPageState extends State<LoginPage> {
           employeeId = decodedToken['EmployeeId'];
           SharedPreferences emplyid = await SharedPreferences.getInstance();
           await emplyid.setString("employeeId", employeeId!);
+
+          SharedPreferences userId = await SharedPreferences.getInstance();
+          await userId.setString("UserId", userid);
           print('EmployeeIdsaved');
 
           print('AccessToken: $accessToken');
           print('RefreshToken: $refreshToken');
           print('EmployeeId: $employeeId');
+          setState(() {
+            _isLoading = false;
+            apiCallCompleted = true;
+          });
 
           empolyelogin(employeeId!, isfirst_time, userid);
 
@@ -165,17 +398,28 @@ class _LoginPageState extends State<LoginPage> {
           FocusScope.of(context).unfocus();
           Commonutils.showCustomToastMessageLong('Invalid Username or Password ', context, 1, 4);
           print('response is not success');
+          setState(() {
+            apiCallCompleted = false;
+            _isLoading = false;
+          });
 
           print('Failed to send the request. Status code: ${response.statusCode}');
         }
       } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ///   apiCallCompleted = false;
         print('Error: $e');
       }
     }
-    ;
   }
 
-  Future<void> empolyelogin(String empolyeid, String isfirst_time, String userid) async {
+  Future<void> empolyelogin(String empolyeid, String isfirstTime, String userid) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final url = Uri.parse(baseUrl + getselfempolyee + empolyeid);
       print('SelfEmpolyeeUrl: $url');
@@ -195,32 +439,33 @@ class _LoginPageState extends State<LoginPage> {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         //await AuthService.saveSecondApiResponse(responseData);
-        print('Savedresponse: ${responseData}');
+        print('Savedresponse: $responseData');
         await SharedPreferencesHelper.saveCategories(responseData);
 
-        if (isfirst_time == 'True') {
-          // Navigator.of(context).pushReplacement(
-          //   MaterialPageRoute(
-          //       builder: (context) => security_questionsscreen(
-          //             userid: '$userid',
-          //           )),
+        if (isfirstTime == 'True') {
+          setState(() {
+            _isLoading = false;
+          });
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
                 builder: (context) => ChangePasword(
-                      userid: '$userid',
+                      userid: userid,
                       newpassword: '',
                       confirmpassword: '',
                     )),
           );
-        } else if (isfirst_time == 'False') {
+        } else if (isfirstTime == 'False') {
           DateTime loginTime = DateTime.now();
           String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(loginTime);
           print('formattedTimelogin:$formattedTime');
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('loginTime', formattedTime);
           SharedPreferencesHelper.putBool(Constants.IS_LOGIN, true);
+          setState(() {
+            _isLoading = false;
+          });
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => home_screen()),
+            MaterialPageRoute(builder: (context) => const home_screen()),
           );
         }
 
@@ -243,11 +488,11 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     // Simulate a delay to mimic loading
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       // Navigate to the next page when loading is complete
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => securityscreen()),
+        MaterialPageRoute(builder: (context) => const securityscreen()),
       ).then((_) {
         // Hide progress indicator when returning from the next page
         setState(() {
@@ -283,7 +528,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Your Login Screen Widgets
                 Center(
                   child: _isLoading
-                      ? CircularProgressIndicator.adaptive()
+                      ? const CustomCircularProgressIndicator()
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -297,8 +542,8 @@ class _LoginPageState extends State<LoginPage> {
                                 width: 55.0,
                               ),
                             ),
-                            SizedBox(height: 2.0),
-                            Text(
+                            const SizedBox(height: 2.0),
+                            const Text(
                               'HRMS',
                               style: TextStyle(
                                 color: Color(0xFFf15f22),
@@ -308,39 +553,51 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 25.0, left: 40.0, right: 40.0),
+                              padding: const EdgeInsets.only(top: 25.0, left: 40.0, right: 40.0),
                               child: TextFormField(
                                 ///     keyboardType: TextInputType.name,
-
+                                ///
+                                keyboardType: TextInputType.name,
+                                maxLength: 8,
                                 controller: _usernamecontroller,
-                                onTap: () {
-                                  // requestPhonePermission();
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')), // Allow only alphanumeric characters
+// Allow only alphanumeric characters
+                                ],
+                                onChanged: (value) {
+                                  // Handle onChanged event to ensure the text stays when special characters are entered
+                                  if (value.contains(RegExp(r'[^a-zA-Z0-9]'))) {
+                                    // If the text contains characters other than alphanumeric, remove those characters
+                                    _usernamecontroller.text = value.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+                                    _usernamecontroller.selection = TextSelection.fromPosition(
+                                        TextPosition(offset: _usernamecontroller.text.length)); // Keep the cursor at the end
+                                  }
                                 },
                                 decoration: InputDecoration(
-                                  hintText: 'Username',
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFFf15f22),
+                                    hintText: 'User Name',
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFFf15f22),
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
                                     ),
-                                    borderRadius: BorderRadius.circular(6.0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xFFf15f22),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFFf15f22),
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
                                     ),
-                                    borderRadius: BorderRadius.circular(6.0),
-                                  ),
-                                  hintStyle: TextStyle(
-                                    color: Colors.black26, // Label text color
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                                  alignLabelWithHint: true,
-                                ),
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black26, // Label text color
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                                    alignLabelWithHint: true,
+                                    counterText: ""),
                                 textAlign: TextAlign.start,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'Calibri',
                                   fontSize: 16,
@@ -348,7 +605,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
+                              padding: const EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0),
                               child: TextFormField(
                                 // keyboardType: TextInputType.phone,
 
@@ -363,23 +620,24 @@ class _LoginPageState extends State<LoginPage> {
                                   filled: true,
                                   fillColor: Colors.white,
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                       color: Color(0xFFf15f22),
                                     ),
                                     borderRadius: BorderRadius.circular(6.0),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                       color: Color(0xFFf15f22),
                                     ),
                                     borderRadius: BorderRadius.circular(6.0),
                                   ),
-                                  hintStyle: TextStyle(
+                                  hintStyle: const TextStyle(
                                     color: Colors.black26, // Label text color
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                                   alignLabelWithHint: true,
+                                  counterText: "",
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -393,9 +651,10 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                   ),
                                 ),
+                                maxLength: 25,
 
                                 textAlign: TextAlign.start,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'Calibri',
                                   fontSize: 16,
@@ -403,10 +662,21 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 6.0, left: 45.0, right: 43.0),
+                              padding: const EdgeInsets.only(top: 6.0, left: 45.0, right: 43.0),
                               child: GestureDetector(
                                 onTap: _loadNextPage,
-                                child: Container(
+                                // onTap: () {
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => security_questionsscreen(
+                                //               newpassword: '',
+                                //               confirmpassword: '',
+                                //               userid: '',
+                                //             )),
+                                //   );
+                                // },
+                                child: const SizedBox(
                                   width: double.infinity,
                                   child: Text(
                                     'Forgot Password?',
@@ -439,11 +709,11 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             // Login Button
                             Padding(
-                              padding: EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
+                              padding: const EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
                               child: Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFf15f22),
+                                  color: const Color(0xFFf15f22),
                                   borderRadius: BorderRadius.circular(6.0),
                                   // Adjust the border radius as needed
                                 ),
@@ -451,16 +721,16 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: () async {
                                     validate();
                                   },
-                                  child: Text(
-                                    'Sign In',
-                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
-                                  ),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
+                                    backgroundColor: Colors.transparent,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(4.0),
                                     ),
+                                  ),
+                                  child: const Text(
+                                    'Sign In',
+                                    style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
                                   ),
                                 ),
                               ),
@@ -521,7 +791,7 @@ class _LoginPageState extends State<LoginPage> {
       // Save DayWorkStatus in SharedPreferences
       saveDayWorkStatus(lookups['DayWorkStatus']);
       saveLeaveReasons(lookups['LeaveReasons']);
-
+      saveResignationReason(lookups['ResignationReasons']);
       // Return the entire response as a Map<String, dynamic>
       return jsonData;
     } else {
@@ -535,6 +805,11 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> saveDayWorkStatus(int dayWorkStatus) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('dayWorkStatus', dayWorkStatus);
+  }
+
+  Future<void> saveResignationReason(int Resignationreq) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('ResignationReasons', Resignationreq);
   }
 
   Future<void> saveLeaveReasons(int LeaveReasons) async {
@@ -558,3 +833,52 @@ class _LoginPageState extends State<LoginPage> {
 //     prefs.setString('secondApiResponse', json.encode(responseData));
 //   }
 // }
+class CustomCircularProgressIndicator extends StatelessWidget {
+  const CustomCircularProgressIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 50, // Adjust the width as needed
+        height: 50, // Adjust the height as needed
+        // decoration: BoxDecoration(
+        // color: Colors.white,
+        //  shape: BoxShape.circle,
+        // gradient: LinearGradient(
+        //   colors: [
+        //     Colors.blue,
+        //     Colors.green,
+        //   ],
+        //   begin: Alignment.topCenter,
+        //   end: Alignment.bottomCenter,
+        // ),
+        //),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 33.0,
+              width: 33.0,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(
+                'assets/cislogo-new.svg',
+                height: 30.0,
+                width: 30.0,
+              ),
+            ),
+            const CircularProgressIndicator(
+              strokeWidth: 3, // Adjust the stroke width of the CircularProgressIndicator
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color(0xFFf15f22),
+              ), // Color for the progress indicator itself
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

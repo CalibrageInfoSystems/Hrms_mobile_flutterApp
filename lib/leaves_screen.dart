@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_month_picker/flutter_month_picker.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hrms/holiday_model.dart';
 import 'package:hrms/leave_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +21,8 @@ import 'home_screen.dart';
 import 'main.dart';
 
 class leaves_screen extends StatefulWidget {
+  const leaves_screen({super.key});
+
   @override
   _leaves_screen_screenState createState() => _leaves_screen_screenState();
 }
@@ -30,8 +34,8 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   DateTime _selectedMonthlwp = DateTime.now();
   double usedPrivilegeLeavesInYear = 0.0;
   double allottedPrivilegeLeaves = 0.0;
-  double noOfleavesinPLs = 0.0;
-  double noOfleavesinCLs = 0.0;
+  double? noOfleavesinPLs;
+  double? noOfleavesinCLs;
   double noOfleavesinLWP = 0.0;
   double usedCasualLeavesInMonth = 0.0;
   String EmployeName = '';
@@ -45,6 +49,9 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   List<LookupDetail> lookupDetails = [];
   String? logintime;
   int DayWorkStatus = 0;
+  bool _isLoading = true;
+  bool isLoading = true;
+  List<Holiday_Model> holidaylist = [];
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -71,7 +78,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     //     context, MaterialPageRoute(builder: (context) => LoginPage()));
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
       (route) => false,
     );
   }
@@ -101,7 +108,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
               title: Column(
                 //mainAxisAlignment: MainAxisAlignment.,
                 children: [
-                  Container(
+                  SizedBox(
                     height: 50.0,
                     width: 60.0,
                     child: SvgPicture.asset(
@@ -110,10 +117,10 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                       width: 55.0,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 7.0,
                   ),
-                  Text(
+                  const Text(
                     "Session Time Out",
                     style: TextStyle(
                       fontSize: 16,
@@ -121,22 +128,23 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(
+                  // SizedBox(
+                  //   height: 3.0,
+                  // ),
+                  // Text(
+                  //   "Invalid Token",
+                  //   style: TextStyle(
+                  //     fontSize: 16,
+                  //     fontFamily: 'Calibri',
+                  //     color: Colors.black,
+                  //   ),
+                  // ),
+
+                  const SizedBox(
                     height: 3.0,
                   ),
-                  Text(
-                    "Invalid Token",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Calibri',
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 3.0,
-                  ),
-                  Text(
-                    "PLease Login Again",
+                  const Text(
+                    "Please Login Again",
                     style: TextStyle(
                       fontSize: 16,
                       fontFamily: 'Calibri',
@@ -152,15 +160,15 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                     onConfirmLogout();
                     Navigator.of(context).pop();
                   },
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
-                  ),
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFf15f22), // Change to your desired background color
+                    backgroundColor: const Color(0xFFf15f22), // Change to your desired background color
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5), // Set border radius
                     ),
+                  ),
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
                   ),
                 ),
               ],
@@ -218,8 +226,9 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         int currentMonth = now.month;
         // Print the current month
         print('Current month: $currentMonth');
-        montlyleavesPl(currentMonth);
-        montlyleavesCL(currentMonth);
+        int currentYear = now.year;
+        montlyleavesPl(currentMonth, currentYear);
+        montlyleavesCL(currentMonth, currentYear);
         montlyleaveslwp(currentMonth);
         //  print('availablecls: $availablecls');
       });
@@ -236,7 +245,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         onWillPop: () async {
           // Handle back button press here
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => home_screen()),
+            MaterialPageRoute(builder: (context) => const home_screen()),
           ); //
           // You can add any custom logic before closing the app
           return true; // Return true to allow back button press and close the app
@@ -252,565 +261,65 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                 ),
-
-                // SingleChildScrollView for scrollable content
-                SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Hello!",
-                              style: TextStyle(
-                                fontSize: 26,
-                                color: Colors.black,
-                                fontFamily: 'Calibri',
-                              ),
-                            ),
-                            // Padding(
-                            //   padding:
-                            //       EdgeInsets.only(top: 0.0, left: 0.0, right: 0.0),
-                            //   child: Container(
-                            //     width: double.infinity,
-                            //     decoration: BoxDecoration(
-                            //       color: Color(0xFFf15f22),
-                            //       borderRadius: BorderRadius.circular(6.0),
-                            //     ),
-                            //     child:
-                            // ElevatedButton(
-                            //   onPressed: () async {
-                            //     Navigator.of(context).pushReplacement(
-                            //       MaterialPageRoute(
-                            //         builder: (context) => apply_leave(
-                            //           buttonName: "test", // Example button name
-                            //           lookupDetailId: -3, // Pass the lookupDetailId
-                            //         ),
-                            //       ),
-                            //     );
-                            //   },
-                            //   child: Text(
-                            //     'Apply',
-                            //     style: TextStyle(
-                            //       color: Colors.white,
-                            //       fontSize: 16,
-                            //       fontFamily: 'hind_semibold',
-                            //     ),
-                            //   ),
-                            //   style: ElevatedButton.styleFrom(
-                            //     primary: Colors.transparent,
-                            //     elevation: 0,
-                            //     shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4.0),
-                            //     ),
-                            //   ),
-                            // ),
-                            //   ),
-                            //  ),
-                            ElevatedButton(
-                              onPressed: () {
-                                DateTime currentTime = DateTime.now();
-                                DateTime formattedlogintime = DateTime.parse(logintime!);
-                                // Replace this with your actual login time
-                                DateTime loginTime = formattedlogintime /* Replace with your login time */;
-
-                                // Calculate the time difference
-                                Duration timeDifference = currentTime.difference(loginTime);
-
-                                // Check if the time difference is less than or equal to 1 hour (3600 seconds)
-                                if (timeDifference.inSeconds <= 3600) {
-                                  // Login is within the allowed window
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => apply_leave(
-                                        buttonName: "test", // Example button name
-                                        lookupDetailId: -3,
-                                        employename: '${EmployeName}', // Pass the lookupDetailId
-                                      ),
-                                    ),
-                                  );
-                                  print("Login is within 1 hour of current time.");
-                                } else {
-                                  // Login is outside the allowed window
-                                  _showtimeoutdialog(context);
-                                  print("Login is more than 1 hour from current time.");
-                                }
-
-                                // Handle the apply button click event
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Color(0xFFf15f22),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                              ),
-                              child: Text(
-                                "Apply",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(
-                          height: 8.0,
-                        ),
-                        Text(
-                          "$EmployeName",
-                          style: TextStyle(
-                            fontSize: 26,
-                            color: Color(0xFFf15f22),
-                            fontFamily: 'Calibri',
-                          ),
-                        ),
-                        SizedBox(
-                          height: 25.0,
-                        ),
-                        // Add some space between text views and containers
-
-                        // Row of three containers
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(6.0),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFF746cdf),
-                                    Color(0xFF81aed5),
-                                  ], // Adjust the colors as needed
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 19.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "PL",
-                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "$usedPrivilegeLeavesInYear",
-                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
-                                      ),
-                                      SizedBox(
-                                        width: 2.0,
-                                      ),
-                                      Text(
-                                        "/",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 2.0,
-                                      ),
-                                      Text(
-                                        "$allottedPrivilegeLeaves",
-                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6.0),
-                                // Adjust the radius as needed
-                                border: Border.all(
-                                  color: Color(0xFF7F7FE1),
-                                  // Specify the border color
-                                  width: 2.0, // Adjust the border width as needed
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 3.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "Monthly PL's",
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFFf15f22), fontFamily: 'Calibri'),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: width / 6,
-                                        height: 30.0,
-                                        child: IconButton(
-                                          padding: EdgeInsets.only(right: 0.0),
-                                          onPressed: () {
-                                            _selectPreviousMonthPL();
-                                          },
-                                          iconSize: 20.0,
-                                          icon: Icon(
-                                            Icons.arrow_left,
-                                            color: Color(0xFFf15f22),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: width / 1.6, // Set your desired width here
-                                        child: Text(
-                                          DateFormat('MMMM').format(_selectedMonthPL),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Calibri',
-                                            color: Color(0xFF746cdf),
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: width / 6,
-                                        height: 30.0,
-                                        child: IconButton(
-                                            padding: EdgeInsets.only(left: 0),
-                                            onPressed: () {
-                                              _selectNextMonthPL();
-                                            },
-                                            iconSize: 20.0,
-                                            icon: Icon(
-                                              Icons.arrow_right,
-                                              color: Color(0xFFf15f22),
-                                            ),
-                                            alignment: Alignment.center),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "$noOfleavesinPLs",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6.0),
-                                // Adjust the radius as needed
-                                border: Border.all(
-                                  color: Color(0xFF7F7FE1),
-                                  // Specify the border color
-                                  width: 2.0, // Adjust the border width as needed
-                                ),
-                              ),
-                              child: Column(children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 3.0),
-                                  // Adjust the padding as needed
-                                  child: Text(
-                                    "Available PL's",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Calibri',
-                                      color: Color(0xFFf15f22),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(top: 4.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // Your click listener logic here
-                                      print("Container Clicked!");
-
-                                      //  printLookupDetailId('PL');
-
-                                      DateTime currentTime = DateTime.now();
-                                      DateTime formattedlogintime = DateTime.parse(logintime!);
-                                      // Replace this with your actual login time
-                                      DateTime loginTime = formattedlogintime /* Replace with your login time */;
-
-                                      // Calculate the time difference
-                                      Duration timeDifference = currentTime.difference(loginTime);
-
-                                      // Check if the time difference is less than or equal to 1 hour (3600 seconds)
-                                      if (timeDifference.inSeconds <= 3600) {
-                                        // Login is within the allowed window
-                                        if (availablepls <= 0) {
-                                          // Show a toast message
-                                          Commonutils.showCustomToastMessageLong('No PLs Available!', context, 1, 3);
-                                        } else {
-                                          printLookupDetailId('PL');
-                                        }
-                                        print("Login is within 1 hour of current time.");
-                                      } else {
-                                        // Login is outside the allowed window
-                                        _showtimeoutdialog(context);
-                                        print("Login is more than 1 hour from current time.");
-                                      }
-
-                                      // Navigator.of(context).pushReplacement(
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) => apply_leave()),
-                                      // );
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "$availablepls",
-                                          style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Calibri',
-                                            color: Color(0xFFf15f22),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 3.0,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Text(
-                                            "Click Here to Apply",
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Calibri',
-                                              color: Color(0xFF7F7FE1),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ]),
-                              // Other child widgets or content can be added here
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6.0),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFF746cdf),
-                                    Color(0xFF81aed5),
-                                  ], // Adjust the colors as needed
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 19.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "CL",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "$usedCasualLeavesInYear",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Calibri',
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 2.0,
-                                      ),
-                                      Text(
-                                        "/",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 2.0,
-                                      ),
-                                      Text(
-                                        "$allotcausalleaves",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Calibri',
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6.0),
-                                // Adjust the radius as needed
-                                border: Border.all(
-                                  color: Color(0xFF7F7FE1),
-                                  // Specify the border color
-                                  width: 2.0, // Adjust the border width as needed
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 3.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "Monthly CL's",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: width / 6,
-                                        height: 30.0,
-                                        child: IconButton(
-                                          padding: EdgeInsets.only(right: 0.0),
-                                          onPressed: () {
-                                            _selectPreviousMonthCL();
-                                          },
-                                          iconSize: 20.0,
-                                          icon: Icon(
-                                            Icons.arrow_left,
-                                            color: Color(0xFFf15f22),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: width / 1.6, // Set your desired width here
-                                        child: Text(
-                                          DateFormat('MMMM').format(_selectedMonthCL),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Calibri',
-                                            color: Color(0xFF746cdf),
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: width / 6,
-                                        height: 30.0,
-                                        child: IconButton(
-                                            padding: EdgeInsets.only(left: 0),
-                                            onPressed: () {
-                                              _selectNextMonthCL();
-                                            },
-                                            iconSize: 20.0,
-                                            icon: Icon(
-                                              Icons.arrow_right,
-                                              color: Color(0xFFf15f22),
-                                            ),
-                                            alignment: Alignment.center),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 1.0),
-                                    // Adjust the padding as needed
-                                    child: Text(
-                                      "$noOfleavesinCLs",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Calibri',
-                                        color: Color(0xFFf15f22),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              // Other child widgets or content can be added here
-                            ),
-
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3.5,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(6.0),
-                                border: Border.all(
-                                  color: Color(0xFF7F7FE1),
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: InkWell(
-                                onTap: () {
+                // SingleChildScrollView(
+                //   child:
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  padding: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0, bottom: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Padding(
+                              //   padding:
+                              //       EdgeInsets.only(top: 0.0, left: 0.0, right: 0.0),
+                              //   child: Container(
+                              //     width: double.infinity,
+                              //     decoration: BoxDecoration(
+                              //       color: Color(0xFFf15f22),
+                              //       borderRadius: BorderRadius.circular(6.0),
+                              //     ),
+                              //     child:
+                              // ElevatedButton(
+                              //   onPressed: () async {
+                              //     Navigator.of(context).pushReplacement(
+                              //       MaterialPageRoute(
+                              //         builder: (context) => apply_leave(
+                              //           buttonName: "test", // Example button name
+                              //           lookupDetailId: -3, // Pass the lookupDetailId
+                              //         ),
+                              //       ),
+                              //     );
+                              //   },
+                              //   child: Text(
+                              //     'Apply',
+                              //     style: TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: 16,
+                              //       fontFamily: 'hind_semibold',
+                              //     ),
+                              //   ),
+                              //   style: ElevatedButton.styleFrom(
+                              //     primary: Colors.transparent,
+                              //     elevation: 0,
+                              //     shape: RoundedRectangleBorder(
+                              //       borderRadius: BorderRadius.circular(4.0),
+                              //     ),
+                              //   ),
+                              // ),
+                              //   ),
+                              //  ),
+                              const Spacer(),
+                              ElevatedButton(
+                                onPressed: () {
                                   DateTime currentTime = DateTime.now();
                                   DateTime formattedlogintime = DateTime.parse(logintime!);
-                                  // Replace this with your actual login time
                                   DateTime loginTime = formattedlogintime /* Replace with your login time */;
 
                                   // Calculate the time difference
@@ -819,52 +328,321 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                   // Check if the time difference is less than or equal to 1 hour (3600 seconds)
                                   if (timeDifference.inSeconds <= 3600) {
                                     // Login is within the allowed window
-                                    if (availablecls <= 0) {
-                                      // Show a toast message
-                                      Commonutils.showCustomToastMessageLong('No CLs Available!', context, 1, 3);
-                                    } else {
-                                      printLookupDetailId('CL');
-                                    }
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) => apply_leave(
+                                          buttonName: "test", // Example button name
+                                          lookupDetailId: -3,
+                                          employename: EmployeName, // Pass the lookupDetailId
+                                        ),
+                                      ),
+                                    );
+
                                     print("Login is within 1 hour of current time.");
                                   } else {
                                     // Login is outside the allowed window
                                     _showtimeoutdialog(context);
                                     print("Login is more than 1 hour from current time.");
                                   }
-                                  //  printLookupDetailId('CL');
+
+                                  // Handle the apply button click event
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFf15f22),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Apply",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 8.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xFF746cdf),
+                                      Color(0xFF81aed5),
+                                    ], // Adjust the colors as needed
+                                  ),
+                                ),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 3.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 19.0),
+                                      // Adjust the padding as needed
                                       child: Text(
-                                        "Available CL's",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Calibri',
-                                          color: Color(0xFFf15f22),
-                                        ),
+                                        "PL's",
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
                                       ),
                                     ),
-                                    Container(
-                                      padding: EdgeInsets.only(top: 4.0),
+                                    const SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "$usedPrivilegeLeavesInYear",
+                                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
+                                        ),
+                                        const SizedBox(
+                                          width: 2.0,
+                                        ),
+                                        const Text(
+                                          "/",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 2.0,
+                                        ),
+                                        Text(
+                                          "$allottedPrivilegeLeaves",
+                                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Calibri'),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  // Adjust the radius as needed
+                                  border: Border.all(
+                                    color: const Color(0xFF7F7FE1),
+                                    // Specify the border color
+                                    width: 2.0, // Adjust the border width as needed
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 3.0),
+                                      // Adjust the padding as needed
+                                      child: Text(
+                                        "Monthly PL's",
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFFf15f22), fontFamily: 'Calibri'),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: width / 6,
+                                          height: 30.0,
+                                          child: IconButton(
+                                            padding: const EdgeInsets.only(right: 0.0),
+                                            onPressed: () {
+                                              _selectPreviousMonthPL();
+                                            },
+                                            iconSize: 20.0,
+                                            icon: const Icon(
+                                              Icons.arrow_left,
+                                              color: Color(0xFFf15f22),
+                                            ),
+                                          ),
+                                        ),
+                                        // Container(
+                                        //   width: width / 1.6, // Set your desired width here
+                                        //   child: Text(
+                                        //     DateFormat('MMMM').format(_selectedMonthPL),
+                                        //     style: TextStyle(
+                                        //       fontSize: 14,
+                                        //       fontWeight: FontWeight.w600,
+                                        //       fontFamily: 'Calibri',
+                                        //       color: Color(0xFF746cdf),
+                                        //     ),
+                                        //     textAlign: TextAlign.center,
+                                        //   ),
+                                        // ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final selected = await showMonthPicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2000),
+                                              lastDate: DateTime(2100),
+                                            );
+                                            if (selected != null) {
+                                              // Print the selected month and year
+                                              print('Selected month: ${selected.month}, year: ${selected.year}');
+
+                                              // Optionally, update the UI with the selected month and year
+                                              setState(() {
+                                                _selectedMonthPL = selected;
+                                                montlyleavesPl(selected.month, selected.year);
+                                              });
+                                            }
+                                            // showmonthpickerforpl();
+                                          },
+                                          child: SizedBox(
+                                            width: width / 1.6,
+                                            child: Text(
+                                              '${_selectedMonthPL.month}/${_selectedMonthPL.year}',
+                                              style: const TextStyle(
+                                                  fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Calibri', color: Color(0xFF746cdf)),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+
+                                        SizedBox(
+                                          width: width / 6,
+                                          height: 30.0,
+                                          child: IconButton(
+                                              padding: const EdgeInsets.only(left: 0),
+                                              onPressed: () {
+                                                _selectNextMonthPL();
+                                              },
+                                              iconSize: 20.0,
+                                              icon: const Icon(
+                                                Icons.arrow_right,
+                                                color: Color(0xFFf15f22),
+                                              ),
+                                              alignment: Alignment.center),
+                                        ),
+                                      ],
+                                    ),
+                                    // Padding(
+                                    //   padding: EdgeInsets.only(top: 1.0),
+                                    //   // Adjust the padding as needed
+                                    //   child: Text(
+                                    //     "$noOfleavesinPLs",
+                                    //     style: TextStyle(
+                                    //       fontSize: 18,
+                                    //       fontWeight: FontWeight.w600,
+                                    //       fontFamily: 'Calibri',
+                                    //       color: Color(0xFFf15f22),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 1.0),
+                                      // Adjust the padding as needed
+                                      child: isLoading
+                                          ? const SizedBox(
+                                              width: 15,
+                                              height: 15,
+                                              child: CircularProgressIndicator.adaptive(),
+                                            ) // Show circular loading indicator
+                                          : Text(
+                                              "${noOfleavesinPLs ?? 0.0}",
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Calibri',
+                                                color: Color(0xFFf15f22),
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  // Adjust the radius as needed
+                                  border: Border.all(
+                                    color: const Color(0xFF7F7FE1),
+                                    // Specify the border color
+                                    width: 2.0, // Adjust the border width as needed
+                                  ),
+                                ),
+                                child: Column(children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 3.0),
+                                    // Adjust the padding as needed
+                                    child: Text(
+                                      "Available PL's",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Calibri',
+                                        color: Color(0xFFf15f22),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 4.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // Your click listener logic here
+                                        print("Container Clicked!");
+
+                                        //  printLookupDetailId('PL');
+
+                                        DateTime currentTime = DateTime.now();
+                                        DateTime formattedlogintime = DateTime.parse(logintime!);
+                                        // Replace this with your actual login time
+                                        DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+                                        // Calculate the time difference
+                                        Duration timeDifference = currentTime.difference(loginTime);
+
+                                        // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+                                        if (timeDifference.inSeconds <= 3600) {
+                                          // Login is within the allowed window
+                                          if (availablepls <= 0) {
+                                            // Show a toast message
+                                            Commonutils.showCustomToastMessageLong('No PLs Available!', context, 1, 3);
+                                          } else {
+                                            printLookupDetailId('PL');
+                                          }
+                                          print("Login is within 1 hour of current time.");
+                                        } else {
+                                          // Login is outside the allowed window
+                                          _showtimeoutdialog(context);
+                                          print("Login is more than 1 hour from current time.");
+                                        }
+
+                                        // Navigator.of(context).pushReplacement(
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) => apply_leave()),
+                                        // );
+                                      },
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "$availablecls",
-                                            style: TextStyle(
-                                              fontSize: 26,
+                                            "$availablepls",
+                                            style: const TextStyle(
+                                              fontSize: 23,
                                               fontWeight: FontWeight.w600,
                                               fontFamily: 'Calibri',
                                               color: Color(0xFFf15f22),
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: 3.0,
-                                          ),
-                                          Align(
+                                          // SizedBox(
+                                          //   height: 3.0,
+                                          // ),
+                                          const Align(
                                             alignment: Alignment.bottomCenter,
                                             child: Text(
                                               "Click Here to Apply",
@@ -879,261 +657,658 @@ class _leaves_screen_screenState extends State<leaves_screen> {
                                         ],
                                       ),
                                     ),
+                                  )
+                                ]),
+                                // Other child widgets or content can be added here
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xFF746cdf),
+                                      Color(0xFF81aed5),
+                                    ], // Adjust the colors as needed
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 19.0),
+                                      // Adjust the padding as needed
+                                      child: Text(
+                                        "CL's",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Calibri',
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "$usedCasualLeavesInYear",
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Calibri',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 2.0,
+                                        ),
+                                        const Text(
+                                          "/",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 2.0,
+                                        ),
+                                        Text(
+                                          "$allotcausalleaves",
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Calibri',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ),
-                            ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  // Adjust the radius as needed
+                                  border: Border.all(
+                                    color: const Color(0xFF7F7FE1),
+                                    // Specify the border color
+                                    width: 2.0, // Adjust the border width as needed
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 3.0),
+                                      // Adjust the padding as needed
+                                      child: Text(
+                                        "Monthly CL's",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Calibri',
+                                          color: Color(0xFFf15f22),
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: width / 6,
+                                          height: 30.0,
+                                          child: IconButton(
+                                            padding: const EdgeInsets.only(right: 0.0),
+                                            onPressed: () {
+                                              _selectPreviousMonthCL();
+                                              //       ///_calender();
+                                            },
+                                            iconSize: 20.0,
+                                            icon: const Icon(
+                                              Icons.arrow_left,
+                                              color: Color(0xFFf15f22),
+                                            ),
+                                          ),
+                                        ),
+                                        // Container(
+                                        //   width: width / 1.6, // Set your desired width here
+                                        //   child: Text(
+                                        //     DateFormat('MMMM').format(_selectedMonthCL),
+                                        //     style: TextStyle(
+                                        //       fontSize: 14,
+                                        //       fontWeight: FontWeight.w600,
+                                        //       fontFamily: 'Calibri',
+                                        //       color: Color(0xFF746cdf),
+                                        //     ),
+                                        //     textAlign: TextAlign.center,
+                                        //   ),
+                                        // ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final selected = await showMonthPicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2000),
+                                              lastDate: DateTime(2100),
+                                            );
+                                            if (selected != null) {
+                                              // Print the selected month and year
+                                              print('Selected month: ${selected.month}, year: ${selected.year}');
 
-                            //
+                                              // Optionally, update the UI with the selected month and year
+                                              setState(() {
+                                                _selectedMonthCL = selected;
+                                                montlyleavesCL(selected.month, selected.year);
+                                              });
+                                            }
+                                          },
+                                          child: SizedBox(
+                                            width: width / 1.6,
+                                            child: Text(
+                                              '${_selectedMonthCL.month}/${_selectedMonthCL.year}',
+                                              style: const TextStyle(
+                                                  fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Calibri', color: Color(0xFF746cdf)),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+
+                                        SizedBox(
+                                          width: width / 6,
+                                          height: 30.0,
+                                          child: IconButton(
+                                              padding: const EdgeInsets.only(left: 0),
+                                              onPressed: () {
+                                                _selectNextMonthCL();
+                                              },
+                                              iconSize: 20.0,
+                                              icon: const Icon(
+                                                Icons.arrow_right,
+                                                color: Color(0xFFf15f22),
+                                              ),
+                                              alignment: Alignment.center),
+                                        ),
+                                      ],
+                                    ),
+                                    // Padding(
+                                    //   padding: EdgeInsets.only(top: 1.0),
+                                    //   // Adjust the padding as needed
+                                    //   child: Text(
+                                    //     "$noOfleavesinCLs",
+                                    //     style: TextStyle(
+                                    //       fontSize: 18,
+                                    //       fontWeight: FontWeight.w600,
+                                    //       fontFamily: 'Calibri',
+                                    //       color: Color(0xFFf15f22),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 1.0),
+                                      // Adjust the padding as needed
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              width: 15,
+                                              height: 15,
+                                              child: CircularProgressIndicator.adaptive(),
+                                            ) // Show circular loading indicator
+                                          : Text(
+                                              "${noOfleavesinCLs ?? 0.0}",
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Calibri',
+                                                color: Color(0xFFf15f22),
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+
+                                // Other child widgets or content can be added here
+                              ),
+
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  border: Border.all(
+                                    color: const Color(0xFF7F7FE1),
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    DateTime currentTime = DateTime.now();
+                                    DateTime formattedlogintime = DateTime.parse(logintime!);
+                                    // Replace this with your actual login time
+                                    DateTime loginTime = formattedlogintime /* Replace with your login time */;
+
+                                    // Calculate the time difference
+                                    Duration timeDifference = currentTime.difference(loginTime);
+
+                                    // Check if the time difference is less than or equal to 1 hour (3600 seconds)
+                                    if (timeDifference.inSeconds <= 3600) {
+                                      // Login is within the allowed window
+                                      if (availablecls <= 0) {
+                                        // Show a toast message
+                                        Commonutils.showCustomToastMessageLong('No CLs Available!', context, 1, 3);
+                                      } else {
+                                        printLookupDetailId('CL');
+                                      }
+                                      print("Login is within 1 hour of current time.");
+                                    } else {
+                                      // Login is outside the allowed window
+                                      _showtimeoutdialog(context);
+                                      print("Login is more than 1 hour from current time.");
+                                    }
+                                    //  printLookupDetailId('CL');
+                                  },
+                                  child: Column(
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.only(top: 3.0),
+                                        child: Text(
+                                          "Available CL's",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Calibri',
+                                            color: Color(0xFFf15f22),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.only(top: 4.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "$availablecls",
+                                              style: const TextStyle(
+                                                fontSize: 23,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Calibri',
+                                                color: Color(0xFFf15f22),
+                                              ),
+                                            ),
+                                            // SizedBox(
+                                            //   height: 3.0,
+                                            // ),
+                                            const Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Text(
+                                                "Click Here to Apply",
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Calibri',
+                                                  color: Color(0xFF7F7FE1),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              //
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16.0,
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color(0xFFf15f22), // Set background color to orange
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Holiday Title',
+                                    style: TextStyle(color: Colors.white), // Set text color to white
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'From Date',
+                                    style: TextStyle(color: Colors.white), // Set text color to white
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 25.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'To Date',
+                                    style: TextStyle(color: Colors.white), // Set text color to white
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     Container(
-                        //       width: MediaQuery.of(context).size.width / 3.5,
-                        //       height: 90,
-                        //       decoration: BoxDecoration(
-                        //         borderRadius: BorderRadius.circular(6.0),
-                        //         gradient: LinearGradient(
-                        //           begin: Alignment.topCenter,
-                        //           end: Alignment.bottomCenter,
-                        //           colors: [
-                        //             Color(0xFF875eca),
-                        //             Color(0xFFe83a4c),
-                        //           ], // Adjust the colors as needed
-                        //         ),
-                        //       ),
-                        //       child: Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.center,
-                        //         children: [
-                        //           Padding(
-                        //             padding: const EdgeInsets.only(top: 19.0),
-                        //             child: Text(
-                        //               "LWP",
-                        //               style: TextStyle(
-                        //                 fontSize: 18,
-                        //                 fontWeight: FontWeight.w600,
-                        //                 fontFamily: 'Calibri',
-                        //                 color: Colors.white,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           SizedBox(height: 10.0),
-                        //           Row(
-                        //             mainAxisAlignment: MainAxisAlignment.center,
-                        //             children: [
-                        //               Text(
-                        //                 "0",
-                        //                 style: TextStyle(
-                        //                   fontSize: 15,
-                        //                   fontWeight: FontWeight.w600,
-                        //                   fontFamily: 'Calibri',
-                        //                   color: Colors.white,
-                        //                 ),
-                        //               ),
-                        //               SizedBox(width: 2.0),
-                        //               Text(
-                        //                 "/",
-                        //                 style: TextStyle(
-                        //                   fontSize: 18,
-                        //                   fontWeight: FontWeight.bold,
-                        //                   color: Colors.white,
-                        //                 ),
-                        //               ),
-                        //               SizedBox(width: 2.0),
-                        //               Text(
-                        //                 "10",
-                        //                 style: TextStyle(
-                        //                   fontSize: 15,
-                        //                   fontWeight: FontWeight.w600,
-                        //                   fontFamily: 'Calibri',
-                        //                   color: Colors.white,
-                        //                 ),
-                        //               ),
-                        //             ],
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //     Container(
-                        //       width: MediaQuery.of(context).size.width / 3.5,
-                        //       height: 90,
-                        //       decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(6.0),
-                        //         // Adjust the radius as needed
-                        //         border: Border.all(
-                        //           color: Color(0xFF7F7FE1),
-                        //           // Specify the border color
-                        //           width: 2.0, // Adjust the border width as needed
-                        //         ),
-                        //       ),
-                        //       child: Column(
-                        //         children: [
-                        //           Padding(
-                        //             padding: const EdgeInsets.only(top: 3.0),
-                        //             // Adjust the padding as needed
-                        //             child: Text(
-                        //               "Monthly LWP",
-                        //               style: TextStyle(
-                        //                 fontSize: 16,
-                        //                 fontWeight: FontWeight.w600,
-                        //                 fontFamily: 'Calibri',
-                        //                 color: Color(0xFFf15f22),
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           Row(
-                        //             children: [
-                        //               Container(
-                        //                 width: width / 6,
-                        //                 height: 30.0,
-                        //                 child: IconButton(
-                        //                   padding: EdgeInsets.only(right: 0.0),
-                        //                   onPressed: () {
-                        //                     //_selectPreviousMonth();
-                        //                     _selectPreviousMonthlwp();
-                        //                   },
-                        //                   iconSize: 20.0,
-                        //                   icon: Icon(
-                        //                     Icons.arrow_left,
-                        //                     color: Color(0xFFf15f22),
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //               Container(
-                        //                 width: width /
-                        //                     1.6, // Set your desired width here
-                        //                 child: Text(
-                        //                   DateFormat('MMMM')
-                        //                       .format(_selectedMonthlwp),
-                        //                   style: TextStyle(
-                        //                     fontSize: 14,
-                        //                     fontWeight: FontWeight.w600,
-                        //                     fontFamily: 'Calibri',
-                        //                     color: Color(0xFF746cdf),
-                        //                   ),
-                        //                   textAlign: TextAlign.center,
-                        //                 ),
-                        //               ),
-                        //               Container(
-                        //                 width: width / 6,
-                        //                 height: 30.0,
-                        //                 child: IconButton(
-                        //                     padding: EdgeInsets.only(left: 0),
-                        //                     onPressed: () {
-                        //                       // _selectNextMonth();
-                        //                       _selectNextMonthlwp();
-                        //                     },
-                        //                     iconSize: 20.0,
-                        //                     icon: Icon(
-                        //                       Icons.arrow_right,
-                        //                       color: Color(0xFFf15f22),
-                        //                     ),
-                        //                     alignment: Alignment.center),
-                        //               ),
-                        //             ],
-                        //           ),
-                        //           Padding(
-                        //             padding: const EdgeInsets.only(top: 1.0),
-                        //             // Adjust the padding as needed
-                        //             child: Text(
-                        //               "$noOfleavesinLWP",
-                        //               style: TextStyle(
-                        //                 fontSize: 20,
-                        //                 fontWeight: FontWeight.w600,
-                        //                 fontFamily: 'Calibri',
-                        //                 color: Color(0xFFf15f22),
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //
-                        //       // Other child widgets or content can be added here
-                        //     ),
-                        //     Container(
-                        //       width: MediaQuery.of(context).size.width / 3.5,
-                        //       height: 90,
-                        //       // decoration: BoxDecoration(
-                        //       //   color: Colors.white,
-                        //       //   borderRadius: BorderRadius.circular(6.0),
-                        //       //   // Adjust the radius as needed
-                        //       //   border: Border.all(
-                        //       //     color: Color(0xFF7F7FE1),
-                        //       //     // Specify the border color
-                        //       //     width: 2.0, // Adjust the border width as needed
-                        //       //   ),
-                        //       // ),
-                        //       child: Column(children: [
-                        //         // Padding(
-                        //         //   padding: const EdgeInsets.only(top: 3.0),
-                        //         //   // Adjust the padding as needed
-                        //         //   child: Text(
-                        //         //     "Available PL's",
-                        //         //     style: TextStyle(
-                        //         //       fontSize: 16,
-                        //         //       fontWeight: FontWeight.w600,
-                        //         //       fontFamily: 'Calibri',
-                        //         //       color: Color(0xFFf15f22),
-                        //         //     ),
-                        //         //   ),
-                        //         // ),
-                        //         // Container(
-                        //         //     padding: EdgeInsets.only(top: 4.0),
-                        //         //     child: Column(
-                        //         //       crossAxisAlignment: CrossAxisAlignment.center,
-                        //         //       children: [
-                        //         //         Text(
-                        //         //           "8",
-                        //         //           style: TextStyle(
-                        //         //             fontSize: 26,
-                        //         //             fontWeight: FontWeight.w600,
-                        //         //             fontFamily: 'Calibri',
-                        //         //             color: Color(0xFFf15f22),
-                        //         //           ),
-                        //         //         ),
-                        //         //         SizedBox(
-                        //         //           height: 3.0,
-                        //         //         ),
-                        //         //         Align(
-                        //         //           alignment: Alignment.bottomCenter,
-                        //         //           child: Text(
-                        //         //             "Click Hear to Apply",
-                        //         //             style: TextStyle(
-                        //         //               fontSize: 11,
-                        //         //               fontWeight: FontWeight.w600,
-                        //         //               fontFamily: 'Calibri',
-                        //         //               color: Color(0xFF7F7FE1),
-                        //         //             ),
-                        //         //           ),
-                        //         //         )
-                        //         //       ],
-                        //         //     ))
-                        //       ]),
-                        //       // Other child widgets or content can be added here
-                        //     ),
-                        //   ],
-                        // ),
-                        // Your existing content...
+                      ),
+                      // FutureBuilder(
+                      //   future: fetchHolidayList(),
+                      //   builder: (context, snapshot) {
+                      //     if (snapshot.connectionState == ConnectionState.waiting) {
+                      //       return Container(
+                      //           padding: EdgeInsets.all(25.0),
+                      //           child: Center(
+                      //             child: CircularProgressIndicator(),
+                      //           ));
+                      //     } else if (snapshot.hasError) {
+                      //       return Container(
+                      //           padding: EdgeInsets.all(25.0),
+                      //           child: Center(
+                      //             child: Text('Please Login to Check Holidays List'),
+                      //           ));
+                      //     } else if (snapshot.hasData) {
+                      //       List<dynamic> holidays = snapshot.data as List<dynamic>;
+                      //       if (holidays.isEmpty) {
+                      //         return Center(
+                      //           child: Text('No holidays'),
+                      //         );
+                      //       } else {
+                      //         return
+                      Expanded(
+                          //   width: MediaQuery.of(context).size.width,
+                          //   height: MediaQuery.of(context).size.height,
+                          child: ListView.builder(
+                        itemCount: holidaylist.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        physics: const ClampingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          Holiday_Model holiday = holidaylist[index];
+                          if (holiday.isActive == true) {
+                            String? formattedFromDate;
+                            String? formattedToDate;
 
-                        // Add LeavesScreen content here if needed
-                        // Your existing content...
+                            formattedFromDate = DateFormat('dd MMM yyyy').format(DateTime.parse(holiday.fromDate.toString()));
+                            print('formattedFromDate$formattedFromDate');
+                          
+                            // if (holiday.toDate.toString() == null) {
+                            //   formattedToDate = DateFormat('dd MMM yyyy').format(DateTime.parse(holiday.toDate.toString()));
+                            //   print('formattedToDate$formattedToDate');
+                            // } else {
+                            //   formattedToDate = formattedFromDate;
+                            // }
 
-                        // Add LeavesScreen content here if needed
-                      ],
-                    ),
+                            if (holiday.toDate == null) {
+                              formattedToDate = formattedFromDate;
+                            } else {
+                              formattedToDate = DateFormat('dd MMM yyyy').format(DateTime.parse(holiday.toDate.toString()));
+                              print('formattedToDate: $formattedToDate');
+                            }
+
+                            return Scrollbar(
+                                child: Column(
+                              children: [
+                                Container(
+                                  // margin: EdgeInsets.symmetric(vertical: 10.0),
+                                  //width: MediaQuery.of(context).size.width,
+                                  //   height: MediaQuery.of(context).size.height,
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0, bottom: 5.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          //  Text('Holiday Title'),
+                                          SizedBox(
+                                            width: 100,
+                                            child: Text(
+                                              holiday.title,
+                                              softWrap: true,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          //  Text('From Date'),
+                                          SizedBox(
+                                              width: 90,
+                                              child: Text(
+                                                formattedFromDate,
+                                                textAlign: TextAlign.center,
+                                              ))
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          //  Text('From Date'),
+                                          SizedBox(
+                                              width: 90,
+                                              child: Text(
+                                                formattedToDate,
+                                                textAlign: TextAlign.center,
+                                              ))
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  color: Colors.grey.shade300,
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 1.0,
+                                )
+                              ],
+                            ));
+                          } else {
+                            return Container(); // Return empty container for inactive holidays
+                          }
+                        },
+                      ))
+                      //       }
+                      //     } else {
+                      //       return Center(
+                      //         child: Text('No data available'),
+                      //       );
+                      //     }
+                      //   },
+                      // ),
+                    ],
                   ),
                 ),
+                // ),
               ],
             ),
           ),
         ));
   }
+
+  // Future<List<dynamic>> fetchHolidayList() async {
+  //   try {
+  //     int currentYear = DateTime.now().year;
+  //     final url = Uri.parse(baseUrl + GetHolidayList + '$currentYear');
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': '$accessToken',
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('Response Body: ${response.body}');
+  //
+  //       try {
+  //         List<dynamic> holidayList = json.decode(response.body);
+  //         return holidayList;
+  //       } on FormatException catch (e) {
+  //         print('Error decoding JSON: $e');
+  //         return []; // Return empty list on decoding error (adjust as needed)
+  //       }
+  //     } else {
+  //       throw Exception('Failed to load holidays: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     rethrow; // Rethrow the caught exception
+  //   }
+  // }
+
+  // Future<List<Holiday_Model>> fetchHolidayList(String Accesstoken) async {
+  //   try {
+  //     int currentYear = DateTime.now().year;
+  //
+  //     final url = Uri.parse(baseUrl + GetHolidayList + '$currentYear');
+  //     print('fetcholiday:$url');
+  //     Map<String, String> headers = {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': '$accessToken',
+  //     };
+  //     final response = await http.get(url, headers: headers);
+  //
+  //     if (response.statusCode == 200) {
+  //       dynamic jsonData = json.decode(response.body);
+  //       print('jsonData$jsonData');
+  //       if (jsonData is List) {
+  //         List<Holiday_Model> holidayList = jsonData.map((json) => Holiday_Model.fromJson(json)).toList();
+  //         print('holidayList$holidayList');
+  //         setState(() {
+  //           holidaylist = holidayList;
+  //           print('holidaylist${holidaylist.length}');
+  //         });
+  //
+  //         return holidayList;
+  //       }
+  //       // else if (jsonData is Map<String, dynamic>) {
+  //       //   // Handle single object response
+  //       //   Holiday_Model holiday = Holiday_Model.fromJson(jsonData);
+  //       //   List<Holiday_Model> holidayList = [holiday];
+  //       //
+  //       //   setState(() {
+  //       //     holidaylist = holidayList;
+  //       //     print('holidaylist${holidaylist.length}');
+  //       //   });
+  //       //
+  //       //   return holidayList;
+  //       // } else {
+  //       //   throw FormatException('Invalid data format in response');
+  //       // }
+  //       return [];
+  //     } else {
+  //       throw Exception('Failed to load holidays: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Error_inholidayslist: $error');
+  //     return []; // Return empty list in case of an error
+  //   }
+  // }
+  Future<List<Holiday_Model>> fetchHolidayList(String accessToken) async {
+    try {
+      int currentYear = DateTime.now().year;
+
+      final url = Uri.parse('$baseUrl$GetHolidayList$currentYear');
+      print('fetchHoliday: $url');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': accessToken,
+      };
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = jsonDecode(response.body);
+        List<Holiday_Model> holidayList = jsonData.map((holidayJson) => Holiday_Model.fromJson(holidayJson)).toList();
+        setState(() {
+          holidaylist = holidayList;
+        });
+        print('holidays${holidaylist.length}');
+        return holidayList;
+      } else {
+        throw Exception('Failed to load holidays: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error in holiday list: $error');
+      return []; // Return empty list in case of an error
+    }
+  }
+
+// Function to check if a string is valid JSON
+
+  // Future<List<HolidayResponse>> fetchHolidayList() async {
+  //   int currentYear = DateTime.now().year;
+  //   final url = Uri.parse(baseUrl + GetHolidayList + '$currentYear');
+  //
+  //   try {
+  //     Map<String, String> headers = {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': '$accessToken',
+  //     };
+  //
+  //     final response = await http.get(url, headers: headers);
+  //     if (response.statusCode == 200) {
+  //       dynamic jsonData = json.decode(response.body);
+  //
+  //       if (jsonData is List) {
+  //         List<HolidayResponse> holidayList = jsonData.map((json) => HolidayResponse.fromJson(json)).toList();
+  //         setState(() {
+  //           holidaylist = holidayList;
+  //           print('holidaylist${holidaylist.length}');
+  //         });
+  //         return holidayList;
+  //       } else {
+  //         throw Exception('Invalid data format: Expected JSON array');
+  //       }
+  //     } else {
+  //       // Handle error if the request was not successful
+  //       print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+  //       return [];
+  //     }
+  //   } catch (error) {
+  //     // Handle any exceptions that occurred during the request
+  //     print('Error: $error');
+  //     return [];
+  //   }
+  // }
 
   void printLookupDetailId(String buttonName) {
     if (lookupDetails.isNotEmpty) {
@@ -1154,23 +1329,18 @@ class _leaves_screen_screenState extends State<leaves_screen> {
           );
         },
       );
-      if (selectedItem != null) {
-        // Handle the case when an element is found
-        print(selectedItem.lookupDetailId);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => apply_leave(
-              buttonName: buttonName, // Example button name
-              lookupDetailId: selectedItem.lookupDetailId,
-              employename: '$EmployeName', // Pass the lookupDetailId
-            ),
+      // Handle the case when an element is found
+      print(selectedItem.lookupDetailId);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => apply_leave(
+            buttonName: buttonName, // Example button name
+            lookupDetailId: selectedItem.lookupDetailId,
+            employename: EmployeName, // Pass the lookupDetailId
           ),
-        );
-      } else {
-        // Handle the case when no element is found
-        print('Item not found for buttonName: $buttonName');
-      }
-    } else {
+        ),
+      );
+        } else {
       // Handle the case when the list is empty
       print('lookupDetails list is empty');
     }
@@ -1189,13 +1359,13 @@ class _leaves_screen_screenState extends State<leaves_screen> {
   }
 
   Future<void> fetchDataleavetype(int dayWorkStatus) async {
-    final url = Uri.parse(baseUrl + getdropdown + '$dayWorkStatus');
-    print('fetchDataleavetype :${url}');
+    final url = Uri.parse('$baseUrl$getdropdown$dayWorkStatus');
+    print('fetchDataleavetype :$url');
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       },
     );
 
@@ -1225,47 +1395,84 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     }
   }
 
+  // void _selectPreviousMonthPL() {
+  //   setState(() {
+  //     int previousMonthPL = _selectedMonthPL.month - 1;
+  //     int monthId = previousMonthPL == 0 ? 12 : previousMonthPL;
+  //     _selectedMonthPL = DateTime(_selectedMonthPL.year, previousMonthPL);
+  //     montlyleavesPl(monthId);
+  //     // Now, you can use the monthId variable as needed
+  //     print('previous Month ID: $monthId');
+  //   });
+  // }
   void _selectPreviousMonthPL() {
     setState(() {
-      int previousMonthPL = _selectedMonthPL.month - 1;
-      int monthId = previousMonthPL == 0 ? 12 : previousMonthPL;
-      _selectedMonthPL = DateTime(_selectedMonthPL.year, previousMonthPL);
-      montlyleavesPl(monthId);
-      // Now, you can use the monthId variable as needed
-      print('previous Month ID: $monthId');
+      _selectedMonthPL = DateTime(_selectedMonthPL.year, _selectedMonthPL.month - 1);
+      print(' ${_selectedMonthPL.month}');
+
+      // Print year
+      print('Year: ${_selectedMonthPL.year}');
+      montlyleavesPl(_selectedMonthPL.month, _selectedMonthPL.year);
     });
   }
 
+  // void _selectNextMonthPL() {
+  //   setState(() {
+  //     int nextMonthPL = _selectedMonthPL.month + 1;
+  //     int monthId = nextMonthPL > 12 ? 1 : nextMonthPL;
+  //     _selectedMonthPL = DateTime(_selectedMonthPL.year, nextMonthPL);
+  //     montlyleavesPl(monthId);
+  //     // Now, you can use the monthId variable as needed
+  //     print('Next Month ID: $monthId');
+  //   });
+  // }
   void _selectNextMonthPL() {
     setState(() {
-      int nextMonthPL = _selectedMonthPL.month + 1;
-      int monthId = nextMonthPL > 12 ? 1 : nextMonthPL;
-      _selectedMonthPL = DateTime(_selectedMonthPL.year, nextMonthPL);
-      montlyleavesPl(monthId);
-      // Now, you can use the monthId variable as needed
-      print('Next Month ID: $monthId');
+      _selectedMonthPL = DateTime(_selectedMonthPL.year, _selectedMonthPL.month + 1);
+
+      // Print month name and number
+      print(' ${_selectedMonthPL.month}');
+
+      // Print year
+      print('Year: ${_selectedMonthPL.year}');
+      montlyleavesPl(_selectedMonthPL.month, _selectedMonthPL.year);
     });
   }
 
   void _selectPreviousMonthCL() {
     setState(() {
-      int previousMonthCL = _selectedMonthCL.month - 1;
-      int monthId = previousMonthCL == 0 ? 12 : previousMonthCL;
-      _selectedMonthCL = DateTime(_selectedMonthCL.year, previousMonthCL);
-      montlyleavesCL(monthId);
-      // Now, you can use the monthId variable as needed
-      print('previous Month ID: $monthId');
+      _selectedMonthCL = DateTime(_selectedMonthCL.year, _selectedMonthCL.month - 1);
+      print(' ${_selectedMonthCL.month}');
+
+      // Print year
+      print('Year: ${_selectedMonthCL.year}');
+      montlyleavesCL(_selectedMonthCL.month, _selectedMonthCL.year);
+
+      // int previousMonthCL = _selectedMonthCL.month - 1;
+      // int monthId = previousMonthCL == 0 ? 12 : previousMonthCL;
+      // _selectedMonthCL = DateTime(_selectedMonthCL.year, previousMonthCL);
+      // montlyleavesCL(monthId);
+      // // Now, you can use the monthId variable as needed
+      // print('previous Month ID: $monthId');
     });
   }
 
   void _selectNextMonthCL() {
     setState(() {
-      int nextMonthCl = _selectedMonthCL.month + 1;
-      int monthId = nextMonthCl > 12 ? 1 : nextMonthCl;
-      _selectedMonthCL = DateTime(_selectedMonthCL.year, nextMonthCl);
-      montlyleavesCL(monthId);
-      // Now, you can use the monthId variable as needed
-      print('Next Month ID: $monthId');
+      _selectedMonthCL = DateTime(_selectedMonthCL.year, _selectedMonthCL.month + 1);
+
+      // Print month name and number
+      print(' ${_selectedMonthCL.month}');
+
+      // Print year
+      print('Year: ${_selectedMonthCL.year}');
+      montlyleavesCL(_selectedMonthCL.month, _selectedMonthCL.year);
+      // int nextMonthCl = _selectedMonthCL.month + 1;
+      // int monthId = nextMonthCl > 12 ? 1 : nextMonthCl;
+      // _selectedMonthCL = DateTime(_selectedMonthCL.year, nextMonthCl);
+      // montlyleavesCL(monthId);
+      // // Now, you can use the monthId variable as needed
+      // print('Next Month ID: $monthId');
     });
   }
 
@@ -1291,20 +1498,23 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     });
   }
 
-  Future<void> montlyleavesPl(int monthId) async {
-    DateTime now = DateTime.now();
+  Future<void> montlyleavesPl(int monthId, int year) async {
+    setState(() {
+      isLoading = true; // Set isLoading to true before making the API call
+    });
+    //  DateTime now = DateTime.now();
 
     // Extract the current year
-    int currentYear = now.year;
+    // int currentYear = now.year;
 
     // Print the current year
-    print('Current Year: $currentYear');
+    //  print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
+      final url = Uri.parse('$baseUrl$getmontlyleaves/$monthId/$employeid/$year');
       print('monthlyleavesPlsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       };
       print('API headers: $accessToken');
 
@@ -1315,46 +1525,62 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       if (response.statusCode == 200) {
         // Parse the JSON response
         final List<dynamic> data = json.decode(response.body);
-
-        print('response data : ${data}');
-        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
-
-        // Now you have a List of LeaveInfo objects
-        for (var leaveInfo in leaveInfos) {
-          print('LeavePLType: ${leaveInfo.leaveType}');
-          // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
-          print('Used PLs in Month: ${leaveInfo.usedPLsInMonth.toDouble()}');
-          double noofPL = leaveInfo.usedPLsInMonth.toDouble();
-          print('noofPL:$noofPL');
+        if (response.body == "[]") {
           setState(() {
-            noOfleavesinPLs = noofPL.toDouble();
-            print('noOfleavesinPLs:$noOfleavesinPLs');
+            isLoading = false;
+            noOfleavesinPLs = 0.0;
           });
+        } else {
+          print('response data : $data');
+          List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
+
+          // Now you have a List of LeaveInfo objects
+          for (var leaveInfo in leaveInfos) {
+            print('LeavePLType: ${leaveInfo.leaveType}');
+            // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
+            print('Used PLs in Month: ${leaveInfo.usedPLsInMonth.toDouble()}');
+            double noofPL = leaveInfo.usedPLsInMonth.toDouble();
+            print('noofPL:$noofPL');
+            setState(() {
+              isLoading = false;
+              noOfleavesinPLs = noofPL.toDouble();
+              print('noOfleavesinPLs:$noOfleavesinPLs');
+            });
+          }
         }
       } else {
         // Handle error if the request was not successful
         print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+        setState(() {
+          isLoading = false; // Set isLoading to false if request fails
+        });
       }
     } catch (error) {
       // Handle any exceptions that occurred during the request
       print('Error: $error');
+      setState(() {
+        isLoading = false; // Set isLoading to false if request fails
+      });
     }
   }
 
-  Future<void> montlyleavesCL(int monthId) async {
-    DateTime now = DateTime.now();
-
-    // Extract the current year
-    int currentYear = now.year;
-
-    // Print the current year
-    print('Current Year: $currentYear');
+  Future<void> montlyleavesCL(int monthId, int year) async {
+    setState(() {
+      _isLoading = true; // Set isLoading to true before making the API call
+    });
+    // DateTime now = DateTime.now();
+    //
+    // // Extract the current year
+    // int currentYear = now.year;
+    //
+    // // Print the current year
+    // print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
+      final url = Uri.parse('$baseUrl$getmontlyleaves/$monthId/$employeid/$year');
       print('monthlyleavesClsapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       };
       print('API headers: $accessToken');
 
@@ -1365,28 +1591,41 @@ class _leaves_screen_screenState extends State<leaves_screen> {
       if (response.statusCode == 200) {
         // Parse the JSON response
         final List<dynamic> data = json.decode(response.body);
-
-        print('response data : ${data}');
-        List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
-
-        // Now you have a List of LeaveInfo objects
-        for (var leaveInfoCl in leaveInfos) {
-          print('LeaveClType: ${leaveInfoCl.leaveType}');
-          // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
-          print('UsedCLsin Month: ${leaveInfoCl.usedCLsInMonth.toDouble()}');
-
-          double noofCL = leaveInfoCl.usedCLsInMonth.toDouble();
-          print('noofCL:$noofCL');
+        if (response.body == "[]") {
           setState(() {
-            noOfleavesinCLs = noofCL.toDouble();
-            print('noOfleavesinCls:$noOfleavesinCLs');
+            _isLoading = false;
+            noOfleavesinCLs = 0.0;
           });
+        } else {
+          print('response data : $data');
+          List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
+
+          // Now you have a List of LeaveInfo objects
+          for (var leaveInfoCl in leaveInfos) {
+            print('LeaveClType: ${leaveInfoCl.leaveType}');
+            // print('Used CLs in Month: ${leaveInfo.usedCLsInMonth}');
+            print('UsedCLsin Month: ${leaveInfoCl.usedCLsInMonth.toDouble()}');
+
+            double noofCL = leaveInfoCl.usedCLsInMonth.toDouble();
+            print('noofCL:$noofCL');
+            setState(() {
+              _isLoading = false;
+              noOfleavesinCLs = noofCL.toDouble();
+              print('noOfleavesinCls:$noOfleavesinCLs');
+            });
+          }
         }
       } else {
         // Handle error if the request was not successful
+        setState(() {
+          _isLoading = false; // Set isLoading to false if request fails
+        });
         print('Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (error) {
+      setState(() {
+        _isLoading = false; // Set isLoading to false if request fails
+      });
       // Handle any exceptions that occurred during the request
       print('Error: $error');
     }
@@ -1401,11 +1640,11 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     // Print the current year
     print('Current Year: $currentYear');
     try {
-      final url = Uri.parse(baseUrl + getmontlyleaves + '/$monthId' + '/$employeid' + '/$currentYear');
+      final url = Uri.parse('$baseUrl$getmontlyleaves/$monthId/$employeid/$currentYear');
       print('monthlyleaveslwpapi: $url');
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'Authorization': '$accessToken',
+        'Authorization': accessToken,
       };
       print('API headers: $accessToken');
 
@@ -1417,7 +1656,7 @@ class _leaves_screen_screenState extends State<leaves_screen> {
         // Parse the JSON response
         final List<dynamic> data = json.decode(response.body);
 
-        print('response data : ${data}');
+        print('response data : $data');
         List<leave_model> leaveInfos = data.map((json) => leave_model.fromJson(json)).toList();
 
         // Now you have a List of LeaveInfo objects
@@ -1448,7 +1687,105 @@ class _leaves_screen_screenState extends State<leaves_screen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       accessToken = prefs.getString("accessToken") ?? "";
+      fetchHolidayList(accessToken);
     });
     print("accestokeninapplyleave:$accessToken");
+  }
+
+  void showmonthpickerforpl(BuildContext context) {
+    showDialog(
+      // barrierDismissible: false,
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Confirmation",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Calibri',
+                      color: Color(0xFFf15f22),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      // Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                      //  Navigator.of(context, rootNavigator: true).pop(context);
+                    },
+                    child: const Icon(
+                      CupertinoIcons.multiply,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/caution-sign.png',
+                          height: 30,
+                          width: 30,
+                        ),
+                        const SizedBox(
+                          width: 15.0,
+                        ),
+                        const Text(
+                            'Your leave request is within the WFH span. will you want to split this,Please confirm this by Clicking Confirm else Cancel')
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf15f22), // Change to your desired background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Set border radius
+                    ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf15f22), // Change to your desired background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Set border radius
+                    ),
+                  ),
+                  child: const Text(
+                    'Confirm',
+                    style: TextStyle(color: Colors.white, fontFamily: 'Calibri'), // Set text color to white
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }

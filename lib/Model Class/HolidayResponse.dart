@@ -3,7 +3,7 @@ class HolidayResponse {
   String title;
   // String description;
   DateTime fromDate;
-  // DateTime? toDate; // Make toDate nullable
+  DateTime? toDate; // Make toDate nullable
   // int year;
   bool isActive;
   // DateTime createdAt;
@@ -16,7 +16,7 @@ class HolidayResponse {
     required this.title,
     // required this.description,
     required this.fromDate,
-    // required this.toDate,
+    required this.toDate,
     // required this.year,
     required this.isActive,
     // required this.createdAt,
@@ -31,7 +31,8 @@ class HolidayResponse {
       title: json['title'],
       // description: json['description'],
       fromDate: DateTime.parse(json['fromDate']),
-      // toDate: json['toDate'] != null ? DateTime.parse(json['toDate']) : null,
+      toDate: json['toDate'] != null ? DateTime.parse(json['toDate']) : null,
+
       // year: json['year'],
       isActive: json['isActive'],
       // createdAt: DateTime.parse(json['createdAt']),

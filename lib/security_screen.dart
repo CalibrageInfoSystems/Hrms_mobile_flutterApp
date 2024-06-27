@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/api%20config.dart';
@@ -10,6 +9,8 @@ import 'Commonutils.dart';
 import 'main.dart';
 
 class securityscreen extends StatefulWidget {
+  const securityscreen({super.key});
+
   @override
   _securityscreenscreenState createState() => _securityscreenscreenState();
 }
@@ -30,7 +31,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
   List<Map<String, dynamic>> additionalQuestionsAndAnswers = [];
   int noofquestionavaiable = 0;
   String? Question_1, Question_2, Answer_1, Answer_2, api_answer_1, api_answer_2;
-  Map<int, TextEditingController> _answerControllers = {};
+  final Map<int, TextEditingController> _answerControllers = {};
 
   @override
   void initState() {
@@ -72,7 +73,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                   Align(
                       alignment: Alignment.topLeft,
                       child: Container(
-                        padding: EdgeInsets.only(left: 10.0, top: 5.0),
+                        padding: const EdgeInsets.only(left: 10.0, top: 5.0),
                         child: GestureDetector(
                           onTap: () {
                             // Handle the back button press here
@@ -82,11 +83,11 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           child: Container(
                             width: 40.0,
                             height: 40.0,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.white, // Change the color as needed
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.arrow_back,
                               color: Color(0xFFF44614), // Change the color as needed
                             ),
@@ -97,12 +98,12 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
               ),
             ),
             body: Theme(
-              data: Theme.of(context).copyWith(colorScheme: ColorScheme.light(primary: Color(0xFFf15f22))),
+              data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: Color(0xFFf15f22))),
               child: SingleChildScrollView(
                 child: Container(
                   height: screenHeight,
                   width: screenWidth,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
                         'assets/background_layer_2.png',
@@ -137,7 +138,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                       //       ),
                       //     )),
                       Padding(
-                        padding: EdgeInsets.only(top: 35.0),
+                        padding: const EdgeInsets.only(top: 35.0),
                         child: SvgPicture.asset(
                           'assets/cislogo-new.svg',
                           height: 120.0,
@@ -145,21 +146,18 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           //  color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 5.0),
-                      Container(
+                      const SizedBox(height: 5.0),
+                      const SizedBox(
                         width: double.infinity,
                         child: Text(
                           'Forgot Password',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: 'Calibri',
-                          ),
+                          style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Calibri', fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      SizedBox(height: 10.0),
-                      Stepper(
+                      const SizedBox(height: 10.0),
+                      SingleChildScrollView(
+                          child: Stepper(
                         type: StepperType.vertical,
                         currentStep: currentstep,
                         onStepTapped: (step) {
@@ -189,30 +187,30 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                             // Hide the "Previous" button in the first step
                             return Row(
                               children: <Widget>[
-                                Spacer(),
+                                const Spacer(),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     height: 35,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                     ),
                                     child: ElevatedButton(
                                       onPressed: details.onStepContinue,
-                                      child: Text(
-                                        'NEXT',
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.0),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Next',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -223,24 +221,31 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           } else if (currentstep == 2) {
                             return Row(
                               children: <Widget>[
-                                Spacer(),
+                                const Spacer(),
                                 // TextButton(
                                 //   onPressed: details.onStepContinue,
                                 //   child: const Text('NEXT'),
                                 // ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                       // Adjust the border radius as needed
                                     ),
                                     child: ElevatedButton(
                                       onPressed: details.onStepCancel,
-                                      child: Text(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.0),
+                                        ),
+                                      ),
+                                      child: const Text(
                                         'Previous',
                                         style: TextStyle(
                                           color: Colors.white,
@@ -248,44 +253,37 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                                           fontFamily: 'Calibri',
                                         ),
                                       ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.0),
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 25.0,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                       // Adjust the border radius as needed
                                     ),
                                     child: ElevatedButton(
                                       onPressed: details.onStepContinue,
-                                      child: Text(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.0),
+                                        ),
+                                      ),
+                                      child: const Text(
                                         'Submit',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -301,24 +299,31 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           } else {
                             return Row(
                               children: <Widget>[
-                                Spacer(),
+                                const Spacer(),
                                 // TextButton(
                                 //   onPressed: details.onStepContinue,
                                 //   child: const Text('NEXT'),
                                 // ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                       // Adjust the border radius as needed
                                     ),
                                     child: ElevatedButton(
                                       onPressed: details.onStepCancel,
-                                      child: Text(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.0),
+                                        ),
+                                      ),
+                                      child: const Text(
                                         'Previous',
                                         style: TextStyle(
                                           color: Colors.white,
@@ -326,44 +331,37 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                                           fontFamily: 'Calibri',
                                         ),
                                       ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.0),
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 25.0,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
+                                  padding: const EdgeInsets.only(top: 10.0, left: 0.0, right: 0.0),
                                   child: Container(
                                     //  width: double.infinity,
                                     height: 35,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFf15f22),
+                                      color: const Color(0xFFf15f22),
                                       borderRadius: BorderRadius.circular(6.0),
                                       // Adjust the border radius as needed
                                     ),
                                     child: ElevatedButton(
                                       onPressed: details.onStepContinue,
-                                      child: Text(
-                                        'NEXT',
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4.0),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Next',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontFamily: 'Calibri',
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.transparent,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(4.0),
                                         ),
                                       ),
                                     ),
@@ -392,7 +390,9 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                             case 0:
                               // Call API for Step 1
                               if (_usernamecontroller.text.trim().isEmpty) {
-                                Commonutils.showCustomToastMessageLong('Please Enter The Username', context, 1, 4);
+                                FocusScope.of(context).unfocus();
+                                Commonutils.showCustomToastMessageLong('Please Enter The User Name', context, 1, 4);
+
                                 return; // Return to prevent proceeding to the next step
                               } else {
                                 await fetchquestion(_usernamecontroller.text.trim());
@@ -426,35 +426,35 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           setState(() => currentstep -= 1);
                         },
                         steps: getSteps(),
-                      ),
+                      )),
                       Padding(
-                        padding: EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
+                        padding: const EdgeInsets.only(top: 35.0, left: 40.0, right: 40.0),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: Color(0xFFf15f22),
+                            color: const Color(0xFFf15f22),
                             borderRadius: BorderRadius.circular(6.0),
                             // Adjust the border radius as needed
                           ),
                           child: ElevatedButton(
                             onPressed: () async {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => LoginPage()),
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
                               );
                             },
-                            child: Text(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                            ),
+                            child: const Text(
                               'Back to SignIn',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontFamily: 'Calibri',
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.transparent,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
                               ),
                             ),
                           ),
@@ -473,41 +473,41 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
         Step(
           state: currentstep > 0 ? StepState.complete : StepState.indexed,
           isActive: currentstep >= 0,
-          title: Text('UserName'),
+          title: const Text('User Name'),
           content: Padding(
-            padding: EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
+            padding: const EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
             child: TextFormField(
               ///     keyboardType: TextInputType.name,
-
+              maxLength: 8,
               controller: _usernamecontroller,
               onTap: () {
                 // requestPhonePermission();
               },
               decoration: InputDecoration(
-                hintText: 'Enter Username',
-                filled: true,
-                fillColor: Colors.white,
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFf15f22),
+                  hintText: 'Enter User Name',
+                  filled: true,
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color(0xFFf15f22),
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFf15f22),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color(0xFFf15f22),
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-                hintStyle: TextStyle(
-                  color: Colors.black26, // Label text color
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                alignLabelWithHint: true,
-              ),
+                  hintStyle: const TextStyle(
+                    color: Colors.black26, // Label text color
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  alignLabelWithHint: true,
+                  counterText: ""),
               textAlign: TextAlign.start,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontFamily: 'Calibri',
                 fontSize: 16,
@@ -518,8 +518,9 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
         Step(
           isActive: currentstep >= 1,
           state: currentstep > 1 ? StepState.complete : StepState.indexed,
-          title: Text('Security Questions'),
-          content: Column(
+          title: const Text('Security Questions'),
+          content: SingleChildScrollView(
+              child: Column(
             children: [
               Visibility(
                 visible: noofquestionavaiable > 2,
@@ -528,7 +529,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                     Container(
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             'Available Questions: ',
                             style: TextStyle(
                               color: Colors.black,
@@ -539,13 +540,13 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                           ),
                           Text(
                             ' $noofquestionavaiable',
-                            style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Calibri'),
+                            style: const TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Calibri'),
                             textAlign: TextAlign.start,
                           ),
                         ],
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     FloatingActionButton(
                       mini: true,
                       onPressed: () {
@@ -566,13 +567,13 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                                   curve: Curves.fastOutSlowIn,
                                   parent: AnimationController(
                                     vsync: this,
-                                    duration: Duration(seconds: 1),
+                                    duration: const Duration(seconds: 1),
                                   )..repeat(),
                                 ),
                               ),
-                              child: Icon(Icons.refresh),
+                              child: const Icon(Icons.refresh),
                             )
-                          : Icon(Icons.refresh),
+                          : const Icon(Icons.refresh),
                     )
                   ],
                 ),
@@ -582,12 +583,12 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    '${Question_1}',
-                    style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
+                    '$Question_1',
+                    style: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
                     textAlign: TextAlign.start,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
+                    padding: const EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
                     child: TextFormField(
                       controller: _answer_1_controller,
                       decoration: InputDecoration(
@@ -595,33 +596,35 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                         filled: true,
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFFf15f22),
                           ),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFFf15f22),
                           ),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.black26,
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                         alignLabelWithHint: true,
+                        counterText: "",
                       ),
+                      maxLength: 50,
                       textAlign: TextAlign.start,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Calibri',
                         fontSize: 16,
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
               ),
               Column(
@@ -629,12 +632,12 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    '${Question_2}',
-                    style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
+                    '$Question_2',
+                    style: const TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Calibri'),
                     textAlign: TextAlign.start,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
+                    padding: const EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
                     child: TextFormField(
                       controller: _answer_2_controller,
                       decoration: InputDecoration(
@@ -642,46 +645,48 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                         filled: true,
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFFf15f22),
                           ),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color(0xFFf15f22),
                           ),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.black26,
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                         alignLabelWithHint: true,
+                        counterText: "",
                       ),
+                      maxLength: 50,
                       textAlign: TextAlign.start,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontFamily: 'Calibri',
                         fontSize: 16,
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
               ),
             ],
-          ),
+          )),
         ),
         Step(
           isActive: currentstep >= 2,
           state: currentstep > 2 ? StepState.complete : StepState.indexed,
-          title: Text('Change Password'),
+          title: const Text('Change Password'),
           content: Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
+                padding: const EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
                 child: TextFormField(
                   ///     keyboardType: TextInputType.name,
                   obscureText: _obscureText_confirm,
@@ -693,23 +698,24 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                     filled: true,
                     fillColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Color(0xFFf15f22),
                       ),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Color(0xFFf15f22),
                       ),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: Colors.black26, // Label text color
                     ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                     alignLabelWithHint: true,
+                    counterText: "",
                     suffixIcon: GestureDetector(
                       onTap: _togglePasswordVisibilityconfrim,
                       child: Icon(
@@ -717,19 +723,20 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                       ),
                     ),
                   ),
+                  maxLength: 25,
                   textAlign: TextAlign.start,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontFamily: 'Calibri',
                     fontSize: 16,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
               Padding(
-                padding: EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
+                padding: const EdgeInsets.only(top: 5.0, left: 0.0, right: 0.0),
                 child: TextFormField(
                   ///     keyboardType: TextInputType.name,
                   obscureText: _obscureText_reconfirm,
@@ -742,23 +749,24 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                     filled: true,
                     fillColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Color(0xFFf15f22),
                       ),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Color(0xFFf15f22),
                       ),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: Colors.black26, // Label text color
                     ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                     alignLabelWithHint: true,
+                    counterText: "",
                     suffixIcon: GestureDetector(
                       onTap: _togglePasswordVisibilityreconfrim,
                       child: Icon(
@@ -766,8 +774,9 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
                       ),
                     ),
                   ),
+                  maxLength: 25,
                   textAlign: TextAlign.start,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontFamily: 'Calibri',
                     fontSize: 16,
@@ -848,6 +857,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
   //   }
   // }
   Future<void> fetchquestion(String username) async {
+    FocusScope.of(context).unfocus();
     try {
       final apiUrl = baseUrl + getquestions + username;
       print('API Request: $apiUrl');
@@ -868,7 +878,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
           //       false; // Set the flag to false after the first API call
           // }
           if (data.isNotEmpty) {
-            Commonutils.showCustomToastMessageLong('Username Successful', context, 0, 2);
+            // Commonutils.showCustomToastMessageLong('${response.body}', context, 0, 2);
             setState(() => currentstep += 1);
 
             // isFirstApiCall =
@@ -877,7 +887,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
           // setState(() => currentstep -= 1);
           setState(() {
             questionsAndAnswers = List<Map<String, dynamic>>.from(data);
-            print('questions${questionsAndAnswers}');
+            print('questions$questionsAndAnswers');
             if (questionsAndAnswers.isNotEmpty) {
               String questionString = questionsAndAnswers[0]['question'].toString();
               String questionString_1 = questionsAndAnswers[1]['question'].toString();
@@ -897,11 +907,11 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
             }
           });
         } else {
-          Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
+          // Commonutils.showCustomToastMessageLong('You Are Trying To Login For The First Time, So Get Credentials From Admin', context, 1, 4);
           print('Invalid username');
         }
       } else {
-        Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
+        Commonutils.showCustomToastMessageLong(response.body, context, 1, 2);
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -941,7 +951,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
           // setState(() => currentstep -= 1);
           setState(() {
             questionsAndAnswers = List<Map<String, dynamic>>.from(data);
-            print('questions${questionsAndAnswers}');
+            print('questions$questionsAndAnswers');
             if (questionsAndAnswers.isNotEmpty) {
               String questionString = questionsAndAnswers[0]['question'].toString();
               String questionString_1 = questionsAndAnswers[1]['question'].toString();
@@ -963,12 +973,12 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
           });
         } else {
           // Username is not valid, show an error message
-          Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
+          //    Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
           print('Invalid username');
           // You can show an error message or handle it as needed.
         }
       } else {
-        Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
+        // Commonutils.showCustomToastMessageLong('Please Enter Valid Username', context, 1, 4);
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -978,6 +988,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
   }
 
   Future<void> validatinganswer() async {
+    FocusScope.of(context).unfocus();
     String answer1 = _answer_1_controller.text.trim();
     String answer2 = _answer_2_controller.text.trim();
 
@@ -990,7 +1001,7 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
       // Answers match, navigate to the next step
       setState(() {
         currentstep += 1;
-        Commonutils.showCustomToastMessageLong('Answers are Correct', context, 0, 2);
+        //  Commonutils.showCustomToastMessageLong('Answers are Correct', context, 0, 2);
       });
     } else {
       // Answers do not match, show an error message
@@ -1071,13 +1082,17 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
       if (isPasswordValid(password2.trim())) {
         changepasswordapi(password2.trim());
       } else {
-        Commonutils.showCustomToastMessageLong('Password must Contain 1 Lowercase, 1 Uppercase, Numbers, Special Characters, and be Between 8 to 25 Characters in Length. Please Correct it.', context, 1, 6);
+        Commonutils.showCustomToastMessageLong(
+            'Password must Contain 1 Lowercase, 1 Uppercase, Numbers, Special Characters, and be Between 8 to 25 Characters in Length. Please Correct it.',
+            context,
+            1,
+            6);
       }
     } else {
-      setState(() {
-        _confirmcontroller.clear(); // Clear the text in the TextEditingController
-        _reconfirmcontroller.clear(); // Clear the text in the TextEditingController
-      });
+      // setState(() {
+      //   _confirmcontroller.clear(); // Clear the text in the TextEditingController
+      //   _reconfirmcontroller.clear(); // Clear the text in the TextEditingController
+      // });
       Commonutils.showCustomToastMessageLong('Passwords do not match Please Correct it', context, 1, 4);
     }
   }
@@ -1110,9 +1125,9 @@ class _securityscreenscreenState extends State<securityscreen> with TickerProvid
       print('statusCode=====>${response.statusCode}');
 
       if (response.statusCode == 200) {
-        Commonutils.showCustomToastMessageLong('Passwords Changed Succesfully!.', context, 0, 4);
+        Commonutils.showCustomToastMessageLong('Password Changed Succesfully!', context, 0, 4);
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
         setState(() {
           //  currentstep += 1;
