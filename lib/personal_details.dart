@@ -50,7 +50,6 @@ class _personal_screen_screenState extends State<personal_details> {
     ]);
     Commonutils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
-        print('The Internet Is Connected');
         _loademployeresponse();
         loademployeeimage();
         loadAccessToken();
@@ -82,118 +81,127 @@ class _personal_screen_screenState extends State<personal_details> {
   }
 
   void _loademployeresponse() async {
-    final loadedData = await SharedPreferencesHelper.getCategories();
+    // final loadedData = await SharedPreferencesHelper.getCategories();
 
-    if (loadedData != null) {
-      final employeeName = loadedData['employeeName'];
-      final dateofbirth = loadedData['originalDOB'];
-      final emailid = loadedData['emailId'];
-      final officemailid = loadedData['officeEmailId'];
-      final expincompany = loadedData['experienceInCompany'];
-      final mobilenum = loadedData['mobileNumber'];
-      final bloodgroup = loadedData['bloodGroup'];
-      final gender = loadedData["gender"];
-      final dateofjoining = loadedData['dateofJoin'];
-      final code = loadedData['code'];
-      final designation = loadedData['designation'];
-      final reportingTo = loadedData['reportingTo'];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('response_key');
+    if (jsonString != null && jsonString.isNotEmpty) {
+      final loadedData = jsonDecode(jsonString);
+      if (loadedData != null) {
+        final employeeName = loadedData['employeeName'];
+        final dateofbirth = loadedData['originalDOB'];
+        final emailid = loadedData['emailId'];
+        final officemailid = loadedData['officeEmailId'];
+        final expincompany = loadedData['experienceInCompany'];
+        final mobilenum = loadedData['mobileNumber'];
+        final bloodgroup = loadedData['bloodGroup'];
+        final gender = loadedData["gender"];
+        final dateofjoining = loadedData['dateofJoin'];
+        final code = loadedData['code'];
+        final designation = loadedData['designation'];
+        final reportingTo = loadedData['reportingTo'];
 
-      //   "gender"
-      // : "Male"
-      print('employeeName: $employeeName');
-      print('dob: $dateofbirth');
-      print('emailid: $emailid');
-      print('officemail: $officemailid');
-      print('expincompany: $expincompany');
-      print('mobilenum: $mobilenum');
-      print('bloodgroup: $bloodgroup');
+        //   "gender"
+        // : "Male"
+        print('employeeName: $employeeName');
+        print('dob: $dateofbirth');
+        print('emailid: $emailid');
+        print('officemail: $officemailid');
+        print('expincompany: $expincompany');
+        print('mobilenum: $mobilenum');
+        print('bloodgroup: $bloodgroup');
 
-      // Format the date of birth into "dd/MM/yyyy"
-      DateTime dobDate = DateTime.parse(dateofbirth);
-      String formattedDOB = DateFormat('dd MMM yyyy').format(dobDate);
-      print('formattedDOB: $formattedDOB');
+        // Format the date of birth into "dd/MM/yyyy"
+        DateTime dobDate = DateTime.parse(dateofbirth);
+        String formattedDOB = DateFormat('dd MMM yyyy').format(dobDate);
+        print('formattedDOB: $formattedDOB');
 
-      // DateTime dateofjoin = DateTime.parse(dateofjoining);
+        // DateTime dateofjoin = DateTime.parse(dateofjoining);
 
 // Check if dateofjoining is not null before parsing
-      if (dateofjoining != null) {
-        dateofjoin = DateTime.parse(dateofjoining!);
-      }
-      // String formatteddateofjoining =
-      //     DateFormat('dd-MM-yyyy').format(dateofjoin!);
+        if (dateofjoining != null) {
+          dateofjoin = DateTime.parse(dateofjoining!);
+        }
+        // String formatteddateofjoining =
+        //     DateFormat('dd-MM-yyyy').format(dateofjoin!);
 
 // Check if dateofjoin is not null before formatting
-      if (dateofjoin != null) {
-        formatteddateofjoining = DateFormat('dd MMM yyyy').format(dateofjoin!);
-        print('formatteddateofjoining$formatteddateofjoining');
-      } else {
-        formatteddateofjoining = ''; // Handle the case when dateofjoin is null
-        // For example, you could provide a default value or show an error message
-      }
+        if (dateofjoin != null) {
+          formatteddateofjoining =
+              DateFormat('dd MMM yyyy').format(dateofjoin!);
+          print('formatteddateofjoining$formatteddateofjoining');
+        } else {
+          formatteddateofjoining =
+              ''; // Handle the case when dateofjoin is null
+          // For example, you could provide a default value or show an error message
+        }
 
-      print('formatteddateofjoining: $formatteddateofjoining');
+        print('formatteddateofjoining: $formatteddateofjoining');
 
-      setState(() {
-        EmployeName = employeeName;
-        dob = formattedDOB;
-        EmailId = emailid;
-        // OfficeEmailid = officemailid;
-        if (loadedData['officeEmailId'] != null) {
-          OfficeEmailid = loadedData['officeEmailId'] as String;
+        setState(() {
+          EmployeName = employeeName;
+          dob = formattedDOB;
+          EmailId = emailid;
+          // OfficeEmailid = officemailid;
+          if (loadedData['officeEmailId'] != null) {
+            OfficeEmailid = loadedData['officeEmailId'] as String;
+            print('OfficeEmailid$OfficeEmailid');
+          } else {
+            OfficeEmailid = '';
+            // Handle the case when loadedData['experienceInCompany'] is null
+            // For example, you could provide a default value or show an error message
+          }
           print('OfficeEmailid$OfficeEmailid');
-        } else {
-          OfficeEmailid = '';
-          // Handle the case when loadedData['experienceInCompany'] is null
-          // For example, you could provide a default value or show an error message
-        }
-        print('OfficeEmailid$OfficeEmailid');
 
-        if (loadedData['reportingTo'] != null) {
-          ReportingTo = reportingTo;
-          print('reportingTo$reportingTo');
-        } else {
-          ReportingTo = '';
-          // Handle the case when loadedData['experienceInCompany'] is null
-          // For example, you could provide a default value or show an error message
-        }
-        if (loadedData['experienceInCompany'] != null) {
-          Expincomapny = loadedData['experienceInCompany'] as String;
-          print('Expincomapny$Expincomapny');
-        } else {
-          Expincomapny = '';
-          // Handle the case when loadedData['experienceInCompany'] is null
-          // For example, you could provide a default value or show an error message
-        }
-        Mobilenum = mobilenum;
-        Bloodgroup = bloodgroup;
-        if (code != null) {
-          cisid = code;
-        } else {
-          cisid = '';
-        }
-        if (designation != null) {
-          employee_designation = designation;
-        } else {
-          employee_designation = '';
-        }
+          if (loadedData['reportingTo'] != null) {
+            ReportingTo = reportingTo;
+            print('reportingTo$reportingTo');
+          } else {
+            ReportingTo = '';
+            // Handle the case when loadedData['experienceInCompany'] is null
+            // For example, you could provide a default value or show an error message
+          }
+          if (loadedData['experienceInCompany'] != null) {
+            Expincomapny = loadedData['experienceInCompany'] as String;
+            print('Expincomapny$Expincomapny');
+          } else {
+            Expincomapny = '';
+            // Handle the case when loadedData['experienceInCompany'] is null
+            // For example, you could provide a default value or show an error message
+          }
+          Mobilenum = mobilenum;
+          Bloodgroup = bloodgroup;
+          if (code != null) {
+            cisid = code;
+          } else {
+            cisid = '';
+          }
+          if (designation != null) {
+            employee_designation = designation;
+          } else {
+            employee_designation = '';
+          }
 
-        // Gender = gender;
-        if (gender != null) {
-          Gender = gender;
-        } else {
-          // Handle the case where gender is null, maybe assign a default value
-          Gender = "Unknown";
-        }
+          // Gender = gender;
+          if (gender != null) {
+            Gender = gender;
+          } else {
+            // Handle the case where gender is null, maybe assign a default value
+            Gender = "Unknown";
+          }
 // Check if formatteddateofjoining is not null before using it
-        if (formatteddateofjoining != null) {
-          Dateofjoining = formatteddateofjoining;
-          print('Dateofjoining$Dateofjoining');
-        } else {
-          Dateofjoining = '';
-          // Handle the case when formatteddateofjoining is null
-          // For example, you could provide a default value or show an error message
-        }
-      });
+          if (formatteddateofjoining != null) {
+            Dateofjoining = formatteddateofjoining;
+            print('Dateofjoining$Dateofjoining');
+          } else {
+            Dateofjoining = '';
+            // Handle the case when formatteddateofjoining is null
+            // For example, you could provide a default value or show an error message
+          }
+        });
+      }
+    } else {
+      print('Failed to load data');
     }
   }
 
@@ -418,18 +426,13 @@ class _personal_screen_screenState extends State<personal_details> {
                                                                     55,
                                                                     0),
                                                                 Colors.white,
-                                                              ], // Gradient colors
-                                                              // begin: Alignment
-                                                              //     .topLeft,
-                                                              // end: Alignment
-                                                              //     .bottomRight,
+                                                              ],
                                                             ),
                                                           ),
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                    .all(
-                                                                    3.0), // Adjust the padding as needed
+                                                                    .all(3.0),
                                                             child: ClipOval(
                                                               child:
                                                                   Image.memory(
@@ -446,12 +449,10 @@ class _personal_screen_screenState extends State<personal_details> {
                                                         getDefaultImage(
                                                             Gender!),
                                                       } else ...{
-                                                        Container(
-                                                          child: Image.asset(
-                                                            'assets/app_logo.png',
-                                                            width: 90,
-                                                            height: 90,
-                                                          ),
+                                                        Image.asset(
+                                                          'assets/app_logo.png',
+                                                          width: 90,
+                                                          height: 90,
                                                         )
                                                       },
                                                       const SizedBox(
@@ -475,11 +476,6 @@ class _personal_screen_screenState extends State<personal_details> {
                                                                   'Calibri'),
                                                         ),
                                                       ),
-                                                      // SizedBox(height: 2.0),
-                                                      // Text(
-                                                      //   "$cisid",
-                                                      //   style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Calibri'),
-                                                      // ),
                                                       const SizedBox(
                                                           height: 2.0),
                                                       Text(
@@ -494,48 +490,18 @@ class _personal_screen_screenState extends State<personal_details> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // SizedBox(
-                                              //   height: 8.0,
-                                              // ),
-
-                                              // Add more widgets if needed
                                             ],
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-
-                                  // Align(
-                                  //     alignment: Alignment.center,
-                                  //     child:
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      //height: MediaQuery.of(context).size.height,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          // SizedBox(
-                                          //   height: 35.0,
-                                          // ),
-
-                                          // if (Gender == "Male")
-                                          //   Image.asset(
-                                          //     'assets/men_emp.jpg',
-                                          //     width: 90,
-                                          //     height: 110,
-                                          //   )
-                                          // else if (Gender == "Female")
-                                          //   Image.asset(
-                                          //     'assets/women-emp.jpg',
-                                          //     width: 90,
-                                          //     height: 110,
-                                          //   ),
-
-                                          //  SizedBox(height: 40.0),
-                                          // SizedBox(height: 40.0),
                                           Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Card(
@@ -1428,25 +1394,38 @@ class _personal_screen_screenState extends State<personal_details> {
   }
 
   Widget getDefaultImage(String gender) {
-    return gender == "Male"
-        ? Image.asset(
-            'assets/men_emp.jpg',
-            width: 90,
-            height: 110,
-          )
+    String genderImage = gender == "Male"
+        ? 'assets/men_emp.jpg'
         : gender == "Female"
-            ? Image.asset(
-                'assets/women-emp.jpg',
-                width: 90,
-                height: 110,
-              )
-            : Container(
-                child: Image.asset(
-                  'assets/app_logo.png',
-                  width: 90,
-                  height: 110,
-                ),
-              ); // You can replace Container() with another default image or widget
+            ? 'assets/women-emp.jpg'
+            : 'assets/app_logo.png';
+
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 184, 55, 0),
+            Colors.white,
+            Color.fromARGB(255, 184, 55, 0),
+            Colors.white,
+          ],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: ClipOval(
+          child: Image.asset(
+            width: 60,
+            height: 50,
+            genderImage,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
 
   Uint8List _decodeBase64(String base64String) {

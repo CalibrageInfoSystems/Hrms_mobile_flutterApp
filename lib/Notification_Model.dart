@@ -15,7 +15,7 @@ class Notification_model {
     required this.notificationId,
     required this.employeeId,
     required this.employeeName,
-    this.code,
+    required this.code,
     required this.message,
     required this.messageTypeId,
     required this.messageType,

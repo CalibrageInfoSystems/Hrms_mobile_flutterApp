@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hrms/Commonutils.dart';
 import 'package:hrms/Notifications_screen.dart';
@@ -26,11 +27,13 @@ class home_screen extends StatefulWidget {
   _home_screenState createState() => _home_screenState();
 }
 
-class _home_screenState extends State<home_screen> with SingleTickerProviderStateMixin {
+class _home_screenState extends State<home_screen>
+    with SingleTickerProviderStateMixin {
   int currentTab = 0;
   bool islogin = false;
   final FocusNode _projectsFocusNode = FocusNode();
   final FocusNode _leavesFocusNode = FocusNode();
+  static const primaryColor = Color(0xFFf15f22);
 
   late AnimationController _animationController;
   late Animation<double> scalAnimation;
@@ -65,7 +68,7 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
             home: Scaffold(
               appBar: AppBar(
                 elevation: 0,
-                backgroundColor: const Color(0xFFf15f22),
+                backgroundColor: primaryColor,
                 title: const Text(
                   'HRMS',
                   style: TextStyle(color: Colors.white),
@@ -76,7 +79,8 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Notifications()),
+                        MaterialPageRoute(
+                            builder: (context) => const Notifications()),
                       );
                     },
                     child: const Icon(
@@ -91,127 +95,153 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                 ],
               ),
               drawer: Drawer(
-                child: ListView(
+                width: 260.0,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     DrawerHeader(
+                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                       decoration: const BoxDecoration(
-                          // Remove the DecorationImage with AssetImage
-                          ),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color.fromARGB(255, 184, 55, 0),
+                            Colors.white,
+                          ],
+                        ),
+                      ),
                       child: SvgPicture.asset(
-                        'assets/cislogo-new.svg', // Replace with the path to your SVG icon
-                        width: 80, // Adjust the width as needed
-                        height: 100, // Adjust the height as needed
+                        'assets/cislogo-new.svg',
+                        width: 80,
+                        height: 100,
                       ),
                     ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            leading: SvgPicture.asset(
+                              'assets/atten.svg',
+                              width: 20,
+                              height: 20,
+                              fit: BoxFit.contain,
+                              color: primaryColor,
+                            ),
+                            title: const Text(
+                              'My Leaves',
+                              style: TextStyle(
+                                // color: Colors.black,
+                                color: primaryColor,
+                                fontFamily: 'hind_semibold',
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Myleaveslist()),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.notification_important,
+                              // color: Colors.black,
+                              color: primaryColor,
+                              weight: 20,
+                            ),
+                            title: const Text(
+                              'Notifications',
+                              style: TextStyle(
+                                // color: Colors.black,
+                                color: primaryColor,
+                                fontFamily: 'hind_semibold',
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Notifications()),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.copy,
+                              color: primaryColor,
+                              weight: 20,
+                            ),
+                            title: const Text(
+                              'Resignation Request',
+                              style: TextStyle(
+                                // color: Colors.black,
+                                color: primaryColor,
+                                fontFamily: 'hind_semibold',
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Resgination_req()),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.star,
+                              color: primaryColor,
+                            ),
+                            title: const Text(
+                              'Feedback',
+                              style: TextStyle(
+                                // color: Colors.black,
 
-                    ListTile(
-                      leading: SvgPicture.asset(
-                        'assets/atten.svg',
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.contain,
-                        color: Colors.black,
+                                color: primaryColor,
+                                fontFamily: 'hind_semibold',
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const feedback_Screen()),
+                              );
+                              // Handle the onTap action for Logout
+                            },
+                          ),
+                        ],
                       ),
-                      title: const Text(
-                        'My Leaves',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'hind_semibold',
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Myleaveslist()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.star), // Change the icon as needed
-                      title: const Text(
-                        'Feedback',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'hind_semibold',
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const feedback_Screen()),
-                        );
-                        // Handle the onTap action for Logout
-                      },
                     ),
                     ListTile(
                       leading: const Icon(
-                        Icons.notification_important,
-                        color: Colors.black,
-                        weight: 20,
+                        Icons.logout,
+                        color: primaryColor,
                       ),
-                      // SvgPicture.asset(
-                      //   'assets/atten.svg',
-                      //   width: 20,
-                      //   height: 20,
-                      //   fit: BoxFit.contain,
-                      //   color: Colors.black,
-                      // ),
-                      title: const Text(
-                        'Notifications',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'hind_semibold',
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Notifications()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.copy,
-                        color: Colors.black,
-                        weight: 20,
-                      ),
-                      // SvgPicture.asset(
-                      //   'assets/atten.svg',
-                      //   width: 20,
-                      //   height: 20,
-                      //   fit: BoxFit.contain,
-                      //   color: Colors.black,
-                      // ),
-                      title: const Text(
-                        'Resignation Request',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'hind_semibold',
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Resgination_req()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.logout), // Change the icon as needed
                       title: const Text(
                         'Logout',
                         style: TextStyle(
-                          color: Colors.black,
+                          // color: Colors.black,
+                          color: primaryColor,
                           fontFamily: 'hind_semibold',
                         ),
                       ),
                       onTap: () {
                         logOutDialog();
-                        // Handle the onTap action for Logout
                       },
                     ),
-                    // Add more ListTiles or other widgets as needed
                   ],
                 ),
               ),
@@ -223,10 +253,14 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                     currentTab = 0;
                   });
                 },
-                backgroundColor: const Color(0xFFf15f22), // Set the background color to orange
+                backgroundColor: const Color(
+                    0xFFf15f22), // Set the background color to orange
                 shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: Colors.white, width: 3.0), // Set border color and width
-                  borderRadius: BorderRadius.circular(60), // Adjust the radius as needed
+                  side: const BorderSide(
+                      color: Colors.white,
+                      width: 3.0), // Set border color and width
+                  borderRadius:
+                      BorderRadius.circular(60), // Adjust the radius as needed
                 ),
                 //   mini: true,
                 child: Image.asset(
@@ -236,7 +270,8 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                   color: Colors.white,
                 ),
               ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: BottomAppBar(
                 height: 58,
                 shape: const CircularNotchedRectangle(),
@@ -279,20 +314,27 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                                             });
                                           },
                                           child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
                                               Container(
-                                                padding: const EdgeInsets.all(14.0),
+                                                padding:
+                                                    const EdgeInsets.all(14.0),
                                                 child: SvgPicture.asset(
                                                   'assets/2560114.svg', // Replace with the actual path to your SVG icon
-                                                  height: 20, // Adjust the height as needed
-                                                  width: 20, // Adjust the width as needed
-                                                  color: const Color(0xFFf15f22),
+                                                  height:
+                                                      20, // Adjust the height as needed
+                                                  width:
+                                                      20, // Adjust the width as needed
+                                                  color: primaryColor,
                                                 ),
                                               ),
                                               const Text(
                                                 "Projects",
-                                                style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
+                                                style: TextStyle(
+                                                    color: primaryColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'Calibri'),
                                               ),
                                             ],
                                           ),
@@ -300,10 +342,16 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                                         Positioned(
                                           top: 0,
                                           left: 0,
-                                          width: MediaQuery.of(context).size.width / 3 / 1,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3 /
+                                              1,
                                           height: 4,
                                           child: Container(
-                                            color: currentTab == 1 ? const Color(0xFFf15f22) : Colors.transparent,
+                                            color: currentTab == 1
+                                                ? primaryColor
+                                                : Colors.transparent,
                                           ),
                                         ),
                                       ],
@@ -337,30 +385,43 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
                                     child: Stack(
                                       children: [
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.all(13.0),
+                                              padding:
+                                                  const EdgeInsets.all(13.0),
                                               child: SvgPicture.asset(
                                                 'assets/leave_8.svg', // Replace with the actual path to your SVG icon
-                                                height: 22, // Adjust the height as needed
-                                                width: 20, // Adjust the width as needed
-                                                color: const Color(0xFFf15f22),
+                                                height:
+                                                    22, // Adjust the height as needed
+                                                width:
+                                                    20, // Adjust the width as needed
+                                                color: primaryColor,
                                               ),
                                             ),
                                             const Text(
                                               "Leaves",
-                                              style: TextStyle(color: Color(0xFFf15f22), fontWeight: FontWeight.bold, fontFamily: 'Calibri'),
+                                              style: TextStyle(
+                                                  color: primaryColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Calibri'),
                                             ),
                                           ],
                                         ),
                                         Positioned(
                                           top: 0,
                                           left: 0,
-                                          width: MediaQuery.of(context).size.width / 2.5 / 1,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2.5 /
+                                              1,
                                           height: 4,
                                           child: Container(
-                                            color: currentTab == 2 ? const Color(0xFFf15f22) : Colors.transparent,
+                                            color: currentTab == 2
+                                                ? primaryColor
+                                                : Colors.transparent,
                                           ),
                                         ),
                                       ],
@@ -421,7 +482,8 @@ class _home_screenState extends State<home_screen> with SingleTickerProviderStat
 
   void onConfirmLogout() {
     SharedPreferencesHelper.putBool(Constants.IS_LOGIN, false);
-    Commonutils.showCustomToastMessageLong("Logout Successfully", context, 0, 3);
+    Commonutils.showCustomToastMessageLong(
+        "Logout Successfully", context, 0, 3);
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => LoginPage()));
 

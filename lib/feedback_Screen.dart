@@ -18,7 +18,8 @@ class feedback_Screen extends StatefulWidget {
 }
 
 class _feedback_Screen_screenState extends State<feedback_Screen> {
-  final TextEditingController _commentstexteditcontroller = TextEditingController();
+  final TextEditingController _commentstexteditcontroller =
+      TextEditingController();
   double rating_star = 0.0;
   String accessToken = '';
 
@@ -74,7 +75,8 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const home_screen()),
+                    MaterialPageRoute(
+                        builder: (context) => const home_screen()),
                   );
                   // Implement your logic to navigate back
                 },
@@ -94,12 +96,13 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
-                    padding: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0, bottom: 20.0),
+                    padding: const EdgeInsets.only(
+                        top: 15.0, left: 15.0, right: 15.0, bottom: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Feedback',
+                          'Please give your feedback',
                           style: TextStyle(
                             fontSize: 24,
                             color: Color(0xFFf15f22),
@@ -109,17 +112,17 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                         const SizedBox(
                           height: 15.0,
                         ),
-                        const Text(
-                          'Rating',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFFf15f22),
-                            fontFamily: 'Calibri',
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 15.0,
-                        ),
+                        // const Text(
+                        //   'Please give your feedback',
+                        //   style: TextStyle(
+                        //     fontSize: 19,
+                        //     color: Color(0xFFf15f22),
+                        //     fontFamily: 'Calibri',
+                        //   ),
+                        // ),
+                        // const SizedBox(
+                        //   height: 6.0,
+                        // ),
                         SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: RatingBar.builder(
@@ -128,7 +131,8 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                               direction: Axis.horizontal,
                               allowHalfRating: true,
                               itemCount: 5,
-                              itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
+                              itemPadding:
+                                  const EdgeInsets.symmetric(horizontal: 1.0),
                               itemBuilder: (context, _) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
@@ -141,14 +145,16 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                               },
                             )),
                         Padding(
-                          padding: const EdgeInsets.only(left: 0, top: 10.0, right: 0),
+                          padding: const EdgeInsets.only(
+                              left: 0, top: 10.0, right: 0),
                           child: GestureDetector(
                             onTap: () async {},
                             child: Container(
                               height: 180,
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
-                                border: Border.all(color: const Color(0xFFf15f22), width: 1.5),
+                                border: Border.all(
+                                    color: const Color(0xFFf15f22), width: 1.5),
                                 borderRadius: BorderRadius.circular(5.0),
                                 color: Colors.white,
                               ),
@@ -181,7 +187,8 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0, left: 0.0, right: 0.0),
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 0.0, right: 0.0),
                           child: Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
@@ -201,7 +208,10 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
                               ),
                               child: const Text(
                                 'Submit',
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Calibri'),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: 'Calibri'),
                               ),
                             ),
                           ),
@@ -220,20 +230,23 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
     bool isValid = true;
     bool hasValidationFailed = false;
     if (rating_star <= 0.0) {
-      Commonutils.showCustomToastMessageLong('Please Share Us Your Valuable Feedback', context, 1, 4);
+      Commonutils.showCustomToastMessageLong(
+          'Please Share Us Your Valuable Feedback', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
       FocusScope.of(context).unfocus();
     }
 
     if (isValid && _commentstexteditcontroller.text.trim().isEmpty) {
-      Commonutils.showCustomToastMessageLong('Please Enter Comment', context, 1, 4);
+      Commonutils.showCustomToastMessageLong(
+          'Please Enter Comment', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
       FocusScope.of(context).unfocus();
     }
     if (isValid) {
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       String? storedEmployeeId = sharedPreferences.getString("employeeId");
       print('employidinfeedback$storedEmployeeId');
       String comments = _commentstexteditcontroller.text.toString();
@@ -272,23 +285,27 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
           if (responseMap.containsKey('isSuccess')) {
             bool isSuccess = responseMap['isSuccess'];
             if (isSuccess == true) {
-              Commonutils.showCustomToastMessageLong('Thankyou For Your Valuable Feedback', context, 0, 4);
+              Commonutils.showCustomToastMessageLong(
+                  'Thankyou For Your Valuable Feedback', context, 0, 4);
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const home_screen()),
               );
             } else {
-              Commonutils.showCustomToastMessageLong('${responseMap['message']}', context, 1, 4);
+              Commonutils.showCustomToastMessageLong(
+                  '${responseMap['message']}', context, 1, 4);
               print('Feedback Failed: ${response.body}');
             }
           } else {
             if (response.body.toLowerCase().contains('invalid token')) {
               // Invalid token scenario
-              Commonutils.showCustomToastMessageLong('Invalid Token. Please Login Again.', context, 1, 4);
+              Commonutils.showCustomToastMessageLong(
+                  'Invalid Token. Please Login Again.', context, 1, 4);
             } else {
               // Other scenarios with success status code
               // Handle as needed, for example, showing the response message
               String message = responseMap['message'] ?? 'No message provided';
-              Commonutils.showCustomToastMessageLong(response.body, context, 0, 3);
+              Commonutils.showCustomToastMessageLong(
+                  response.body, context, 0, 3);
             }
           }
         } else if (response.statusCode == 520) {
@@ -297,7 +314,8 @@ class _feedback_Screen_screenState extends State<feedback_Screen> {
           Commonutils.showCustomToastMessageLong(response.body, context, 0, 3);
         } else {
           // Handle other status codes if needed
-          print('Failed to send the request. Status code: ${response.statusCode}');
+          print(
+              'Failed to send the request. Status code: ${response.statusCode}');
         }
         // if (response.statusCode == 200) {
         //   Map<String, dynamic> responseMap = json.decode(response.body);
